@@ -6,17 +6,22 @@ namespace EventStreams.Projection
 {
     using Core;
 
-    public class Projector
-    {
-        public TAggregateRoot Project<TAggregateRoot>(IEnumerable<IEvent<TAggregateRoot>> events) where TAggregateRoot : class, new()
-        {
-            Func<TAggregateRoot, IEvent<TAggregateRoot>, TAggregateRoot> foo =
-                (currentState, currentEvent) =>
-                    {
+    public class Projector {
+        private readonly EventInvocationCache _invocationCache = new EventInvocationCache();
 
+        public void Cache<TAggregateRoot>() where TAggregateRoot : class, new() {
+            _invocationCache.Cache<TAggregateRoot>();
+        }
 
-                        return currentEvent.Aggregator(currentState);
-                    };
+        public TAggregateRoot Project<TAggregateRoot>(IEnumerable<IStreamedEvent> events) where TAggregateRoot : class, new() {
+            Func<TAggregateRoot, IStreamedEvent, TAggregateRoot> foo =
+                (currentState, currentEvent) => {
+                    _invocationCache
+                        .Get<TAggregateRoot>(currentEvent)
+                        .Invoke(currentState, currentEvent, true);
+
+                    return currentState;
+                };
 
             return events.Aggregate(new TAggregateRoot(), foo);
         }

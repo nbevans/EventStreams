@@ -2,18 +2,20 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{2FEABB25-7F6E-4F1B-8BD5-305669C8014B}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{4698D6DD-9A4A-4C4F-902F-3534E446B37A}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>EventStreams</RootNamespace>
-    <AssemblyName>EventStreams.Tests</AssemblyName>
+    <AssemblyName>EventStreams.Tests.Performance</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -21,9 +23,9 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,29 +34,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework">
-      <HintPath>..\EventStreams\packages\NUnit.2.6.0.12054\lib\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Projection\SimpleProjectorTests.cs" />
-    <Compile Include="TestDomain\BankAccount.cs" />
-    <Compile Include="TestDomain\BankAccountState.cs" />
-    <Compile Include="TestDomain\Events\BankAccount\Credited.cs" />
-    <Compile Include="TestDomain\Events\BankAccount\Debited.cs" />
-    <Compile Include="TestDomain\Events\BankAccount\SalaryDeposited.cs" />
-    <Compile Include="TestDomain\Events\BankAccount\MadePurchase.cs" />
-    <Compile Include="TestDomain\Events\BankAccount\PayeSalaryDeposited.cs" />
-    <Compile Include="TestDomain\Events\Transformers\SalaryDepositedTransformer.cs" />
+    <Compile Include="Core\IPerformanceTestSuite.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Projection\ProjectorTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\EventStreams.Tests\EventStreams.Tests.csproj">
+      <Project>{2FEABB25-7F6E-4F1B-8BD5-305669C8014B}</Project>
+      <Name>EventStreams.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EventStreams\EventStreams.csproj">
       <Project>{BF0048D3-C7B2-4D31-BD26-49EA846455E8}</Project>
       <Name>EventStreams</Name>

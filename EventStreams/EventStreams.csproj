@@ -37,18 +37,19 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\IEventCore.cs" />
-    <Compile Include="Core\IEvent.cs" />
-    <Compile Include="Core\IEventIdentification.cs" />
-    <Compile Include="Core\EventBase.cs" />
-    <Compile Include="Core\IEventTiming.cs" />
-    <Compile Include="Core\IEventAggregation.cs" />
+    <Compile Include="Core\IStreamedEvent.cs" />
+    <Compile Include="Core\StreamedEventHandler.cs" />
+    <Compile Include="Core\IStreamedEventIdentity.cs" />
+    <Compile Include="Core\StreamedEventArgs.cs" />
+    <Compile Include="Core\IStreamedEventTiming.cs" />
+    <Compile Include="Core\InvocationExtensions.cs" />
     <Compile Include="Core\TimeSource.cs" />
+    <Compile Include="Projection\DelegateHelper.cs" />
+    <Compile Include="Projection\EventInvocationCache.cs" />
     <Compile Include="Projection\Projector.cs" />
     <Compile Include="Projection\Transformation\IEventTransformer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

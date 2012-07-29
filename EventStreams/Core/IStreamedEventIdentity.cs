@@ -2,10 +2,10 @@
 
 namespace EventStreams.Core
 {
-    public interface IEventIdentification
+    public interface IStreamedEventIdentity
     {
         Guid Id { get; }
 
-        string Name { get; }
+        string DebugName { get; }
     }
 }

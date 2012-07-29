@@ -2,7 +2,7 @@
 
 namespace EventStreams.Core
 {
-    public interface IEventTiming
+    public interface IStreamedEventTiming
     {
         DateTime Timestamp { get; }
     }
