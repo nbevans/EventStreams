@@ -1,13 +1,15 @@
-﻿//using System;
-//using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
-//namespace EventStreams.Projection.Transformation
-//{
-//    using Core;
+namespace EventStreams.Projection.Transformation {
+    using Core;
 
-//    public interface IEventTransformer
-//    {
-//        IEnumerable<IEvent<TAggregateRoot>> Transform<TAggregateRoot>(IEvent<TAggregateRoot> candidateEvent)
-//            where TAggregateRoot : class, new();
-//    }
-//}
+    public interface IEventTransformer {
+
+        DateTime Chronology { get; }
+
+        IEnumerable<IStreamedEvent> Transform<TAggregateRoot>(IStreamedEvent candidateEvent)
+            where TAggregateRoot : class, new();
+
+    }
+}

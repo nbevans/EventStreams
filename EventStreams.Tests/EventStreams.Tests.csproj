@@ -41,7 +41,8 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Projection\SimpleProjectorTests.cs" />
+    <Compile Include="Projection\ProjectorIntegrationTests.cs" />
+    <Compile Include="Projection\Transformation\EventSequenceTransformerTests.cs" />
     <Compile Include="TestDomain\BankAccount.cs" />
     <Compile Include="TestDomain\BankAccountState.cs" />
     <Compile Include="TestDomain\Events\BankAccount\Credited.cs" />
@@ -49,7 +50,7 @@
     <Compile Include="TestDomain\Events\BankAccount\SalaryDeposited.cs" />
     <Compile Include="TestDomain\Events\BankAccount\MadePurchase.cs" />
     <Compile Include="TestDomain\Events\BankAccount\PayeSalaryDeposited.cs" />
-    <Compile Include="TestDomain\Events\Transformers\SalaryDepositedTransformer.cs" />
+    <Compile Include="TestDomain\Events\Transformers\SplitSalaryDepositedTransformer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

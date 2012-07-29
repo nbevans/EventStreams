@@ -2,28 +2,32 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EventStreams.Projection
-{
+namespace EventStreams.Projection {
     using Core;
+    using Transformation;
 
-    public class Projector {
+    public class Projector : IProjector {
         private readonly EventInvocationCache _invocationCache = new EventInvocationCache();
+        private readonly EventSequenceTransformer _eventSequenceTransformer = new EventSequenceTransformer();
 
-        public void Cache<TAggregateRoot>() where TAggregateRoot : class, new() {
+        public IEventSequenceTransformer Transformations { get { return _eventSequenceTransformer; } }
+
+        public IProjector Cache<TAggregateRoot>() where TAggregateRoot : class, new() {
             _invocationCache.Cache<TAggregateRoot>();
+            return this;
         }
 
         public TAggregateRoot Project<TAggregateRoot>(IEnumerable<IStreamedEvent> events) where TAggregateRoot : class, new() {
-            Func<TAggregateRoot, IStreamedEvent, TAggregateRoot> foo =
-                (currentState, currentEvent) => {
-                    _invocationCache
-                        .Get<TAggregateRoot>(currentEvent)
-                        .Invoke(currentState, currentEvent, true);
+            return events
+                .Aggregate(
+                    new TAggregateRoot(),
+                    (currentState, currentEvent) => {
+                        _invocationCache
+                            .Get<TAggregateRoot>(currentEvent)
+                            .Invoke(currentState, currentEvent, true);
 
-                    return currentState;
-                };
-
-            return events.Aggregate(new TAggregateRoot(), foo);
+                        return currentState;
+                    });
         }
     }
 }

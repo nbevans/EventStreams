@@ -22,7 +22,7 @@ namespace EventStreams.Core
 
         public string DebugName
         {
-            get { return string.Format("#{0:x} @ {1:o}", Id.GetHashCode(), Timestamp); }
+            get { return string.Format("{0} (#{1:x}) @ {2:o}", GetType().Name, Id.GetHashCode(), Timestamp); }
         }
     }
 }

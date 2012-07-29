@@ -5,10 +5,9 @@ using EventStreams.TestDomain.Events.BankAccount;
 
 using NUnit.Framework;
 
-namespace EventStreams.Projection
-{
+namespace EventStreams.Projection {
     [TestFixture]
-    public class SimpleProjectorTests {
+    public class ProjectorIntegrationTests {
 
         private readonly Projector _projector = new Projector();
 

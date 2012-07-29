@@ -46,7 +46,10 @@
     <Compile Include="Core\TimeSource.cs" />
     <Compile Include="Projection\DelegateHelper.cs" />
     <Compile Include="Projection\EventInvocationCache.cs" />
+    <Compile Include="Projection\IProjector.cs" />
     <Compile Include="Projection\Projector.cs" />
+    <Compile Include="Projection\Transformation\EventSequenceTransformer.cs" />
+    <Compile Include="Projection\Transformation\IEventSequenceTransformer.cs" />
     <Compile Include="Projection\Transformation\IEventTransformer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
