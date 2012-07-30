@@ -43,6 +43,7 @@
     <Compile Include="Core\StreamedEventArgs.cs" />
     <Compile Include="Core\IStreamedEventTiming.cs" />
     <Compile Include="Core\InvocationExtensions.cs" />
+    <Compile Include="Core\StreamingContext.cs" />
     <Compile Include="Core\TimeSource.cs" />
     <Compile Include="Projection\DelegateHelper.cs" />
     <Compile Include="Projection\EventInvocationCache.cs" />

@@ -6,7 +6,7 @@ using System.Reflection;
 using EventStreams.Core;
 
 namespace EventStreams.Projection {
-    using StreamedEventAction = Action<object, IStreamedEvent, bool>;
+    using StreamedEventAction = Action<object, IStreamedEvent, StreamingContext>;
 
     internal class EventInvocationCache {
         private readonly Dictionary<Type, Dictionary<Type, StreamedEventAction>> _cache =
@@ -18,7 +18,7 @@ namespace EventStreams.Projection {
 
             var events = typeof(TAggregateRoot).GetEvents(BindingFlags.Instance | BindingFlags.Public);
             foreach (var e in events) {
-                if (e.EventHandlerType.IsGenericType && e.EventHandlerType.GetGenericTypeDefinition().Equals(typeof(StreamedEventHandler<>))) {
+                if (e.EventHandlerType.IsGenericType && e.EventHandlerType.GetGenericTypeDefinition() == typeof(StreamedEventHandler<>)) {
                     var genericArgs = e.EventHandlerType.GetGenericArguments().First();
                     EnsureCachedAndGet<TAggregateRoot>(genericArgs);
                 }

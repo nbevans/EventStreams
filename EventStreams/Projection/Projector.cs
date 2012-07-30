@@ -24,7 +24,7 @@ namespace EventStreams.Projection {
                     (currentState, currentEvent) => {
                         _invocationCache
                             .Get<TAggregateRoot>(currentEvent)
-                            .Invoke(currentState, currentEvent, true);
+                            .Invoke(currentState, currentEvent, new StreamingContext { Projecting = true });
 
                         return currentState;
                     });
