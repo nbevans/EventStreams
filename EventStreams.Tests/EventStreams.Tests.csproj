@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Projection\ProjectorIntegrationTests.cs" />
     <Compile Include="Projection\Transformation\EventSequenceTransformerTests.cs" />
+    <Compile Include="Serialization\SerializerTests.cs" />
     <Compile Include="TestDomain\BankAccount.cs" />
     <Compile Include="TestDomain\BankAccountState.cs" />
     <Compile Include="TestDomain\Events\BankAccount\Credited.cs" />
