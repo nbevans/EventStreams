@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using EventStreams.TestDomain.Events.BankAccount;
+using EventStreams.Domain.Events.BankAccount;
 
-namespace EventStreams.TestDomain.Events.Transformers {
+namespace EventStreams.Domain.Events.Transformers {
     using Core;
     using Projection.Transformation;
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EventStreams.TestDomain
+namespace EventStreams.Domain
 {
     using Core;
     using Events.BankAccount;

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 using EventStreams.Core;
-using EventStreams.TestDomain;
-using EventStreams.TestDomain.Events.BankAccount;
-using EventStreams.TestDomain.Events.Transformers;
+using EventStreams.Domain;
+using EventStreams.Domain.Events.BankAccount;
+using EventStreams.Domain.Events.Transformers;
 
 using NUnit.Framework;
 

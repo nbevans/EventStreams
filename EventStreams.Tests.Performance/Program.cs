@@ -34,11 +34,12 @@ namespace EventStreams {
             foreach (var testSuite in testSuites) {
                 Console.WriteLine("Opening test suite: " + testSuite.GetType().FullName);
 
+                const int batchCount = 5;
                 var testNumber = 0;
                 foreach (var test in testSuite.GetTests()) {
-                    Console.WriteLine("   Test #" + testNumber.ToString("N0") + "         (5 batches of " + testSuite.Repeat.ToString("N0") + " iterations)");
+                    Console.WriteLine("   Test #{0:N0}: {1} ({2:N0} batches / {3:N0} iterations)", testNumber, test.Method.Name.PadRight(20), batchCount, testSuite.Repeat);
 
-                    for (var i = 0; i < 5; ++i) {
+                    for (var i = 0; i < batchCount; ++i) {
                         var sw = Stopwatch.StartNew();
 
                         for (var j = 0; j < testSuite.Repeat; ++j)
@@ -53,7 +54,6 @@ namespace EventStreams {
                     test();
                     sw2.Stop();
                     Console.WriteLine("      " + sw2.Elapsed + " * single exec");
-
 
                     testNumber++;
                 }

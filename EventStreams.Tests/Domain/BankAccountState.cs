@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace EventStreams.TestDomain {
+namespace EventStreams.Domain {
 
     [DataContract]
     public class BankAccountState {

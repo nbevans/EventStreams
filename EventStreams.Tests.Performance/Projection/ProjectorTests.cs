@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 namespace EventStreams.Projection {
     using Core;
-    using TestDomain;
-    using TestDomain.Events.BankAccount;
+    using Domain;
+    using Domain.Events.BankAccount;
 
     class ProjectorTests : IPerformanceTestSuite {
 
@@ -16,20 +16,15 @@ namespace EventStreams.Projection {
             new MadePurchase(45, "Wine")
         };
 
-        public ProjectorTests() {
-            _projector.Cache<BankAccount>();
-        }
-
         public IEnumerable<Action> GetTests() {
-            yield return DoIt;
+            yield return ProjectSequenceOfFourEvents;
         }
 
-        public int Repeat
-        {
+        public int Repeat {
             get { return 1000000; }
         }
 
-        private void DoIt() {
+        private void ProjectSequenceOfFourEvents() {
             _projector.Project<BankAccount>(_events100);
         }
     }

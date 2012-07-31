@@ -1,7 +1,7 @@
 ﻿using System;
 using EventStreams.Core;
-using EventStreams.TestDomain;
-using EventStreams.TestDomain.Events.BankAccount;
+using EventStreams.Domain;
+using EventStreams.Domain.Events.BankAccount;
 
 using NUnit.Framework;
 

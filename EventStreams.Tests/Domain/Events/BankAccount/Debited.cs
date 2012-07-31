@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace EventStreams.TestDomain.Events.BankAccount
+namespace EventStreams.Domain.Events.BankAccount
 {
     using Core;
 

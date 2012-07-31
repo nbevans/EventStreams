@@ -5,7 +5,7 @@ using System.IO;
 namespace EventStreams.Serialization
 {
     using Core;
-    using TestDomain;
+    using Domain;
 
     class SerializerTests : IPerformanceTestSuite
     {
