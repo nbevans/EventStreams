@@ -13,9 +13,11 @@ namespace EventStreams.Serialization
         [Test]
         public void foo()
         {
-            var tmp = new BankAccountState {Balance = 111.95m, Foo = "foobar"};
+            //var tmp = new BankAccountState {Balance = 111.95m, Foo = "foobar", Dt = DateTime.UtcNow};
 
-            new Serializer().Serialize(tmp);
+            //new Serializer().Serialize(tmp);
+
+            var test = new Serializer().Deserialize<BankAccountState>();
         }
     }
 }

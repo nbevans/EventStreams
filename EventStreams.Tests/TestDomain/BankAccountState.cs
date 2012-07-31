@@ -6,11 +6,14 @@ namespace EventStreams.TestDomain {
     [DataContract]
     public class BankAccountState {
 
-        [DataMember(Order = 0)]
+        [DataMember(Order = 1)]
         public decimal Balance { get; set; }
 
-        [DataMember(Order = 1)]
+        [DataMember(Order = 2)]
         public string Foo { get; set; }
+
+        [DataMember(Order = 3)]
+        public DateTime Dt { get; set; }
 
     }
 }
