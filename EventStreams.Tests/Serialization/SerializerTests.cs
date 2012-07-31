@@ -17,7 +17,7 @@ namespace EventStreams.Serialization
 
             //new Serializer().Serialize(tmp);
 
-            var test = new Serializer().Deserialize<BankAccountState>();
+            //var test = new Serializer().Deserialize<BankAccountState>();
         }
     }
 }

@@ -26,7 +26,7 @@ namespace EventStreams {
                 Assembly
                     .GetExecutingAssembly()
                     .GetTypes()
-                    .Where(t => !typeof(IPerformanceTestSuite).Equals(t))
+                    .Where(t => typeof(IPerformanceTestSuite) != t)
                     .Where(t => typeof(IPerformanceTestSuite).IsAssignableFrom(t))
                     .Select(Activator.CreateInstance)
                     .Cast<IPerformanceTestSuite>();
@@ -36,18 +36,24 @@ namespace EventStreams {
 
                 var testNumber = 0;
                 foreach (var test in testSuite.GetTests()) {
-                    Console.WriteLine("   Test #" + testNumber.ToString("N0"));
+                    Console.WriteLine("   Test #" + testNumber.ToString("N0") + "         (5 batches of " + testSuite.Repeat.ToString("N0") + " iterations)");
 
                     for (var i = 0; i < 5; ++i) {
                         var sw = Stopwatch.StartNew();
 
-                        for (var j = 0; j < 1000000; ++j)
+                        for (var j = 0; j < testSuite.Repeat; ++j)
                             test();
 
                         sw.Stop();
 
                         Console.WriteLine("      " + sw.Elapsed);
                     }
+
+                    var sw2 = Stopwatch.StartNew();
+                    test();
+                    sw2.Stop();
+                    Console.WriteLine("      " + sw2.Elapsed + " * single exec");
+
 
                     testNumber++;
                 }

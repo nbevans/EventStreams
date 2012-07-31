@@ -42,6 +42,7 @@
     <Compile Include="Core\IPerformanceTestSuite.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Projection\ProjectorTests.cs" />
+    <Compile Include="Serialization\SerializerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EventStreams.Tests\EventStreams.Tests.csproj">

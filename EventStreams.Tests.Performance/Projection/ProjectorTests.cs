@@ -24,6 +24,11 @@ namespace EventStreams.Projection {
             yield return DoIt;
         }
 
+        public int Repeat
+        {
+            get { return 1000000; }
+        }
+
         private void DoIt() {
             _projector.Project<BankAccount>(_events100);
         }
