@@ -36,6 +36,63 @@ namespace EventStreams.Serialization {
             Assert.That(objOut.F == objIn.F);
         }
 
+        [Test]
+        public void Expect_that_nested_reference_types_can_be_serialized_and_deserialized_accurately() {
+            var nestedObjIn1 = new TestState {
+                A = decimal.MaxValue,
+                B = "Hello World!",
+                C = DateTime.MaxValue,
+                D = long.MaxValue,
+                E = new byte[] { 1, 2, 3 },
+                F = true
+            };
+
+            var nestedObjIn2 = new TestState {
+                A = decimal.MinValue,
+                B = "Hello Galaxy!",
+                C = DateTime.MinValue,
+                D = long.MinValue,
+                E = new byte[] { 3, 2, 1 },
+                F = true
+            };
+
+            var containerObjIn = new TestContainerState {
+                A = nestedObjIn1,
+                B = nestedObjIn2
+            };
+
+            var ms = new MemoryStream(128);
+            var serializer = new Serializer();
+
+            serializer.Serialize(ms, containerObjIn);
+            ms.Position = 0;
+            var objContainerOut = serializer.Deserialize<TestContainerState>(ms);
+
+            Assert.That(objContainerOut.A.A == containerObjIn.A.A);
+            Assert.That(objContainerOut.A.B == containerObjIn.A.B);
+            Assert.That(objContainerOut.A.C == containerObjIn.A.C);
+            Assert.That(objContainerOut.A.D == containerObjIn.A.D);
+            Assert.That(objContainerOut.A.E.SequenceEqual(containerObjIn.A.E));
+            Assert.That(objContainerOut.A.F == containerObjIn.A.F);
+
+            Assert.That(objContainerOut.B.A == containerObjIn.B.A);
+            Assert.That(objContainerOut.B.B == containerObjIn.B.B);
+            Assert.That(objContainerOut.B.C == containerObjIn.B.C);
+            Assert.That(objContainerOut.B.D == containerObjIn.B.D);
+            Assert.That(objContainerOut.B.E.SequenceEqual(containerObjIn.B.E));
+            Assert.That(objContainerOut.B.F == containerObjIn.B.F);
+        }
+
+        [DataContract]
+        public class TestContainerState {
+
+            [DataMember(Order = 1)]
+            public TestState A { get; set; }
+
+            [DataMember(Order = 2)]
+            public TestState B { get; set; }
+        }
+
         [DataContract]
         public class TestState {
 
