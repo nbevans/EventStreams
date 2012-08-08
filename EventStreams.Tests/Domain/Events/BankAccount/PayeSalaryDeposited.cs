@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace EventStreams.Domain.Events.BankAccount
-{
+namespace EventStreams.Domain.Events.BankAccount {
     [DataContract]
     public class PayeSalaryDeposited : Credited {
 

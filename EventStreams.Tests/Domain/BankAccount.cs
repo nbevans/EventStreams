@@ -1,67 +1,76 @@
 ﻿using System;
-using System.Reactive.Subjects;
 
-namespace EventStreams.Domain
-{
+namespace EventStreams.Domain {
     using Core;
+    using Core.Domain;
+    using Extensions;
     using Events.BankAccount;
 
-    public class BankAccount : IObservable<MadePurchase>, IObserver<MadePurchase> {
+    public class BankAccount : IObservable<MadePurchase>, IObserver<IStreamedEvent> {
         private readonly BankAccountState _state;
-        private Subject<BankAccount> _subject;
+        private readonly IObserver<IStreamedEvent> _handler;
 
         public decimal Balance { get { return _state.Balance; } }
 
         public BankAccount()
-            : this(null) { }
+            : this(null) {
+
+            _handler = new ConventionEventHandler<BankAccount>(this);
+
+            //_handler =
+            //    new AggregateRootEventHandler<BankAccount>(this)
+            //        .Bind<Credited>(e => _state.Balance += e.Args<Credited>().Value)
+            //        .Bind<Debited>(e => _state.Balance -= e.Args<Debited>().Value)
+            //        .Bind<MadePurchase>(e => _state.Balance -= e.Args<MadePurchase>().Value)
+            //        .Bind<PayeSalaryDeposited>(e => _state.Balance += e.Args<PayeSalaryDeposited>().Value);
+        }
 
         public BankAccount(BankAccountState state) {
             _state = state ?? new BankAccountState();
-
-            Credited += (e, p) => _state.Balance += e.Value;
-            Debited += (e, p) => _state.Balance -= e.Value;
-            MadePurchase += (e, p) => Debited(e, p);
-            PayeSalaryDeposited += (e, p) => Credited(e, p);
         }
 
-        public event StreamedEventHandler<Credited> Credited;
-
-        public event StreamedEventHandler<Debited> Debited;
-
-        public event StreamedEventHandler<MadePurchase> MadePurchase;
-
-        public event StreamedEventHandler<PayeSalaryDeposited> PayeSalaryDeposited;
-
         public void Credit(decimal value) {
-            new Credited(value).Invoke(Credited);
         }
 
         public void Debit(decimal value) {
-            new Debited(value).Invoke(Debited);
         }
 
         public void Purchase(decimal value, string name) {
-            new MadePurchase(value, name).Invoke(MadePurchase);
         }
 
         public void DepositPayeSalary(decimal value, string source) {
-            new PayeSalaryDeposited(value, source).Invoke(PayeSalaryDeposited);
+        }
+
+        protected void Handle(Credited args) {
+            _state.Balance += args.Value;
+        }
+
+        protected void Handle(Debited args) {
+            _state.Balance -= args.Value;
+        }
+
+        protected void Handle(MadePurchase args) {
+            _state.Balance -= args.Value;
+        }
+
+        protected void Handle(PayeSalaryDeposited args) {
+            _state.Balance += args.Value;
         }
 
         public IDisposable Subscribe(IObserver<MadePurchase> observer) {
-            throw new NotImplementedException();
+            return Disposable.Empty;
         }
 
-        public void OnNext(MadePurchase value) {
-            throw new NotImplementedException();
+        void IObserver<IStreamedEvent>.OnNext(IStreamedEvent value) {
+            _handler.OnNext(value);
         }
 
-        public void OnError(Exception error) {
-            throw new NotImplementedException();
+        void IObserver<IStreamedEvent>.OnError(Exception error) {
+            _handler.OnError(error);
         }
 
-        public void OnCompleted() {
-            throw new NotImplementedException();
+        void IObserver<IStreamedEvent>.OnCompleted() {
+            _handler.OnCompleted();
         }
     }
 }

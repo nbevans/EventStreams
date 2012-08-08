@@ -5,7 +5,6 @@ using System.Linq;
 using EventStreams.Core;
 using EventStreams.Domain;
 using EventStreams.Domain.Events.BankAccount;
-using EventStreams.Domain.Events.Transformers;
 
 using NUnit.Framework;
 
@@ -15,11 +14,11 @@ namespace EventStreams.Projection.Transformation {
 
         private readonly Projector _projector = new Projector();
 
-        private readonly StreamedEventArgs[] _events100 = new StreamedEventArgs[] {
-            new PayeSalaryDeposited(100, "Acme Corp"),
-            new SalaryDeposited(50),
-            new MadePurchase(5, "Cheese"),
-            new MadePurchase(45, "Wine")
+        private readonly StreamedEvent[] _events100 = new[] {
+            new PayeSalaryDeposited(100, "Acme Corp").ToStreamedEvent(),
+            new SalaryDeposited(50).ToStreamedEvent(),
+            new MadePurchase(5, "Cheese").ToStreamedEvent(),
+            new MadePurchase(45, "Wine").ToStreamedEvent()
         };
 
         [TestFixtureSetUp]
@@ -39,13 +38,13 @@ namespace EventStreams.Projection.Transformation {
 
             Assert.That(results != null);
             Assert.That(results.Count() == 7);
-            Assert.That(((PayeSalaryDeposited)results.ElementAt(0)).Value == 100);
-            Assert.That(((PayeSalaryDeposited)results.ElementAt(1)).Value == 12.5m);
-            Assert.That(((PayeSalaryDeposited)results.ElementAt(2)).Value == 12.5m);
-            Assert.That(((PayeSalaryDeposited)results.ElementAt(3)).Value == 12.5m);
-            Assert.That(((PayeSalaryDeposited)results.ElementAt(4)).Value == 12.5m);
-            Assert.That(((MadePurchase)results.ElementAt(5)).Value == 5);
-            Assert.That(((MadePurchase)results.ElementAt(6)).Value == 45);
+            Assert.That(results.ElementAt(0).Args<PayeSalaryDeposited>().Value == 100);
+            Assert.That(results.ElementAt(1).Args<PayeSalaryDeposited>().Value == 12.5m);
+            Assert.That(results.ElementAt(2).Args<PayeSalaryDeposited>().Value == 12.5m);
+            Assert.That(results.ElementAt(3).Args<PayeSalaryDeposited>().Value == 12.5m);
+            Assert.That(results.ElementAt(4).Args<PayeSalaryDeposited>().Value == 12.5m);
+            Assert.That(results.ElementAt(5).Args<MadePurchase>().Value == 5);
+            Assert.That(results.ElementAt(6).Args<MadePurchase>().Value == 45);
         }
 
         private class SalaryDepositedToFourSplit : IEventTransformer {
@@ -55,13 +54,13 @@ namespace EventStreams.Projection.Transformation {
             }
 
             public IEnumerable<IStreamedEvent> Transform<TAggregateRoot>(IStreamedEvent candidateEvent) where TAggregateRoot : class, new() {
-                var tmp = candidateEvent as SalaryDeposited;
+                var tmp = candidateEvent.Arguments as SalaryDeposited;
                 if (tmp != null) {
                     var split = tmp.Value / 4;
-                    yield return new SalaryDeposited(split);
-                    yield return new SalaryDeposited(split);
-                    yield return new SalaryDeposited(split);
-                    yield return new SalaryDeposited(split);
+                    yield return new SalaryDeposited(split).ToStreamedEvent();
+                    yield return new SalaryDeposited(split).ToStreamedEvent();
+                    yield return new SalaryDeposited(split).ToStreamedEvent();
+                    yield return new SalaryDeposited(split).ToStreamedEvent();
                     yield break;
                 }
 
@@ -76,9 +75,9 @@ namespace EventStreams.Projection.Transformation {
             }
 
             public IEnumerable<IStreamedEvent> Transform<TAggregateRoot>(IStreamedEvent candidateEvent) where TAggregateRoot : class, new() {
-                var tmp = candidateEvent as SalaryDeposited;
+                var tmp = candidateEvent.Arguments as SalaryDeposited;
                 if (tmp != null) {
-                    yield return new PayeSalaryDeposited(tmp.Value, "Unknown");
+                    yield return new PayeSalaryDeposited(tmp.Value, "Unknown").ToStreamedEvent();
                     yield break;
                 }
 

@@ -1,7 +1,6 @@
 ﻿using System;
 
-namespace EventStreams.Core
-{
+namespace EventStreams.Core {
     /// <summary>
     /// Provides the ability to override the current moment in time to facilitate testing.
     /// </summary>
@@ -9,8 +8,7 @@ namespace EventStreams.Core
     /// Original idea by Ayende Rahien:
     /// http://ayende.com/Blog/archive/2008/07/07/Dealing-with-time-in-tests.aspx
     /// </remarks>
-    public static class TimeSource
-    {
+    public static class TimeSource {
         /// <summary>
         /// Gets the callback to be used to resolve the current moment in time.
         /// </summary>
@@ -19,13 +17,11 @@ namespace EventStreams.Core
         /// <summary>
         /// Gets the current moment in time, in UTC.
         /// </summary>
-        public static DateTime UtcNow
-        {
+        public static DateTime UtcNow {
             get { return Source(); }
         }
 
-        static TimeSource()
-        {
+        static TimeSource() {
             Clear();
         }
 
@@ -33,8 +29,7 @@ namespace EventStreams.Core
         /// Sets the source to be used to resolve the current moment in time.
         /// </summary>
         /// <param name="source"></param>
-        public static void Set(Func<DateTime> source)
-        {
+        public static void Set(Func<DateTime> source) {
             if (source == null) throw new ArgumentNullException("source");
             Source = source;
         }
@@ -42,8 +37,7 @@ namespace EventStreams.Core
         /// <summary>
         /// Clears the source and reverts to the default.
         /// </summary>
-        public static void Clear()
-        {
+        public static void Clear() {
             Source = () => DateTime.UtcNow;
         }
     }

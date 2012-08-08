@@ -55,12 +55,15 @@
     <Compile Include="Domain\Events\BankAccount\SalaryDeposited.cs" />
     <Compile Include="Domain\Events\BankAccount\MadePurchase.cs" />
     <Compile Include="Domain\Events\BankAccount\PayeSalaryDeposited.cs" />
-    <Compile Include="Domain\Events\Transformers\SplitSalaryDepositedTransformer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\EventStreams.Core\EventStreams.Core.csproj">
+      <Project>{510E17FE-9418-4148-A58B-066E2D98C52C}</Project>
+      <Name>EventStreams.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EventStreams\EventStreams.csproj">
       <Project>{BF0048D3-C7B2-4D31-BD26-49EA846455E8}</Project>
       <Name>EventStreams</Name>

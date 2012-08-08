@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace EventStreams.Projection.Transformation {
     using Core;
@@ -35,7 +34,7 @@ namespace EventStreams.Projection.Transformation {
         private IEnumerable<IStreamedEvent> TransformCore<TAggregateRoot>(IEnumerable<IStreamedEvent> events, IEventTransformer transformer) where TAggregateRoot : class, new() {
             foreach (var e in events) {
                 var transformedEvents = transformer.Transform<TAggregateRoot>(e);
-                if (events != null)
+                if (transformedEvents != null)
                     foreach (var transformedEvent in transformedEvents)
                         yield return transformedEvent;
             }

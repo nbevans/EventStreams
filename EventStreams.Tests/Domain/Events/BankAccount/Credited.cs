@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace EventStreams.Domain.Events.BankAccount
-{
-    using Core;
-
+namespace EventStreams.Domain.Events.BankAccount {
     [DataContract]
-    public class Credited : StreamedEventArgs {
+    public class Credited : EventArgs {
 
         [DataMember]
         public decimal Value { get; private set; }

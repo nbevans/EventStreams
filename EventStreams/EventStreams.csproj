@@ -41,16 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\IStreamedEvent.cs" />
-    <Compile Include="Core\StreamedEventHandler.cs" />
-    <Compile Include="Core\IStreamedEventIdentity.cs" />
-    <Compile Include="Core\StreamedEventArgs.cs" />
-    <Compile Include="Core\IStreamedEventTiming.cs" />
-    <Compile Include="Core\InvocationExtensions.cs" />
-    <Compile Include="Core\StreamingContext.cs" />
-    <Compile Include="Core\TimeSource.cs" />
-    <Compile Include="Projection\DelegateHelper.cs" />
-    <Compile Include="Projection\EventInvocationCache.cs" />
     <Compile Include="Projection\IProjector.cs" />
     <Compile Include="Projection\Projector.cs" />
     <Compile Include="Projection\Transformation\EventSequenceTransformer.cs" />
@@ -63,7 +53,12 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\EventStreams.Core\EventStreams.Core.csproj">
+      <Project>{510E17FE-9418-4148-A58B-066E2D98C52C}</Project>
+      <Name>EventStreams.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

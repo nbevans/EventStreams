@@ -9,11 +9,11 @@ namespace EventStreams.Projection {
     class ProjectorTests : IPerformanceTestSuite {
 
         private readonly Projector _projector = new Projector();
-        private readonly StreamedEventArgs[] _events100 = new StreamedEventArgs[] {
-            new PayeSalaryDeposited(100, "Acme Corp"),
-            new PayeSalaryDeposited(50, "Acme Corp"),
-            new MadePurchase(5, "Cheese"),
-            new MadePurchase(45, "Wine")
+        private readonly StreamedEvent[] _events100 = new[] {
+            new PayeSalaryDeposited(100, "Acme Corp").ToStreamedEvent(),
+            new PayeSalaryDeposited(50, "Acme Corp").ToStreamedEvent(),
+            new MadePurchase(5, "Cheese").ToStreamedEvent(),
+            new MadePurchase(45, "Wine").ToStreamedEvent()
         };
 
         public IEnumerable<Action> GetTests() {

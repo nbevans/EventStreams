@@ -45,6 +45,10 @@
     <Compile Include="Serialization\SerializerTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\EventStreams.Core\EventStreams.Core.csproj">
+      <Project>{510E17FE-9418-4148-A58B-066E2D98C52C}</Project>
+      <Name>EventStreams.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EventStreams.Tests\EventStreams.Tests.csproj">
       <Project>{2FEABB25-7F6E-4F1B-8BD5-305669C8014B}</Project>
       <Name>EventStreams.Tests</Name>

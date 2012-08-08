@@ -33,18 +33,25 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Domain\DelegatedEventHandler.cs" />
+    <Compile Include="Core\Domain\ConventionEventHandler.cs" />
+    <Compile Include="Core\Domain\AggregateRootEventHandlerBase.cs" />
+    <Compile Include="Core\EventArgsExtensions.cs" />
+    <Compile Include="Core\IStreamedEvent.cs" />
+    <Compile Include="Core\IStreamedEventDiagnostics.cs" />
+    <Compile Include="Core\IStreamedEventIdentity.cs" />
+    <Compile Include="Core\IStreamedEventTiming.cs" />
+    <Compile Include="Core\Domain\MethodInvocationCache.cs" />
+    <Compile Include="Core\StreamedEvent.cs" />
+    <Compile Include="Core\StreamedEventExtensions.cs" />
+    <Compile Include="Core\TimeSource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Core\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -11,27 +11,27 @@ namespace EventStreams.Projection {
 
         private readonly Projector _projector = new Projector();
 
-        private readonly StreamedEventArgs[] _events100 = new StreamedEventArgs[] {
-            new PayeSalaryDeposited(100, "Acme Corp"),
-            new PayeSalaryDeposited(50, "Acme Corp"),
-            new MadePurchase(5, "Cheese"),
-            new MadePurchase(45, "Wine")
+        private readonly StreamedEvent[] _events100 = new[] {
+            new PayeSalaryDeposited(100, "Acme Corp").ToStreamedEvent(),
+            new PayeSalaryDeposited(50, "Acme Corp").ToStreamedEvent(),
+            new MadePurchase(5, "Cheese").ToStreamedEvent(),
+            new MadePurchase(45, "Wine").ToStreamedEvent()
         };
 
-        private readonly StreamedEventArgs[] _events240 = new StreamedEventArgs[] {
-            new PayeSalaryDeposited(200, "Acme Corp"),
-            new PayeSalaryDeposited(100, "Acme Corp"),
-            new MadePurchase(10, "Cheese"),
-            new MadePurchase(50, "Wine")
+        private readonly StreamedEvent[] _events240 = new[] {
+            new PayeSalaryDeposited(200, "Acme Corp").ToStreamedEvent(),
+            new PayeSalaryDeposited(100, "Acme Corp").ToStreamedEvent(),
+            new MadePurchase(10, "Cheese").ToStreamedEvent(),
+            new MadePurchase(50, "Wine").ToStreamedEvent()
         };
 
-        private readonly StreamedEventArgs[] _events725 = new StreamedEventArgs[] {
-            new PayeSalaryDeposited(200, "Acme Corp"),
-            new PayeSalaryDeposited(100, "Acme Corp"),
-            new MadePurchase(10, "Cheese"),
-            new MadePurchase(50, "Wine"),
-            new PayeSalaryDeposited(500, "Acme Corp"),
-            new MadePurchase(15, "Beer"),
+        private readonly StreamedEvent[] _events725 = new[] {
+            new PayeSalaryDeposited(200, "Acme Corp").ToStreamedEvent(),
+            new PayeSalaryDeposited(100, "Acme Corp").ToStreamedEvent(),
+            new MadePurchase(10, "Cheese").ToStreamedEvent(),
+            new MadePurchase(50, "Wine").ToStreamedEvent(),
+            new PayeSalaryDeposited(500, "Acme Corp").ToStreamedEvent(),
+            new MadePurchase(15, "Beer").ToStreamedEvent(),
         };
 
         [TestFixtureSetUp]
@@ -40,8 +40,7 @@ namespace EventStreams.Projection {
         }
 
         [Test]
-        public void Given_events_100_sequence_then_balance_equals_100()
-        {
+        public void Given_events_100_sequence_then_balance_equals_100() {
             var obj1 = _projector.Project<BankAccount>(_events100);
             Assert.That(obj1.Balance == 100);
         }
