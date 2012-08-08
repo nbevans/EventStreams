@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Reactive.Subjects;
 
 namespace EventStreams.Domain
 {
     using Core;
     using Events.BankAccount;
 
-    public class BankAccount {
+    public class BankAccount : IObservable<MadePurchase>, IObserver<MadePurchase> {
         private readonly BankAccountState _state;
+        private Subject<BankAccount> _subject;
 
         public decimal Balance { get { return _state.Balance; } }
 
@@ -44,6 +46,22 @@ namespace EventStreams.Domain
 
         public void DepositPayeSalary(decimal value, string source) {
             new PayeSalaryDeposited(value, source).Invoke(PayeSalaryDeposited);
+        }
+
+        public IDisposable Subscribe(IObserver<MadePurchase> observer) {
+            throw new NotImplementedException();
+        }
+
+        public void OnNext(MadePurchase value) {
+            throw new NotImplementedException();
+        }
+
+        public void OnError(Exception error) {
+            throw new NotImplementedException();
+        }
+
+        public void OnCompleted() {
+            throw new NotImplementedException();
         }
     }
 }
