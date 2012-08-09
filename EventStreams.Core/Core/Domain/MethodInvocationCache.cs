@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -7,48 +8,39 @@ using System.Reflection;
 namespace EventStreams.Core.Domain {
     using HandleMethod = Action<object, EventArgs>;
  
-    internal sealed class MethodInvocationCache {
-        private readonly Dictionary<Type, Dictionary<Type, HandleMethod>> _outerCache =
-            new Dictionary<Type, Dictionary<Type, HandleMethod>>();
+    internal sealed class MethodInvocationCache<TAggregateRoot> {
+        private readonly ConcurrentDictionary<Type, HandleMethod> _cache =
+            new ConcurrentDictionary<Type, HandleMethod>();
 
-        public void Cache<TAggregateRoot>() {
-            if (_outerCache.ContainsKey(typeof(TAggregateRoot)))
-                return;
-
-            var handledTypes = GetMethods<TAggregateRoot>().Select(mi => mi.GetParameters().First().ParameterType);
+        public MethodInvocationCache() {
+            var handledTypes = GetMethods().Select(mi => mi.GetParameters().First().ParameterType);
             foreach (var handledType in handledTypes)
-                EnsureCachedAndGet<TAggregateRoot>(handledType);
+                EnsureCachedAndGet(handledType);
         }
 
-        public bool TryGetMethod<TAggregateRoot>(EventArgs args, out HandleMethod method) {
-            method = EnsureCachedAndGet<TAggregateRoot>(args.GetType());
+        public bool TryGetMethod(EventArgs args, out HandleMethod method) {
+            method = EnsureCachedAndGet(args.GetType());
             return method != null;
         }
 
-        private HandleMethod EnsureCachedAndGet<TAggregateRoot>(Type handledType) {
-            Dictionary<Type, HandleMethod> innerCache;
-            if (!_outerCache.TryGetValue(typeof(TAggregateRoot), out innerCache))
-                _outerCache.Add(typeof(TAggregateRoot), (innerCache = new Dictionary<Type, HandleMethod>()));
+        private HandleMethod EnsureCachedAndGet(Type handledType) {
+            Func<Type, HandleMethod> factory = t => {
+                var mi = GetMethodFor(handledType);
+                return mi != null
+                    ? CreateOpenInstanceDelegate<HandleMethod>(mi)
+                    : null;
+            };
 
-            HandleMethod d;
-            if (!innerCache.TryGetValue(handledType, out d)) {
-                var mi = GetMethodFor<TAggregateRoot>(handledType);
-                if (mi != null) {
-                    d = CreateOpenInstanceDelegate<HandleMethod>(mi);
-                    innerCache.Add(handledType, d);
-                }
-            }
-
-            return d;
+            return _cache.GetOrAdd(handledType, factory);
         }
 
-        private MethodInfo GetMethodFor<TAggregateRoot>(Type handledType) {
+        private MethodInfo GetMethodFor(Type handledType) {
             return
-                GetMethods<TAggregateRoot>()
+                GetMethods()
                     .SingleOrDefault(mi => handledType == mi.GetParameters().First().ParameterType);
         }
 
-        private IEnumerable<MethodInfo> GetMethods<TAggregateRoot>() {
+        private IEnumerable<MethodInfo> GetMethods() {
             return
                 typeof(TAggregateRoot)
                     .GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)

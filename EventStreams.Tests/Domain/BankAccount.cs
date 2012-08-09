@@ -17,12 +17,12 @@ namespace EventStreams.Domain {
 
             _handler = new ConventionEventHandler<BankAccount>(this);
 
-            _handler =
-                new DelegatedEventHandler<BankAccount>(this)
-                    .Bind<Credited>(e => _state.Balance += e.Assume<Credited>().Value)
-                    .Bind<Debited>(e => _state.Balance -= e.Assume<Debited>().Value)
-                    .Bind<MadePurchase>(e => _state.Balance -= e.Assume<MadePurchase>().Value)
-                    .Bind<PayeSalaryDeposited>(e => _state.Balance += e.Assume<PayeSalaryDeposited>().Value);
+            //_handler =
+            //    new DelegatedEventHandler<BankAccount>(this)
+            //        .Bind<Credited>(e => _state.Balance += e.Assume<Credited>().Value)
+            //        .Bind<Debited>(e => _state.Balance -= e.Assume<Debited>().Value)
+            //        .Bind<MadePurchase>(e => _state.Balance -= e.Assume<MadePurchase>().Value)
+            //        .Bind<PayeSalaryDeposited>(e => _state.Balance += e.Assume<PayeSalaryDeposited>().Value);
         }
 
         public BankAccount(BankAccountState state) {
