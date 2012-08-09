@@ -21,11 +21,10 @@ namespace EventStreams.Core.Domain {
             var handledTypes = GetMethods().Select(mi => mi.GetParameters().First().ParameterType);
             foreach (var handledType in handledTypes) {
                 var mi = GetMethodFor(handledType);
-                var handleMethod = mi != null
-                    ? CreateOpenInstanceDelegate<HandleMethod>(mi)
-                    : null;
-
-                _cache.Add(handledType, handleMethod);
+                if (mi != null) {
+                    var handleMethod = CreateOpenInstanceDelegate<HandleMethod>(mi);
+                    _cache.Add(handledType, handleMethod);
+                }
             }
         }
 
