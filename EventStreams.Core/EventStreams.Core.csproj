@@ -37,6 +37,7 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Disposable.cs" />
     <Compile Include="Core\Domain\DelegatedEventHandler.cs" />
     <Compile Include="Core\Domain\ConventionEventHandler.cs" />
     <Compile Include="Core\Domain\AggregateRootEventHandlerBase.cs" />

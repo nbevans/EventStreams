@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EventStreams.Extensions {
+namespace EventStreams.Core {
     public static class Disposable {
         private static readonly IDisposable _emptyDisposer = new DisposableImpl(null);
 

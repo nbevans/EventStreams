@@ -44,7 +44,6 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extensions\Disposable.cs" />
     <Compile Include="Projection\ProjectorIntegrationTests.cs" />
     <Compile Include="Projection\Transformation\EventSequenceTransformerTests.cs" />
     <Compile Include="Serialization\SerializerTests.cs" />

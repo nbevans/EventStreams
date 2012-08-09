@@ -3,7 +3,6 @@
 namespace EventStreams.Domain {
     using Core;
     using Core.Domain;
-    using Extensions;
     using Events.BankAccount;
 
     public class BankAccount : IObservable<MadePurchase>, IObserver<EventArgs> {
