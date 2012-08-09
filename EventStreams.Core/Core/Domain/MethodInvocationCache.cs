@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,29 +8,29 @@ namespace EventStreams.Core.Domain {
     using HandleMethod = Action<object, EventArgs>;
  
     internal sealed class MethodInvocationCache<TAggregateRoot> {
-        private readonly ConcurrentDictionary<Type, HandleMethod> _cache =
-            new ConcurrentDictionary<Type, HandleMethod>();
+        /// <summary>
+        /// Heuristic that predicts most aggregate roots will have up to 4 event handlers.
+        /// For those that have more, not a problem as the dictionary will just expand itself.
+        /// </summary>
+        private const int InitialCapacity = 4;
+
+        private readonly Dictionary<Type, HandleMethod> _cache =
+            new Dictionary<Type, HandleMethod>(InitialCapacity);
 
         public MethodInvocationCache() {
             var handledTypes = GetMethods().Select(mi => mi.GetParameters().First().ParameterType);
-            foreach (var handledType in handledTypes)
-                EnsureCachedAndGet(handledType);
+            foreach (var handledType in handledTypes) {
+                var mi = GetMethodFor(handledType);
+                var handleMethod = mi != null
+                    ? CreateOpenInstanceDelegate<HandleMethod>(mi)
+                    : null;
+
+                _cache.Add(handledType, handleMethod);
+            }
         }
 
         public bool TryGetMethod(EventArgs args, out HandleMethod method) {
-            method = EnsureCachedAndGet(args.GetType());
-            return method != null;
-        }
-
-        private HandleMethod EnsureCachedAndGet(Type handledType) {
-            Func<Type, HandleMethod> factory = t => {
-                var mi = GetMethodFor(handledType);
-                return mi != null
-                    ? CreateOpenInstanceDelegate<HandleMethod>(mi)
-                    : null;
-            };
-
-            return _cache.GetOrAdd(handledType, factory);
+            return _cache.TryGetValue(args.GetType(), out method);
         }
 
         private MethodInfo GetMethodFor(Type handledType) {
