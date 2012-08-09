@@ -12,19 +12,12 @@ namespace EventStreams.Projection.Transformation {
     [TestFixture]
     public class EventSequenceTransformerTests {
 
-        private readonly Projector _projector = new Projector();
-
         private readonly StreamedEvent[] _events100 = new[] {
             new PayeSalaryDeposited(100, "Acme Corp").ToStreamedEvent(),
             new SalaryDeposited(50).ToStreamedEvent(),
             new MadePurchase(5, "Cheese").ToStreamedEvent(),
             new MadePurchase(45, "Wine").ToStreamedEvent()
         };
-
-        [TestFixtureSetUp]
-        public void TestFixtureSetUp() {
-            _projector.Cache<BankAccount>();
-        }
 
         [Test]
         public void Given_two_cascading_transformers_the_sequencer_outputs_expected_types_and_order() {
@@ -53,7 +46,7 @@ namespace EventStreams.Projection.Transformation {
                 get { return new DateTime(2012, 7, 29); }
             }
 
-            public IEnumerable<IStreamedEvent> Transform<TAggregateRoot>(IStreamedEvent candidateEvent) where TAggregateRoot : class, new() {
+            public IEnumerable<IStreamedEvent> Transform<TAggregateRoot>(IStreamedEvent candidateEvent) {
                 var tmp = candidateEvent.Arguments as SalaryDeposited;
                 if (tmp != null) {
                     var split = tmp.Value / 4;
@@ -74,7 +67,7 @@ namespace EventStreams.Projection.Transformation {
                 get { return new DateTime(2012, 7, 30); }
             }
 
-            public IEnumerable<IStreamedEvent> Transform<TAggregateRoot>(IStreamedEvent candidateEvent) where TAggregateRoot : class, new() {
+            public IEnumerable<IStreamedEvent> Transform<TAggregateRoot>(IStreamedEvent candidateEvent) {
                 var tmp = candidateEvent.Arguments as SalaryDeposited;
                 if (tmp != null) {
                     yield return new PayeSalaryDeposited(tmp.Value, "Unknown").ToStreamedEvent();

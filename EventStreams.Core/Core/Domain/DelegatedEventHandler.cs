@@ -2,22 +2,22 @@
 using System.Collections.Generic;
 
 namespace EventStreams.Core.Domain {
-    public class DelegatedEventHandler<TAggregateRoot> : AggregateRootEventHandlerBase<TAggregateRoot> where TAggregateRoot : class, new() {
-        private readonly Dictionary<Type, Action<IStreamedEvent>> _handlers = new Dictionary<Type, Action<IStreamedEvent>>();
+    public class DelegatedEventHandler<TAggregateRoot> : AggregateRootEventHandlerBase<TAggregateRoot> where TAggregateRoot : class, IObserver<EventArgs>, new() {
+        private readonly Dictionary<Type, Action<EventArgs>> _handlers = new Dictionary<Type, Action<EventArgs>>();
 
         public DelegatedEventHandler(TAggregateRoot owner)
             : base(owner) { }
 
-        public DelegatedEventHandler<TAggregateRoot> Bind<T>(Action<IStreamedEvent> handler) {
+        public DelegatedEventHandler<TAggregateRoot> Bind<T>(Action<EventArgs> handler) {
             _handlers.Add(typeof(T), handler);
             return this;
         }
 
-        public override void OnNext(IStreamedEvent value) {
+        public override void OnNext(EventArgs value) {
             base.OnNext(value);
 
-            Action<IStreamedEvent> handler;
-            if (_handlers.TryGetValue(value.Arguments.GetType(), out handler))
+            Action<EventArgs> handler;
+            if (_handlers.TryGetValue(value.GetType(), out handler))
                 handler(value);
             else
                 ThrowEventHandlerNotFound(value);

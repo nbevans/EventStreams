@@ -5,11 +5,7 @@ namespace EventStreams.Projection.Transformation {
     using Core;
 
     public interface IEventTransformer {
-
         DateTime Chronology { get; }
-
-        IEnumerable<IStreamedEvent> Transform<TAggregateRoot>(IStreamedEvent candidateEvent)
-            where TAggregateRoot : class, new();
-
+        IEnumerable<IStreamedEvent> Transform<TAggregateRoot>(IStreamedEvent candidateEvent);
     }
 }

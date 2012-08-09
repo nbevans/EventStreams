@@ -34,11 +34,6 @@ namespace EventStreams.Projection {
             new MadePurchase(15, "Beer").ToStreamedEvent(),
         };
 
-        [TestFixtureSetUp]
-        public void TestFixtureSetUp() {
-            _projector.Cache<BankAccount>();
-        }
-
         [Test]
         public void Given_events_100_sequence_then_balance_equals_100() {
             var obj1 = _projector.Project<BankAccount>(_events100);

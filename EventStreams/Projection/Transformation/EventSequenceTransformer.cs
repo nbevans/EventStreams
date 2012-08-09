@@ -8,13 +8,13 @@ namespace EventStreams.Projection.Transformation {
         private readonly List<IEventTransformer> _eventTransformers = new List<IEventTransformer>();
         private bool _isChronologic;
 
-        public IEventSequenceTransformer Bind<TEventTransformer>() where TEventTransformer : IEventTransformer, new() {
+        public IEventSequenceTransformer Bind<TEventTransformer>() where TEventTransformer : class, IEventTransformer, new() {
             _eventTransformers.Add(new TEventTransformer());
             _isChronologic = false;
             return this;
         }
 
-        public IEnumerable<IStreamedEvent> Transform<TAggregateRoot>(IEnumerable<IStreamedEvent> events) where TAggregateRoot : class, new() {
+        public IEnumerable<IStreamedEvent> Transform<TAggregateRoot>(IEnumerable<IStreamedEvent> events) {
             EnsureChronology();
 
             foreach (var e in events) {
@@ -31,7 +31,7 @@ namespace EventStreams.Projection.Transformation {
             }
         }
 
-        private IEnumerable<IStreamedEvent> TransformCore<TAggregateRoot>(IEnumerable<IStreamedEvent> events, IEventTransformer transformer) where TAggregateRoot : class, new() {
+        private IEnumerable<IStreamedEvent> TransformCore<TAggregateRoot>(IEnumerable<IStreamedEvent> events, IEventTransformer transformer) {
             foreach (var e in events) {
                 var transformedEvents = transformer.Transform<TAggregateRoot>(e);
                 if (transformedEvents != null)

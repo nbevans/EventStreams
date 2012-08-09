@@ -6,9 +6,9 @@ namespace EventStreams.Domain {
     using Extensions;
     using Events.BankAccount;
 
-    public class BankAccount : IObservable<MadePurchase>, IObserver<IStreamedEvent> {
+    public class BankAccount : IObservable<MadePurchase>, IObserver<EventArgs> {
         private readonly BankAccountState _state;
-        private readonly IObserver<IStreamedEvent> _handler;
+        private readonly IObserver<EventArgs> _handler;
 
         public decimal Balance { get { return _state.Balance; } }
 
@@ -17,12 +17,12 @@ namespace EventStreams.Domain {
 
             _handler = new ConventionEventHandler<BankAccount>(this);
 
-            //_handler =
-            //    new AggregateRootEventHandler<BankAccount>(this)
-            //        .Bind<Credited>(e => _state.Balance += e.Args<Credited>().Value)
-            //        .Bind<Debited>(e => _state.Balance -= e.Args<Debited>().Value)
-            //        .Bind<MadePurchase>(e => _state.Balance -= e.Args<MadePurchase>().Value)
-            //        .Bind<PayeSalaryDeposited>(e => _state.Balance += e.Args<PayeSalaryDeposited>().Value);
+            _handler =
+                new DelegatedEventHandler<BankAccount>(this)
+                    .Bind<Credited>(e => _state.Balance += e.Assume<Credited>().Value)
+                    .Bind<Debited>(e => _state.Balance -= e.Assume<Debited>().Value)
+                    .Bind<MadePurchase>(e => _state.Balance -= e.Assume<MadePurchase>().Value)
+                    .Bind<PayeSalaryDeposited>(e => _state.Balance += e.Assume<PayeSalaryDeposited>().Value);
         }
 
         public BankAccount(BankAccountState state) {
@@ -61,15 +61,15 @@ namespace EventStreams.Domain {
             return Disposable.Empty;
         }
 
-        void IObserver<IStreamedEvent>.OnNext(IStreamedEvent value) {
+        void IObserver<EventArgs>.OnNext(EventArgs value) {
             _handler.OnNext(value);
         }
 
-        void IObserver<IStreamedEvent>.OnError(Exception error) {
+        void IObserver<EventArgs>.OnError(Exception error) {
             _handler.OnError(error);
         }
 
-        void IObserver<IStreamedEvent>.OnCompleted() {
+        void IObserver<EventArgs>.OnCompleted() {
             _handler.OnCompleted();
         }
     }

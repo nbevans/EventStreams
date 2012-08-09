@@ -11,7 +11,7 @@ namespace EventStreams.Core.Domain {
         private readonly Dictionary<Type, Dictionary<Type, HandleMethod>> _outerCache =
             new Dictionary<Type, Dictionary<Type, HandleMethod>>();
 
-        public void Cache<TAggregateRoot>() where TAggregateRoot : class, new() {
+        public void Cache<TAggregateRoot>() {
             if (_outerCache.ContainsKey(typeof(TAggregateRoot)))
                 return;
 
@@ -20,12 +20,12 @@ namespace EventStreams.Core.Domain {
                 EnsureCachedAndGet<TAggregateRoot>(handledType);
         }
 
-        public bool TryGetMethod<TAggregateRoot>(IStreamedEvent currentEvent, out HandleMethod method) where TAggregateRoot : class, new() {
-            method = EnsureCachedAndGet<TAggregateRoot>(currentEvent.Arguments.GetType());
+        public bool TryGetMethod<TAggregateRoot>(EventArgs args, out HandleMethod method) {
+            method = EnsureCachedAndGet<TAggregateRoot>(args.GetType());
             return method != null;
         }
 
-        private HandleMethod EnsureCachedAndGet<TAggregateRoot>(Type handledType) where TAggregateRoot : class, new() {
+        private HandleMethod EnsureCachedAndGet<TAggregateRoot>(Type handledType) {
             Dictionary<Type, HandleMethod> innerCache;
             if (!_outerCache.TryGetValue(typeof(TAggregateRoot), out innerCache))
                 _outerCache.Add(typeof(TAggregateRoot), (innerCache = new Dictionary<Type, HandleMethod>()));
@@ -42,14 +42,13 @@ namespace EventStreams.Core.Domain {
             return d;
         }
 
-        private MethodInfo GetMethodFor<TAggregateRoot>(Type handledType) where TAggregateRoot : class, new() {
+        private MethodInfo GetMethodFor<TAggregateRoot>(Type handledType) {
             return
                 GetMethods<TAggregateRoot>()
-                    .Where(mi => handledType == mi.GetParameters().First().ParameterType)
-                    .SingleOrDefault();
+                    .SingleOrDefault(mi => handledType == mi.GetParameters().First().ParameterType);
         }
 
-        private IEnumerable<MethodInfo> GetMethods<TAggregateRoot>() where TAggregateRoot : class, new() {
+        private IEnumerable<MethodInfo> GetMethods<TAggregateRoot>() {
             return
                 typeof(TAggregateRoot)
                     .GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
