@@ -20,7 +20,7 @@ namespace EventStreams.Projection.Transformation {
         };
 
         [Test]
-        public void Given_two_cascading_transformers_the_sequencer_outputs_expected_types_and_order() {
+        public void Given_two_cascading_transformers_when_invoked_on_events100_then_the_output_sequence_is_the_expected_types_and_order() {
             var transformer =
                 (EventSequenceTransformer)
                 new EventSequenceTransformer()

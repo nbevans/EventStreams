@@ -7,7 +7,7 @@ using System.Reflection;
 namespace EventStreams.Core.Domain {
     using HandleMethod = Action<object, EventArgs>;
  
-    internal sealed class MethodInvocationCache<TAggregateRoot> {
+    internal sealed class HandleMethodInvocationCache<TAggregateRoot> {
         /// <summary>
         /// Heuristic that predicts most aggregate roots will have up to 4 event handlers.
         /// For those that have more, not a problem as the dictionary will just expand itself.
@@ -17,7 +17,7 @@ namespace EventStreams.Core.Domain {
         private readonly Dictionary<Type, HandleMethod> _cache =
             new Dictionary<Type, HandleMethod>(InitialCapacity);
 
-        public MethodInvocationCache() {
+        public HandleMethodInvocationCache() {
             var handledTypes = GetMethods().Select(mi => mi.GetParameters().First().ParameterType);
             foreach (var handledType in handledTypes) {
                 var mi = GetMethodFor(handledType);

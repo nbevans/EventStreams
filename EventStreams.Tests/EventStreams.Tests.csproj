@@ -44,6 +44,9 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Domain\ConventionEventHandlerTests.cs" />
+    <Compile Include="Core\Domain\DelegatedEventHandlerTests.cs" />
+    <Compile Include="Domain\Repositories\IBankAccountRepository.cs" />
     <Compile Include="Projection\ProjectorIntegrationTests.cs" />
     <Compile Include="Projection\Transformation\EventSequenceTransformerTests.cs" />
     <Compile Include="Serialization\SerializerTests.cs" />

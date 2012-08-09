@@ -6,11 +6,11 @@ namespace EventStreams.Projection.Transformation {
 
     public class EventSequenceTransformer : IEventSequenceTransformer {
         private readonly List<IEventTransformer> _eventTransformers = new List<IEventTransformer>();
-        private bool _isChronologic;
+        private bool _modified;
 
         public IEventSequenceTransformer Bind<TEventTransformer>() where TEventTransformer : class, IEventTransformer, new() {
             _eventTransformers.Add(new TEventTransformer());
-            _isChronologic = false;
+            _modified = false;
             return this;
         }
 
@@ -41,9 +41,9 @@ namespace EventStreams.Projection.Transformation {
         }
 
         private void EnsureChronology() {
-            if (!_isChronologic) {
+            if (!_modified) {
                 _eventTransformers.Sort((a, b) => a.Chronology.CompareTo(b.Chronology));
-                _isChronologic = true;
+                _modified = true;
             }
         }
     }
