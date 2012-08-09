@@ -1,12 +1,11 @@
 ﻿using System;
 
 namespace EventStreams.Core.Domain {
-    public abstract class AggregateRootEventHandlerBase<TAggregateRoot> : IObserver<EventArgs> where TAggregateRoot : class, IObserver<EventArgs>, new() {
+    public abstract class EventHandler<TAggregateRoot> : IObserver<EventArgs> where TAggregateRoot : class, IObserver<EventArgs>, new() {
+        public TAggregateRoot Owner { get; private set; }
+        public bool IsCompleted { get; private set; }
 
-        protected TAggregateRoot Owner { get; private set; }
-        protected bool IsCompleted { get; private set; }
-
-        protected AggregateRootEventHandlerBase(TAggregateRoot owner) {
+        protected EventHandler(TAggregateRoot owner) {
             if (owner == null) throw new ArgumentNullException("owner");
             Owner = owner;
         }

@@ -1,20 +1,21 @@
 ﻿using System;
 
 namespace EventStreams.Domain {
-    using Core;
     using Core.Domain;
     using Events.BankAccount;
 
-    public class BankAccount : IObservable<MadePurchase>, IObserver<EventArgs> {
+    public class BankAccount : IAggregateRoot {
+        private readonly Guid _identity = Guid.NewGuid();
         private readonly BankAccountState _state;
-        private readonly IObserver<EventArgs> _handler;
-
+        private readonly EventHandler<BankAccount> _eventHandler;
+        private readonly CommandHandler<BankAccount> _commandHandler;
         public decimal Balance { get { return _state.Balance; } }
 
         public BankAccount()
             : this(null) {
 
-            _handler = new ConventionEventHandler<BankAccount>(this);
+            _eventHandler = new ConventionEventHandler<BankAccount>(this);
+            _commandHandler = new CommandHandler<BankAccount>(this);
 
             //_handler =
             //    new DelegatedEventHandler<BankAccount>(this)
@@ -29,15 +30,19 @@ namespace EventStreams.Domain {
         }
 
         public void Credit(decimal value) {
+            _commandHandler.OnNext(new Credited(value));
         }
 
         public void Debit(decimal value) {
+            _commandHandler.OnNext(new Debited(value));
         }
 
         public void Purchase(decimal value, string name) {
+            _commandHandler.OnNext(new MadePurchase(value, name));
         }
 
         public void DepositPayeSalary(decimal value, string source) {
+            _commandHandler.OnNext(new PayeSalaryDeposited(value, source));
         }
 
         protected void Handle(Credited args) {
@@ -56,20 +61,28 @@ namespace EventStreams.Domain {
             _state.Balance += args.Value;
         }
 
-        public IDisposable Subscribe(IObserver<MadePurchase> observer) {
-            return Disposable.Empty;
+        Guid IAggregateRoot.Identity {
+            get { return _identity; }
+        }
+
+        object IAggregateRoot.Memento {
+            get { return _state; }
+        }
+
+        IDisposable IObservable<EventArgs>.Subscribe(IObserver<EventArgs> observer) {
+            return _commandHandler.Subscribe(observer);
         }
 
         void IObserver<EventArgs>.OnNext(EventArgs value) {
-            _handler.OnNext(value);
+            _eventHandler.OnNext(value);
         }
 
         void IObserver<EventArgs>.OnError(Exception error) {
-            _handler.OnError(error);
+            _eventHandler.OnError(error);
         }
 
         void IObserver<EventArgs>.OnCompleted() {
-            _handler.OnCompleted();
+            _eventHandler.OnCompleted();
         }
     }
 }

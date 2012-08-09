@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace EventStreams.Projection {
     using Core;
@@ -11,6 +12,10 @@ namespace EventStreams.Projection {
         public IEventSequenceTransformer Transformations { get { return _eventSequenceTransformer; } }
 
         public TAggregateRoot Project<TAggregateRoot>(IEnumerable<IStreamedEvent> events) where TAggregateRoot : class, IObserver<EventArgs>, new() {
+            // Short-circuit (for performance) if there is nothing to actually project.
+            if (events == null || !events.Any())
+                return new TAggregateRoot();
+
             // Ensure all the events are transformed (if needed) before projecting them.
             // This can for instance ensure that any "old" events are upgraded to newer replacements.
             var transformedEvents =
