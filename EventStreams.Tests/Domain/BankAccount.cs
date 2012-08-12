@@ -84,5 +84,9 @@ namespace EventStreams.Domain {
         void IObserver<EventArgs>.OnCompleted() {
             _eventHandler.OnCompleted();
         }
+
+        public void Dispose() {
+            _commandHandler.OnCompleted();
+        }
     }
 }

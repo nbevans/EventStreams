@@ -26,7 +26,11 @@ namespace EventStreams {
             return Observe(ar);
         }
 
-        internal void Commit(IAggregateRoot aggregateRoot, IEnumerable<EventArgs> uncommittedEvents) {
+        private void Close(IAggregateRoot aggregateRoot) {
+            _objects.Remove(aggregateRoot.Identity);
+        }
+
+        private void Commit(IAggregateRoot aggregateRoot, IEnumerable<EventArgs> uncommittedEvents) {
             AggregateRootObserver observer;
             if (!_objects.TryGetValue(aggregateRoot.Identity, out observer))
                 throw new InvalidOperationException("Commit cannot be performed because the aggregate root did not originate from this event source.");
@@ -40,32 +44,36 @@ namespace EventStreams {
             aggregateRoot.Subscribe(observer);
             return aggregateRoot;
         }
-    }
 
-    internal sealed class AggregateRootObserver : IObserver<EventArgs> {
-        private readonly EventSource _parentSource;
-        private readonly IAggregateRoot _aggregateRoot;
-        private readonly List<EventArgs> _uncommitted = new List<EventArgs>(4);
+        private sealed class AggregateRootObserver : IObserver<EventArgs> {
+            private readonly EventSource _parentSource;
+            private readonly IAggregateRoot _aggregateRoot;
+            private readonly LinkedList<EventArgs> _uncommitted = new LinkedList<EventArgs>();
 
-        public AggregateRootObserver(EventSource parentSource, IAggregateRoot aggregateRoot) {
-            if (parentSource == null) throw new ArgumentNullException("parentSource");
-            if (aggregateRoot == null) throw new ArgumentNullException("aggregateRoot");
-            _parentSource = parentSource;
-            _aggregateRoot = aggregateRoot;
-        }
+            public AggregateRootObserver(EventSource parentSource, IAggregateRoot aggregateRoot) {
+                if (parentSource == null) throw new ArgumentNullException("parentSource");
+                if (aggregateRoot == null) throw new ArgumentNullException("aggregateRoot");
+                _parentSource = parentSource;
+                _aggregateRoot = aggregateRoot;
+            }
 
-        public void OnNext(EventArgs value) {
-            _uncommitted.Add(value);
-        }
+            public void OnNext(EventArgs value) {
+                _uncommitted.AddLast(value);
+            }
 
-        public void OnError(Exception error) {
-            
-        }
+            public void OnError(Exception error) {
+                throw new NotSupportedException();
+            }
 
-        public void OnCompleted() {
-            _parentSource.Commit(_aggregateRoot, _uncommitted);
-            _uncommitted.Clear();
-            _uncommitted.TrimExcess();
+            public void OnCompleted() {
+                if (_uncommitted.Count > 0) {
+                    _parentSource.Commit(_aggregateRoot, _uncommitted);
+                    _uncommitted.Clear();
+
+                } else {
+                    _parentSource.Close(_aggregateRoot);
+                }
+            }
         }
     }
 }
