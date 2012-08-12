@@ -16,7 +16,11 @@ namespace EventStreams {
             return ar;
         }
 
-        internal void Commit(IAggregateRoot aggregateRoot, IEnumerable<EventArgs> uncommitedEvents) {
+        //public TAggregateRoot Open<TAggregateRoot>(Guid identity) where TAggregateRoot : class, IAggregateRoot, new() {
+            //var ar = Create<TAggregateRoot>()
+        //}
+
+        internal void Commit<TAggregateRoot>(TAggregateRoot aggregateRoot, IEnumerable<EventArgs> uncommittedEvents) where TAggregateRoot : class, IAggregateRoot, new() {
             
         }
     }
@@ -42,7 +46,7 @@ namespace EventStreams {
         }
 
         public void OnCompleted() {
-            _parentSource.Commit(_aggregateRoot, _uncommitted);
+            //_parentSource.Commit(_aggregateRoot, _uncommitted);
         }
     }
 }
