@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace EventStreams.Serialization {
+namespace EventStreams.Persistence.Serialization {
     using ProtoBufSerializer = ProtoBuf.Serializer;
 
     public class Serializer : ISerializer {

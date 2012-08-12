@@ -2,26 +2,43 @@
 using System.Collections.Generic;
 
 namespace EventStreams {
+    using Projection;
+    using Persistence;
     using Core.Domain;
 
     public class EventSource {
         private readonly IDictionary<Guid, AggregateRootObserver> _objects =
             new Dictionary<Guid, AggregateRootObserver>();
 
+        private readonly IProjector _projector =
+            new Projector();
+
+        private readonly IPersistEvents _persistEvents =
+            new NullPersistEvents();
+
         public TAggregateRoot Create<TAggregateRoot>() where TAggregateRoot : class, IAggregateRoot, new() {
-            var ar = new TAggregateRoot();
-            var observer = new AggregateRootObserver(this, ar);
-            _objects.Add(ar.Identity, observer);
-            ar.Subscribe(observer);
-            return ar;
+            return Observe(new TAggregateRoot());
         }
 
-        //public TAggregateRoot Open<TAggregateRoot>(Guid identity) where TAggregateRoot : class, IAggregateRoot, new() {
-            //var ar = Create<TAggregateRoot>()
-        //}
+        public TAggregateRoot Open<TAggregateRoot>(Guid identity) where TAggregateRoot : class, IAggregateRoot, new() {
+            var events = _persistEvents.Load(identity);
+            var ar = _projector.Project<TAggregateRoot>(events);
+            return Observe(ar);
+        }
 
-        internal void Commit<TAggregateRoot>(TAggregateRoot aggregateRoot, IEnumerable<EventArgs> uncommittedEvents) where TAggregateRoot : class, IAggregateRoot, new() {
-            
+        internal void Commit(IAggregateRoot aggregateRoot, IEnumerable<EventArgs> uncommittedEvents) {
+            AggregateRootObserver observer;
+            if (!_objects.TryGetValue(aggregateRoot.Identity, out observer))
+                throw new InvalidOperationException("Commit cannot be performed because the aggregate root did not originate from this event source.");
+
+            _persistEvents.Persist(aggregateRoot, uncommittedEvents);
+        }
+
+        private TAggregateRoot Observe<TAggregateRoot>(TAggregateRoot aggregateRoot) where TAggregateRoot : class, IAggregateRoot, new() {
+            var observer = new AggregateRootObserver(this, aggregateRoot);
+            _objects.Add(aggregateRoot.Identity, observer);
+            aggregateRoot.Subscribe(observer);
+            return aggregateRoot;
         }
     }
 
@@ -46,7 +63,9 @@ namespace EventStreams {
         }
 
         public void OnCompleted() {
-            //_parentSource.Commit(_aggregateRoot, _uncommitted);
+            _parentSource.Commit(_aggregateRoot, _uncommitted);
+            _uncommitted.Clear();
+            _uncommitted.TrimExcess();
         }
     }
 }

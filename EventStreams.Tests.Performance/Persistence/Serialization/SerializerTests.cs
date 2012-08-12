@@ -2,42 +2,35 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace EventStreams.Serialization
-{
+namespace EventStreams.Persistence.Serialization {
     using Core;
     using Domain;
 
-    class SerializerTests : IPerformanceTestSuite
-    {
+    class SerializerTests : IPerformanceTestSuite {
         private readonly Serializer _serializer = new Serializer();
         private readonly MemoryStream ms = new MemoryStream(64);
 
-        public IEnumerable<Action> GetTests()
-        {
+        public IEnumerable<Action> GetTests() {
             yield return Serialize;
             yield return Deserialize;
         }
 
-        public int Repeat
-        {
+        public int Repeat {
             get { return 200000; }
         }
 
-        public SerializerTests()
-        {
+        public SerializerTests() {
             var tmp = new BankAccountState { Balance = 111.95m, Foo = "foobar", Dt = DateTime.UtcNow };
             _serializer.Serialize(ms, tmp);
         }
 
-        private void Serialize()
-        {
-            var tmp = new BankAccountState {Balance = 111.95m, Foo = "foobar", Dt = DateTime.UtcNow};
+        private void Serialize() {
+            var tmp = new BankAccountState { Balance = 111.95m, Foo = "foobar", Dt = DateTime.UtcNow };
             using (var ms = new MemoryStream(64))
                 _serializer.Serialize(ms, tmp);
         }
 
-        private void Deserialize()
-        {
+        private void Deserialize() {
             _serializer.Deserialize<BankAccountState>(ms);
         }
     }

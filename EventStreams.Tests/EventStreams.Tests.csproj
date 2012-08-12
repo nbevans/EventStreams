@@ -33,7 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.framework">
-      <HintPath>..\EventStreams\packages\NUnit.2.6.0.12054\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\EventStreams\packages\NUnit.2.6.1\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -48,7 +48,7 @@
     <Compile Include="Core\Domain\DelegatedEventHandlerTests.cs" />
     <Compile Include="Projection\ProjectorIntegrationTests.cs" />
     <Compile Include="Projection\Transformation\EventSequenceTransformerTests.cs" />
-    <Compile Include="Serialization\SerializerTests.cs" />
+    <Compile Include="Persistence\Serialization\SerializerTests.cs" />
     <Compile Include="Domain\BankAccount.cs" />
     <Compile Include="Domain\BankAccountState.cs" />
     <Compile Include="Domain\Events\BankAccount\Credited.cs" />
