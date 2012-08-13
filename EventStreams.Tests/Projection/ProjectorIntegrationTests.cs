@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using EventStreams.Core;
 using EventStreams.Domain;
 using EventStreams.Domain.Events.BankAccount;
@@ -6,6 +7,7 @@ using EventStreams.Domain.Events.BankAccount;
 using NUnit.Framework;
 
 namespace EventStreams.Projection {
+
     [TestFixture]
     public class ProjectorIntegrationTests {
 
@@ -31,7 +33,7 @@ namespace EventStreams.Projection {
             new MadePurchase(10, "Cheese").ToStreamedEvent(),
             new MadePurchase(50, "Wine").ToStreamedEvent(),
             new PayeSalaryDeposited(500, "Acme Corp").ToStreamedEvent(),
-            new MadePurchase(15, "Beer").ToStreamedEvent(),
+            new MadePurchase(15, "Beer").ToStreamedEvent()
         };
 
         [Test]
@@ -48,6 +50,18 @@ namespace EventStreams.Projection {
             Assert.That(obj1.Balance == 100);
             Assert.That(obj2.Balance == 240);
             Assert.That(obj3.Balance == 725);
+        }
+
+        [Test]
+        public void Given_a_null_event_sequence_then_a_clean_aggregate_root_is_returned() {
+            var obj = _projector.Project<BankAccount>(null);
+            Assert.That(obj.Balance == 0);
+        }
+
+        [Test]
+        public void Given_an_empty_event_sequence_then_a_clean_aggregate_root_is_returned() {
+            var obj = _projector.Project<BankAccount>(Enumerable.Empty<IStreamedEvent>());
+            Assert.That(obj.Balance == 0);
         }
     }
 }

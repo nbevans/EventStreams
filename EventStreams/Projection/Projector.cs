@@ -6,7 +6,9 @@ namespace EventStreams.Projection {
     using Core;
     using Transformation;
 
+    // ReSharper disable PossibleMultipleEnumeration
     public class Projector : IProjector {
+
         private readonly IEventSequenceTransformer _eventSequenceTransformer = new EventSequenceTransformer();
 
         public IEventSequenceTransformer Transformations { get { return _eventSequenceTransformer; } }
@@ -39,4 +41,5 @@ namespace EventStreams.Projection {
             return aggregateRoot;
         }
     }
+    // ReSharper restore PossibleMultipleEnumeration
 }

@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Core\Domain\ConventionEventHandlerTests.cs" />
     <Compile Include="Core\Domain\DelegatedEventHandlerTests.cs" />
+    <Compile Include="Core\StreamedEventExtensionsTests.cs" />
     <Compile Include="Projection\ProjectorIntegrationTests.cs" />
     <Compile Include="Projection\Transformation\EventSequenceTransformerTests.cs" />
     <Compile Include="Persistence\Serialization\SerializerTests.cs" />
@@ -56,6 +57,8 @@
     <Compile Include="Domain\Events\BankAccount\SalaryDeposited.cs" />
     <Compile Include="Domain\Events\BankAccount\MadePurchase.cs" />
     <Compile Include="Domain\Events\BankAccount\PayeSalaryDeposited.cs" />
+    <Compile Include="Core\TimeSourceTests.cs" />
+    <Compile Include="TimeSourceSetUp.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
