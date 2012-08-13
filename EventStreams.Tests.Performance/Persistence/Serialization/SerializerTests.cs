@@ -5,6 +5,7 @@ using System.IO;
 namespace EventStreams.Persistence.Serialization {
     using Core;
     using Domain;
+    using Snapshots;
 
     class SerializerTests : IPerformanceTestSuite {
         private readonly Serializer _serializer = new Serializer();

@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>packages\Newtonsoft.Json.4.5.8\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="protobuf-net, Version=2.0.0.480, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <HintPath>packages\protobuf-net.2.0.0.480\lib\net40\protobuf-net.dll</HintPath>
     </Reference>
@@ -47,14 +50,17 @@
     <Compile Include="Persistence\IPersistEvents.cs" />
     <Compile Include="Persistence\NonClosingStreamWrapper.cs" />
     <Compile Include="Persistence\NullPersistEvents.cs" />
+    <Compile Include="Persistence\Serialization\Events\XmlEventWriter.cs" />
+    <Compile Include="Persistence\Serialization\Events\IEventWriter.cs" />
+    <Compile Include="Persistence\Serialization\Events\JsonEventWriter.cs" />
     <Compile Include="Projection\IProjector.cs" />
     <Compile Include="Projection\Projector.cs" />
     <Compile Include="Projection\Transformation\EventSequenceTransformer.cs" />
     <Compile Include="Projection\Transformation\IEventSequenceTransformer.cs" />
     <Compile Include="Projection\Transformation\IEventTransformer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Persistence\Serialization\ISerializer.cs" />
-    <Compile Include="Persistence\Serialization\Serializer.cs" />
+    <Compile Include="Persistence\Serialization\Snapshots\ISerializer.cs" />
+    <Compile Include="Persistence\Serialization\Snapshots\Serializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -65,6 +71,7 @@
       <Name>EventStreams.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

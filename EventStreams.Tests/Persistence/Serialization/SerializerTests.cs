@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 using NUnit.Framework;
 
 namespace EventStreams.Persistence {
-    using Serialization;
+    using Serialization.Snapshots;
 
     [TestFixture]
     class SerializerTests {

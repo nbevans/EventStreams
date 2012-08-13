@@ -1,16 +1,14 @@
 ﻿using System;
 using System.IO;
 
-namespace EventStreams.Persistence.Serialization {
-    using ProtoBufSerializer = ProtoBuf.Serializer;
-
+namespace EventStreams.Persistence.Serialization.Snapshots {
     public class Serializer : ISerializer {
         public void Serialize<TAggregateRoot>(Stream stream, TAggregateRoot graph) {
-            ProtoBufSerializer.Serialize(stream, graph);
+            ProtoBuf.Serializer.Serialize(stream, graph);
         }
 
         public TAggregateRoot Deserialize<TAggregateRoot>(Stream stream) {
-            return ProtoBufSerializer.Deserialize<TAggregateRoot>(stream);
+            return ProtoBuf.Serializer.Deserialize<TAggregateRoot>(stream);
         }
     }
 }

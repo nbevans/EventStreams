@@ -1,32 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization;
+using System.Linq;
 using System.Text;
-using System.Xml;
 
 namespace EventStreams.Persistence {
     using Core;
+    using Serialization.Events;
 
     public class EventStreamWriter : IDisposable {
 
         private static readonly byte[] _separatorBytes =
             Encoding.UTF8.GetBytes(Environment.NewLine + Environment.NewLine);
 
-        private static readonly XmlWriterSettings _xmlWriterSettings =
-            new XmlWriterSettings {
-                CloseOutput = false,
-                ConformanceLevel = ConformanceLevel.Fragment,
-                Encoding = Encoding.UTF8,
-                Indent = true,
-                OmitXmlDeclaration = true
-            };
-
         private readonly Stream _innerStream;
+        private readonly IEventWriter _eventWriter;
 
-        public EventStreamWriter(Stream innerStream) {
+        public EventStreamWriter(Stream innerStream, IEventWriter eventWriter) {
             if (innerStream == null) throw new ArgumentNullException("innerStream");
-            _innerStream = new NonClosingStreamWrapper(innerStream);
+            if (eventWriter == null) throw new ArgumentNullException("eventWriter");
+            _innerStream = innerStream;
+            _eventWriter = eventWriter;
         }
 
         ~EventStreamWriter() {
@@ -38,22 +32,20 @@ namespace EventStreams.Persistence {
         }
 
         public void Write(IEnumerable<IStreamedEvent> streamedEvents) {
-            foreach (var se in streamedEvents) {
-                    
+            foreach (var se in streamedEvents.ToArray()) {
+
                 WriteHeader("Id", se.Id.ToString());
                 WriteHeader("Timestamp", se.Timestamp.ToString("O"));
+                WriteHeader("Type", se.Arguments.GetType().AssemblyQualifiedName);
 
-                using (var xw = XmlWriter.Create(_innerStream, _xmlWriterSettings)) {
-                    new DataContractSerializer(se.Arguments.GetType())
-                        .WriteObject(xw, se.Arguments);
-                }
+                _eventWriter.Write(_innerStream, se.Arguments);
 
                 WriteSeparator();
             }
         }
 
         private void WriteHeader(string name, string value) {
-            var line = string.Concat(name, ": ", value, Environment.NewLine);
+            var line = string.Concat(name, ":  ", value, Environment.NewLine);
             var bytes = Encoding.UTF8.GetBytes(line);
             _innerStream.Write(bytes, 0, bytes.Length);
         }

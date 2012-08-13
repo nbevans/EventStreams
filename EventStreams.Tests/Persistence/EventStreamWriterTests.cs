@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Linq;
-using System.Xml;
 using System.IO;
 
 using NUnit.Framework;
 
 namespace EventStreams.Persistence {
     using Core;
+    using Serialization.Events;
     using Domain.Events.BankAccount;
 
     [TestFixture]
@@ -22,14 +21,20 @@ namespace EventStreams.Persistence {
         [Test]
         public void Given_events100_when_written_to_memory_stream_then_output_is_as_expected() {
             using (var ms = new MemoryStream()) {
-                using (var esw = new EventStreamWriter(ms)) {
+                using (var esw = new EventStreamWriter(ms, new BlobEventWriter())) {
+                    // When
                     esw.Write(_events100);
 
+                    // Then
                     ms.Position = 0;
                     using (var sr = new StreamReader(ms)) {
-                        TestLine(sr, "Id: " + _events100.ElementAt(0).Id);
-                        TestLine(sr, "Timestamp: " + _events100.ElementAt(0).Timestamp.ToString("O"));
-                        ReadXmlDocument(sr);
+                        foreach (var se in _events100) {
+                            TestLine(sr, "Id:  " + se.Id);
+                            TestLine(sr, "Timestamp:  " + se.Timestamp.ToString("O"));
+                            TestLine(sr, "Type:  " + se.Arguments.GetType().AssemblyQualifiedName);
+                            TestLine(sr, "{ }");
+                            TestLine(sr, "");
+                        }
                     }
                 }
             }
@@ -37,13 +42,12 @@ namespace EventStreams.Persistence {
 
         private void TestLine(StreamReader sr, string expected) {
             var line = sr.ReadLine();
-            Assert.That(line == expected);
+            Assert.That(line, Is.EqualTo(expected));
         }
 
-        private void ReadXmlDocument(StreamReader sr) {
-            using (var xr = XmlReader.Create(sr, new XmlReaderSettings { CloseInput = false, ConformanceLevel = ConformanceLevel.Document })) {
-                while (xr.ReadState != ReadState.EndOfFile)
-                    xr.Read();
+        private sealed class BlobEventWriter : IEventWriter {
+            public void Write(Stream innerStream, EventArgs args) {
+                innerStream.Write(new[] { (byte)'{', (byte)' ', (byte)'}' }, 0, 3);
             }
         }
     }
