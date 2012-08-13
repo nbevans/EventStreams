@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace EventStreams {
     using Projection;
     using Persistence;
+    using Core;
     using Core.Domain;
 
     public class EventSource {
@@ -14,7 +15,7 @@ namespace EventStreams {
             new Projector();
 
         private readonly IPersistEvents _persistEvents =
-            new NullPersistEvents();
+            new FileSystemPersistEvents();
 
         public TAggregateRoot Create<TAggregateRoot>() where TAggregateRoot : class, IAggregateRoot, new() {
             return Observe(new TAggregateRoot());
@@ -30,7 +31,7 @@ namespace EventStreams {
             _objects.Remove(aggregateRoot.Identity);
         }
 
-        private void Commit(IAggregateRoot aggregateRoot, IEnumerable<EventArgs> uncommittedEvents) {
+        private void Commit(IAggregateRoot aggregateRoot, IEnumerable<IStreamedEvent> uncommittedEvents) {
             AggregateRootObserver observer;
             if (!_objects.TryGetValue(aggregateRoot.Identity, out observer))
                 throw new InvalidOperationException("Commit cannot be performed because the aggregate root did not originate from this event source.");
@@ -48,7 +49,7 @@ namespace EventStreams {
         private sealed class AggregateRootObserver : IObserver<EventArgs> {
             private readonly EventSource _parentSource;
             private readonly IAggregateRoot _aggregateRoot;
-            private readonly LinkedList<EventArgs> _uncommitted = new LinkedList<EventArgs>();
+            private readonly LinkedList<IStreamedEvent> _uncommitted = new LinkedList<IStreamedEvent>();
 
             public AggregateRootObserver(EventSource parentSource, IAggregateRoot aggregateRoot) {
                 if (parentSource == null) throw new ArgumentNullException("parentSource");
@@ -58,7 +59,7 @@ namespace EventStreams {
             }
 
             public void OnNext(EventArgs value) {
-                _uncommitted.AddLast(value);
+                _uncommitted.AddLast(new StreamedEvent(value));
             }
 
             public void OnError(Exception error) {

@@ -38,15 +38,15 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Reactive">
-      <HintPath>..\EventStreams\packages\Rx-Main.1.0.11226\lib\Net4\System.Reactive.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\EventArgsExtensionsTests.cs" />
     <Compile Include="Core\Domain\ConventionEventHandlerTests.cs" />
     <Compile Include="Core\Domain\DelegatedEventHandlerTests.cs" />
     <Compile Include="Core\StreamedEventExtensionsTests.cs" />
+    <Compile Include="Persistence\EventStreamWriterTests.cs" />
     <Compile Include="Projection\ProjectorIntegrationTests.cs" />
     <Compile Include="Projection\Transformation\EventSequenceTransformerTests.cs" />
     <Compile Include="Persistence\Serialization\SerializerTests.cs" />

@@ -7,13 +7,13 @@ namespace EventStreams.Core {
     [DebuggerDisplay("{DebugName}")]
     public sealed class StreamedEvent : IStreamedEvent {
 
-        [DataMember(Order = 0)]
+        [DataMember(Order = 1)]
         public Guid Id { get; private set; }
 
-        [DataMember(Order = 1)]
+        [DataMember(Order = 2)]
         public DateTime Timestamp { get; private set; }
 
-        [DataMember(Order = 2)]
+        [DataMember(Order = 3)]
         public EventArgs Arguments { get; private set; }
 
         public StreamedEvent(EventArgs arguments) {

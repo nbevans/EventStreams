@@ -8,7 +8,7 @@ namespace EventStreams.Persistence {
     using Core.Domain;
 
     public interface IPersistEvents {
-        void Persist(IAggregateRoot aggregateRoot, IEnumerable<EventArgs> eventsToAppend);
+        void Persist(IAggregateRoot aggregateRoot, IEnumerable<IStreamedEvent> eventsToAppend);
         IEnumerable<IStreamedEvent> Load(Guid identity);
     }
 }

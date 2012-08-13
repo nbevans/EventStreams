@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 
 namespace EventStreams.Domain.Events.BankAccount {
-    [DataContract]
+    [DataContract(Namespace = "")]
     public class SalaryDeposited : Credited {
 
         public SalaryDeposited(decimal value)
