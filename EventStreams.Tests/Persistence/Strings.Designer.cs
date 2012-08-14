@@ -62,16 +62,17 @@ namespace EventStreams.Persistence {
         
         /// <summary>
         ///   Looks up a localized string similar to Id:  20f65c10-d7de-43b0-a527-4ccc43496bfe
-        ///Timestamp:  2012-01-01T00:00:00.1000000Z
+        ///Timestamp:  0001-01-01T00:00:00.0000000
         ///Type:  EventStreams.Domain.Events.BankAccount.PayeSalaryDeposited, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
         ///{
         ///  &quot;Source&quot;: &quot;Acme Corp&quot;,
         ///  &quot;Value&quot;: 100.0
         ///}
         ///
-        ///Id:  a621bc38-ba90-46c0-a411-02a2936b4952
-        ///Timestamp:  2012-01-01T00:00:00.2000000Z
-        ///Type:  EventStreams.Domain.Events.BankAccount.PayeSalaryDeposited, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToke [rest of string was truncated]&quot;;.
+        ///Id:  685f85da-07ac-4eb3-b7f5-f52bcd543e84
+        ///Timestamp:  0001-01-01T00:00:00.0000000
+        ///Type:  EventStreams.Domain.Events.BankAccount.MadePurchase, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+        ///{ [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string FileSystemPersistEventsTests___Given_events100_when_written_to_disk_and_when_read_back_in_then_content_is_as_expected {
             get {
