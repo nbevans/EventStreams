@@ -9,7 +9,7 @@ namespace EventStreams.Persistence.Serialization {
 
     class SerializerTests : IPerformanceTestSuite {
         private readonly Serializer _serializer = new Serializer();
-        private readonly MemoryStream ms = new MemoryStream(64);
+        private readonly MemoryStream _ms = new MemoryStream(64);
 
         public IEnumerable<Action> GetTests() {
             yield return Serialize;
@@ -21,18 +21,18 @@ namespace EventStreams.Persistence.Serialization {
         }
 
         public SerializerTests() {
-            var tmp = new BankAccountState { Balance = 111.95m, Foo = "foobar", Dt = DateTime.UtcNow };
-            _serializer.Serialize(ms, tmp);
+            var tmp = new BankAccountState { Balance = 111.95m };
+            _serializer.Serialize(_ms, tmp);
         }
 
         private void Serialize() {
-            var tmp = new BankAccountState { Balance = 111.95m, Foo = "foobar", Dt = DateTime.UtcNow };
+            var tmp = new BankAccountState { Balance = 111.95m };
             using (var ms = new MemoryStream(64))
                 _serializer.Serialize(ms, tmp);
         }
 
         private void Deserialize() {
-            _serializer.Deserialize<BankAccountState>(ms);
+            _serializer.Deserialize<BankAccountState>(_ms);
         }
     }
 }

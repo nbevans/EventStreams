@@ -16,10 +16,12 @@ namespace EventStreams.Core {
         [DataMember(Order = 3)]
         public EventArgs Arguments { get; private set; }
 
-        public StreamedEvent(EventArgs arguments) {
+        public StreamedEvent(EventArgs arguments) : this(Guid.NewGuid(), arguments) { }
+
+        public StreamedEvent(Guid identity, EventArgs arguments) {
             if (arguments == null) throw new ArgumentNullException("arguments");
 
-            Id = Guid.NewGuid();
+            Id = identity;
             Timestamp = TimeSource.UtcNow;
             Arguments = arguments;
         }

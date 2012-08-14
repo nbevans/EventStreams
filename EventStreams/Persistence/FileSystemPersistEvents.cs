@@ -8,16 +8,26 @@ namespace EventStreams.Persistence {
     using Core;
     using Core.Domain;
 
-    internal class FileSystemPersistEvents : IPersistEvents {
+    public class FileSystemPersistEvents : IPersistEvents {
+
+        public string RootPath { get; set; }
+
+        public FileSystemPersistEvents() {
+            RootPath = AppDomain.CurrentDomain.BaseDirectory;
+        }
 
         public void Persist(IAggregateRoot aggregateRoot, IEnumerable<IStreamedEvent> eventsToAppend) {
-            using (var fs = new FileStream(aggregateRoot.Identity + ".events", FileMode.Append, FileAccess.Write, FileShare.None, 4096, FileOptions.SequentialScan))
+            using (var fs = new FileStream(GetFileName(aggregateRoot), FileMode.Append, FileAccess.Write, FileShare.None, 4096, FileOptions.SequentialScan))
             using (var esw = new EventStreamWriter(fs, new JsonEventWriter()))
                 esw.Write(eventsToAppend);
         }
 
         public IEnumerable<IStreamedEvent> Load(Guid identity) {
             throw new NotSupportedException();
+        }
+
+        public virtual string GetFileName(IAggregateRoot aggregateRoot) {
+            return Path.Combine(RootPath, aggregateRoot.Identity + ".events");
         }
     }
 }
