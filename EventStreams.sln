@@ -1,15 +1,22 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStreams", "EventStreams.csproj", "{BF0048D3-C7B2-4D31-BD26-49EA846455E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStreams", "EventStreams\EventStreams.csproj", "{BF0048D3-C7B2-4D31-BD26-49EA846455E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStreams.Tests", "..\EventStreams.Tests\EventStreams.Tests.csproj", "{2FEABB25-7F6E-4F1B-8BD5-305669C8014B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStreams.Tests", "EventStreams.Tests\EventStreams.Tests.csproj", "{2FEABB25-7F6E-4F1B-8BD5-305669C8014B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4C0AF48D-A5C3-4CB6-9914-32CED5FBC459}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStreams.Tests.Performance", "..\EventStreams.Tests.Performance\EventStreams.Tests.Performance.csproj", "{4698D6DD-9A4A-4C4F-902F-3534E446B37A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStreams.Tests.Performance", "EventStreams.Tests.Performance\EventStreams.Tests.Performance.csproj", "{4698D6DD-9A4A-4C4F-902F-3534E446B37A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStreams.Core", "..\EventStreams.Core\EventStreams.Core.csproj", "{510E17FE-9418-4148-A58B-066E2D98C52C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStreams.Core", "EventStreams.Core\EventStreams.Core.csproj", "{510E17FE-9418-4148-A58B-066E2D98C52C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{90E0717F-6E07-45FB-9824-6FB41BB3BE68}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\nuget.exe = .nuget\nuget.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
