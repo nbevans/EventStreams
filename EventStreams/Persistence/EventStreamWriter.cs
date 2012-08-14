@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace EventStreams.Persistence {
@@ -10,8 +11,12 @@ namespace EventStreams.Persistence {
 
     public class EventStreamWriter : IDisposable {
 
+        private static readonly int _hashHeaderPrefixLength = "Hash:  ".Length;
+
+        private static readonly int _hashBase64Length = 44;
+
         private static readonly byte[] _separatorBytes =
-            Encoding.UTF8.GetBytes(Environment.NewLine + Environment.NewLine);
+            Encoding.UTF8.GetBytes("\r\n");
 
         private readonly Stream _innerStream;
         private readonly IEventWriter _eventWriter;
@@ -32,26 +37,73 @@ namespace EventStreams.Persistence {
         }
 
         public void Write(IEnumerable<IStreamedEvent> streamedEvents) {
-            foreach (var se in streamedEvents.ToArray()) {
+            var previousHash = ReadHashSeedOrNull();
 
-                WriteHeader("Id", se.Id.ToString());
-                WriteHeader("Timestamp", se.Timestamp.ToString("O"));
-                WriteHeader("Type", se.Arguments.GetType().AssemblyQualifiedName);
+            foreach (var se in streamedEvents) {
+                using (var hashAlgo = SHA256.Create())
+                using (var cryptoStream = new CryptoStream(new NonClosingStreamWrapper(_innerStream), hashAlgo, CryptoStreamMode.Write)) {
+                    InjectHashSeed(hashAlgo, previousHash);
 
-                _eventWriter.Write(_innerStream, se.Arguments);
+                    _eventWriter.Write(cryptoStream, se.Arguments);
 
-                WriteSeparator();
+                    WriteSeparator(cryptoStream);
+                    WriteHeader(cryptoStream, "Id", se.Id.ToString());
+                    WriteHeader(cryptoStream, "Timestamp", se.Timestamp.ToString("O"));
+                    WriteHeader(cryptoStream, "Type", se.Arguments.GetType().AssemblyQualifiedName);
+                    
+                    cryptoStream.FlushFinalBlock();
+                    previousHash = hashAlgo.Hash;
+                    WriteHeader(cryptoStream, "Hash", Convert.ToBase64String(previousHash));
+
+                    WriteSeparator(cryptoStream);
+                }
             }
         }
 
-        private void WriteHeader(string name, string value) {
-            var line = string.Concat(name, ":  ", value, Environment.NewLine);
-            var bytes = Encoding.UTF8.GetBytes(line);
-            _innerStream.Write(bytes, 0, bytes.Length);
+        private byte[] ReadHashSeedOrNull() {
+            var peekBackLength = _hashHeaderPrefixLength + _hashBase64Length + (_separatorBytes.Length * 2);
+            var peekBackPosition = _innerStream.Position - peekBackLength;
+            var restorePosition = _innerStream.Position;
+
+            if (peekBackPosition < 0)
+                return null;
+
+            try {
+                _innerStream.Position = peekBackPosition;
+
+                var buffer = new byte[_hashHeaderPrefixLength + _hashBase64Length];
+                if (_innerStream.Read(buffer, 0, buffer.Length) != buffer.Length)
+                    throw new InvalidOperationException("WTF? Corrupt stream.");
+
+                if (buffer[0] != 'H' && buffer[1] != 'a' && buffer[2] != 's' && buffer[3] != 'h' &&
+                    buffer[4] != ':' && buffer[5] != ' ' && buffer[6] != ' ')
+                    throw new InvalidOperationException("WTF? This ain't no hash line!");
+
+                var str = Encoding.UTF8.GetString(buffer, _hashHeaderPrefixLength, _hashBase64Length);
+                return Convert.FromBase64String(str);
+
+            } finally {
+                _innerStream.Position = restorePosition;
+            }
         }
 
-        private void WriteSeparator() {
-            _innerStream.Write(_separatorBytes, 0, _separatorBytes.Length);
+        private void InjectHashSeed(ICryptoTransform cryptoTransform, byte[] seedHash) {
+            if (seedHash == null || seedHash.Length == 0)
+                return;
+
+            var numBytes = cryptoTransform.TransformBlock(seedHash, 0, seedHash.Length, null, 0);
+            if (numBytes != seedHash.Length)
+                throw new InvalidOperationException("The seed hash was injected but the number of bytes written does not match the number of bytes injected.");
+        }
+
+        private void WriteHeader(Stream stream, string name, string value) {
+            var line = string.Concat(name, ":  ", value, Environment.NewLine);
+            var bytes = Encoding.UTF8.GetBytes(line);
+            stream.Write(bytes, 0, bytes.Length);
+        }
+
+        private void WriteSeparator(Stream stream) {
+            stream.Write(_separatorBytes, 0, _separatorBytes.Length);
         }
 
         protected virtual void Dispose(bool disposing) {

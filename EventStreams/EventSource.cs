@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace EventStreams {
     using Projection;
     using Persistence;
+    using Persistence.Serialization.Events;
     using Core;
     using Core.Domain;
 
@@ -15,7 +16,7 @@ namespace EventStreams {
             new Projector();
 
         private readonly IPersistEvents _persistEvents =
-            new FileSystemPersistEvents();
+            new FileSystemPersistEvents(new JsonEventWriter());
 
         public TAggregateRoot Create<TAggregateRoot>() where TAggregateRoot : class, IAggregateRoot, new() {
             return Observe(new TAggregateRoot());

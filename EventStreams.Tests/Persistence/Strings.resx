@@ -117,22 +117,45 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="FileSystemPersistEventsTests___Given_events100_when_written_to_disk_and_when_read_back_in_then_content_is_as_expected" xml:space="preserve">
-    <value>Id:  20f65c10-d7de-43b0-a527-4ccc43496bfe
+  <data name="firstAndSecondEventStreams" xml:space="preserve">
+    <value>{ }
+Id:  20f65c10-d7de-43b0-a527-4ccc43496bfe
 Timestamp:  0001-01-01T00:00:00.0000000
 Type:  EventStreams.Domain.Events.BankAccount.PayeSalaryDeposited, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-{
-  "Source": "Acme Corp",
-  "Value": 100.0
-}
+Hash:  8R7wvpBxZBU9yEp34gfPFGzIYjpN+yAxmPnyfKK4dd0=
 
+{ }
 Id:  685f85da-07ac-4eb3-b7f5-f52bcd543e84
 Timestamp:  0001-01-01T00:00:00.0000000
 Type:  EventStreams.Domain.Events.BankAccount.MadePurchase, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-{
-  "Name": "Wine",
-  "Value": 45.0
-}
+Hash:  sbfOHJm3L7+OftOKBeAR3hcBC2Rv0OU7GWEOtD1lD9k=
+
+{ }
+Id:  1012e630-8325-47d4-9393-dcd7f5940e09
+Timestamp:  0001-01-01T00:00:00.0000000
+Type:  EventStreams.Domain.Events.BankAccount.PayeSalaryDeposited, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+Hash:  NIhRKNLtT31d+JRlcIC/HAsUtif9HHtUUXRluQ4WekQ=
+
+{ }
+Id:  e19772ba-6dae-408e-9f09-8561889c8154
+Timestamp:  0001-01-01T00:00:00.0000000
+Type:  EventStreams.Domain.Events.BankAccount.MadePurchase, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+Hash:  D+MBuIo75gr1fXhqzb8lRfmLgZQSj70G03B/uDv8xWg=
+
+</value>
+  </data>
+  <data name="firstEventsStream" xml:space="preserve">
+    <value>{ }
+Id:  20f65c10-d7de-43b0-a527-4ccc43496bfe
+Timestamp:  0001-01-01T00:00:00.0000000
+Type:  EventStreams.Domain.Events.BankAccount.PayeSalaryDeposited, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+Hash:  8R7wvpBxZBU9yEp34gfPFGzIYjpN+yAxmPnyfKK4dd0=
+
+{ }
+Id:  685f85da-07ac-4eb3-b7f5-f52bcd543e84
+Timestamp:  0001-01-01T00:00:00.0000000
+Type:  EventStreams.Domain.Events.BankAccount.MadePurchase, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+Hash:  sbfOHJm3L7+OftOKBeAR3hcBC2Rv0OU7GWEOtD1lD9k=
 
 </value>
   </data>

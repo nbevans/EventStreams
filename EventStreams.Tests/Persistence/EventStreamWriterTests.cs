@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 
+using Moq;
+
 using NUnit.Framework;
 
 namespace EventStreams.Persistence {
@@ -11,43 +13,40 @@ namespace EventStreams.Persistence {
     [TestFixture]
     internal class EventStreamWriterTests {
 
-        private readonly StreamedEvent[] _events100 = new[] {
-            new PayeSalaryDeposited(100, "Acme Corp").ToStreamedEvent(),
-            new PayeSalaryDeposited(50, "Acme Corp").ToStreamedEvent(),
-            new MadePurchase(5, "Cheese").ToStreamedEvent(),
-            new MadePurchase(45, "Wine").ToStreamedEvent()
+        private readonly IStreamedEvent[] _firstEvents = new[] {
+            Mock.Of<IStreamedEvent>(f => f.Id == new Guid("20F65C10-D7DE-43B0-A527-4CCC43496BFE") && f.Timestamp == DateTime.MinValue && f.Arguments == new PayeSalaryDeposited(100, "Acme Corp")),
+            Mock.Of<IStreamedEvent>(f => f.Id == new Guid("685F85DA-07AC-4EB3-B7F5-F52BCD543E84") && f.Timestamp == DateTime.MinValue && f.Arguments == new MadePurchase(45, "Wine"))
+        };
+
+        private readonly IStreamedEvent[] _secondEvents = new[] {
+            Mock.Of<IStreamedEvent>(f => f.Id == new Guid("1012E630-8325-47D4-9393-DCD7F5940E09") && f.Timestamp == DateTime.MinValue && f.Arguments == new PayeSalaryDeposited(150, "Acme Corp")),
+            Mock.Of<IStreamedEvent>(f => f.Id == new Guid("E19772BA-6DAE-408E-9F09-8561889C8154") && f.Timestamp == DateTime.MinValue && f.Arguments == new MadePurchase(25, "Cheese"))
         };
 
         [Test]
-        public void Given_events100_when_written_to_memory_stream_then_output_is_as_expected() {
+        public void Given_first_set_when_read_back_then_output_is_as_expected() {
             using (var ms = new MemoryStream()) {
-                using (var esw = new EventStreamWriter(ms, new BlobEventWriter())) {
-                    // When
-                    esw.Write(_events100);
-
-                    // Then
+                using (var esw = new EventStreamWriter(ms, new NullEventWriter())) {
+                    esw.Write(_firstEvents);
                     ms.Position = 0;
                     using (var sr = new StreamReader(ms)) {
-                        foreach (var se in _events100) {
-                            TestLine(sr, "Id:  " + se.Id);
-                            TestLine(sr, "Timestamp:  " + se.Timestamp.ToString("O"));
-                            TestLine(sr, "Type:  " + se.Arguments.GetType().AssemblyQualifiedName);
-                            TestLine(sr, "{ }");
-                            TestLine(sr, "");
-                        }
+                        Assert.That(sr.ReadToEnd(), Is.EqualTo(Strings.firstEventsStream));
                     }
                 }
             }
         }
 
-        private void TestLine(StreamReader sr, string expected) {
-            var line = sr.ReadLine();
-            Assert.That(line, Is.EqualTo(expected));
-        }
-
-        private sealed class BlobEventWriter : IEventWriter {
-            public void Write(Stream innerStream, EventArgs args) {
-                innerStream.Write(new[] { (byte)'{', (byte)' ', (byte)'}' }, 0, 3);
+        [Test]
+        public void Given_first_set_when_appended_to_with_second_set_then_hashes_continue_from_previous_hash() {
+            using (var ms = new MemoryStream()) {
+                using (var esw = new EventStreamWriter(ms, new NullEventWriter())) {
+                    esw.Write(_firstEvents);
+                    esw.Write(_secondEvents);
+                    ms.Position = 0;
+                    using (var sr = new StreamReader(ms)) {
+                        Assert.That(sr.ReadToEnd(), Is.EqualTo(Strings.firstAndSecondEventStreams));
+                    }
+                }
             }
         }
     }
