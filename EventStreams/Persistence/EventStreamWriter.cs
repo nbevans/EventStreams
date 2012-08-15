@@ -16,7 +16,7 @@ namespace EventStreams.Persistence {
         private static readonly int _hashBase64Length =
             ((new ShaHash().HashSize / 8) + 2) / 3 * 4;
 
-        private static readonly byte[] _separatorBytes =
+        private static readonly byte[] _newLineBytes =
             Encoding.UTF8.GetBytes("\r\n");
 
         private readonly Stream _innerStream;
@@ -45,24 +45,23 @@ namespace EventStreams.Persistence {
                 using (var cryptoStream = new CryptoStream(new NonClosingStreamWrapper(_innerStream), hashAlgo, CryptoStreamMode.Write)) {
                     InjectHashSeed(hashAlgo, previousHash);
 
-                    _eventWriter.Write(cryptoStream, se.Arguments);
+                    var wc = new WriteContext(cryptoStream, se); {
+                        wc.Header("Id", se.Id.ToString());
+                        wc.Header("Time", se.Timestamp.ToString("O"));
+                        wc.Header("Type", se.Arguments.GetType().AssemblyQualifiedName);
+                        wc.Header("Args", (s, e) => _eventWriter.Write(s, e.Arguments));
 
-                    WriteSeparator(cryptoStream);
-                    WriteHeader(cryptoStream, "Id", se.Id.ToString());
-                    WriteHeader(cryptoStream, "Timestamp", se.Timestamp.ToString("O"));
-                    WriteHeader(cryptoStream, "Type", se.Arguments.GetType().AssemblyQualifiedName);
-                    
-                    cryptoStream.FlushFinalBlock();
-                    previousHash = hashAlgo.Hash;
-                    WriteHeader(cryptoStream, "Hash", Convert.ToBase64String(previousHash));
-
-                    WriteSeparator(cryptoStream);
+                        cryptoStream.FlushFinalBlock();
+                        previousHash = hashAlgo.Hash;
+                        wc.Header("Hash", Convert.ToBase64String(previousHash));
+                        wc.Separator();
+                    }
                 }
             }
         }
 
         private byte[] ReadHashSeedOrNull() {
-            var peekBackLength = _hashHeaderPrefixLength + _hashBase64Length + (_separatorBytes.Length * 2);
+            var peekBackLength = _hashHeaderPrefixLength + _hashBase64Length + (_newLineBytes.Length * 2);
             var peekBackPosition = _innerStream.Position - peekBackLength;
             var restorePosition = _innerStream.Position;
 
@@ -102,16 +101,6 @@ namespace EventStreams.Persistence {
                 throw new InvalidOperationException("The seed hash was injected but the number of bytes written does not match the number of bytes injected.");
         }
 
-        private void WriteHeader(Stream stream, string name, string value) {
-            var line = string.Concat(name, ":  ", value, Environment.NewLine);
-            var bytes = Encoding.UTF8.GetBytes(line);
-            stream.Write(bytes, 0, bytes.Length);
-        }
-
-        private void WriteSeparator(Stream stream) {
-            stream.Write(_separatorBytes, 0, _separatorBytes.Length);
-        }
-
         protected virtual void Dispose(bool disposing) {
             if (disposing)
                 GC.SuppressFinalize(this);
@@ -121,6 +110,38 @@ namespace EventStreams.Persistence {
 
         public void Dispose() {
             Dispose(true);
+        }
+
+        private sealed class WriteContext {
+            private readonly Stream _stream;
+            private readonly IStreamedEvent _streamedEvent;
+
+            public WriteContext(Stream stream, IStreamedEvent streamedEvent) {
+                _stream = stream;
+                _streamedEvent = streamedEvent;
+            }
+
+            public void Header(string name, Action<Stream, IStreamedEvent> valueWriter) {
+                var line = string.Concat(name, ":", GetSpaces(name));
+                var bytes = Encoding.UTF8.GetBytes(line);
+                _stream.Write(bytes, 0, bytes.Length);
+                valueWriter(_stream, _streamedEvent);
+                Separator();
+            }
+
+            public void Header(string name, string value) {
+                var line = string.Concat(name, ":", GetSpaces(name), value, "\r\n");
+                var bytes = Encoding.UTF8.GetBytes(line);
+                _stream.Write(bytes, 0, bytes.Length);
+            }
+
+            public void Separator() {
+                _stream.Write(_newLineBytes, 0, _newLineBytes.Length);
+            }
+
+            private static string GetSpaces(string name) {
+                return new string(' ', Math.Max(7 - name.Length - 1, 2));
+            }
         }
     }
 }

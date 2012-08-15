@@ -118,61 +118,61 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="FirstAndSecondEvents" xml:space="preserve">
-    <value>{ }
-Id:  20f65c10-d7de-43b0-a527-4ccc43496bfe
-Timestamp:  0001-01-01T00:00:00.0000000
+    <value>Id:    20f65c10-d7de-43b0-a527-4ccc43496bfe
+Time:  0001-01-01T00:00:00.0000000
 Type:  EventStreams.Domain.Events.BankAccount.PayeSalaryDeposited, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-Hash:  UaRFPB9/sWLT9fFM+0iSbeOiY48=
+Args:  { }
+Hash:  pjJuhW1PkXFR1mRv/cV6+1Y/HF8=
 
-{ }
-Id:  685f85da-07ac-4eb3-b7f5-f52bcd543e84
-Timestamp:  0001-01-01T00:00:00.0000000
+Id:    685f85da-07ac-4eb3-b7f5-f52bcd543e84
+Time:  0001-01-01T00:00:00.0000000
 Type:  EventStreams.Domain.Events.BankAccount.MadePurchase, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-Hash:  mPaAMrv5R0V8evLNWL222HmZI0o=
+Args:  { }
+Hash:  Fmvnk5dgWY2x9JsjJdy2+T8T7D8=
 
-{ }
-Id:  1012e630-8325-47d4-9393-dcd7f5940e09
-Timestamp:  0001-01-01T00:00:00.0000000
+Id:    1012e630-8325-47d4-9393-dcd7f5940e09
+Time:  0001-01-01T00:00:00.0000000
 Type:  EventStreams.Domain.Events.BankAccount.PayeSalaryDeposited, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-Hash:  75dtw48W7S6NYoAWRlqB8EiiXiM=
+Args:  { }
+Hash:  GVoz9Gm8jvrhz1V1k5bqExADKQw=
 
-{ }
-Id:  e19772ba-6dae-408e-9f09-8561889c8154
-Timestamp:  0001-01-01T00:00:00.0000000
+Id:    e19772ba-6dae-408e-9f09-8561889c8154
+Time:  0001-01-01T00:00:00.0000000
 Type:  EventStreams.Domain.Events.BankAccount.MadePurchase, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-Hash:  Bbnc1AGRDA0w3xp/Mz2y7IMcTlY=
+Args:  { }
+Hash:  R+FaJY81Tyxlwl3UiKnnEKnsV3k=
 
 </value>
   </data>
   <data name="FirstEvents" xml:space="preserve">
-    <value>{ }
-Id:  20f65c10-d7de-43b0-a527-4ccc43496bfe
-Timestamp:  0001-01-01T00:00:00.0000000
+    <value>Id:    20f65c10-d7de-43b0-a527-4ccc43496bfe
+Time:  0001-01-01T00:00:00.0000000
 Type:  EventStreams.Domain.Events.BankAccount.PayeSalaryDeposited, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-Hash:  UaRFPB9/sWLT9fFM+0iSbeOiY48=
+Args:  { }
+Hash:  pjJuhW1PkXFR1mRv/cV6+1Y/HF8=
 
-{ }
-Id:  685f85da-07ac-4eb3-b7f5-f52bcd543e84
-Timestamp:  0001-01-01T00:00:00.0000000
+Id:    685f85da-07ac-4eb3-b7f5-f52bcd543e84
+Time:  0001-01-01T00:00:00.0000000
 Type:  EventStreams.Domain.Events.BankAccount.MadePurchase, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-Hash:  mPaAMrv5R0V8evLNWL222HmZI0o=
+Args:  { }
+Hash:  Fmvnk5dgWY2x9JsjJdy2+T8T7D8=
 
 </value>
   </data>
   <data name="FirstEvents_WithHashSeed" xml:space="preserve">
     <value>Hash:  YXNkYXNkYXNkYWFzZGFzZGFzZGE=
 
-{ }
-Id:  20f65c10-d7de-43b0-a527-4ccc43496bfe
-Timestamp:  0001-01-01T00:00:00.0000000
+Id:    20f65c10-d7de-43b0-a527-4ccc43496bfe
+Time:  0001-01-01T00:00:00.0000000
 Type:  EventStreams.Domain.Events.BankAccount.PayeSalaryDeposited, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-Hash:  uOKQfueUeHBsBOd/tCRJDf9w3m4=
+Args:  { }
+Hash:  dWyDdzTQivXEnPpWIvVcGWtz8G4=
 
-{ }
-Id:  685f85da-07ac-4eb3-b7f5-f52bcd543e84
-Timestamp:  0001-01-01T00:00:00.0000000
+Id:    685f85da-07ac-4eb3-b7f5-f52bcd543e84
+Time:  0001-01-01T00:00:00.0000000
 Type:  EventStreams.Domain.Events.BankAccount.MadePurchase, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-Hash:  5Bf7A2vHKhjpTjp1EMMchYdUx80=
+Args:  { }
+Hash:  KaIiu8mAda2aPcskz1Q2s7XnqEI=
 
 </value>
   </data>

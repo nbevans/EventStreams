@@ -61,17 +61,16 @@ namespace EventStreams.Persistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to { }
-        ///Id:  20f65c10-d7de-43b0-a527-4ccc43496bfe
-        ///Timestamp:  0001-01-01T00:00:00.0000000
+        ///   Looks up a localized string similar to Id:    20f65c10-d7de-43b0-a527-4ccc43496bfe
+        ///Time:  0001-01-01T00:00:00.0000000
         ///Type:  EventStreams.Domain.Events.BankAccount.PayeSalaryDeposited, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-        ///Hash:  UaRFPB9/sWLT9fFM+0iSbeOiY48=
+        ///Args:  { }
+        ///Hash:  pjJuhW1PkXFR1mRv/cV6+1Y/HF8=
         ///
-        ///{ }
-        ///Id:  685f85da-07ac-4eb3-b7f5-f52bcd543e84
-        ///Timestamp:  0001-01-01T00:00:00.0000000
+        ///Id:    685f85da-07ac-4eb3-b7f5-f52bcd543e84
+        ///Time:  0001-01-01T00:00:00.0000000
         ///Type:  EventStreams.Domain.Events.BankAccount.MadePurchase, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-        ///Hash [rest of string was truncated]&quot;;.
+        ///Args:  { [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string FirstAndSecondEvents {
             get {
@@ -80,17 +79,16 @@ namespace EventStreams.Persistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to { }
-        ///Id:  20f65c10-d7de-43b0-a527-4ccc43496bfe
-        ///Timestamp:  0001-01-01T00:00:00.0000000
+        ///   Looks up a localized string similar to Id:    20f65c10-d7de-43b0-a527-4ccc43496bfe
+        ///Time:  0001-01-01T00:00:00.0000000
         ///Type:  EventStreams.Domain.Events.BankAccount.PayeSalaryDeposited, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-        ///Hash:  UaRFPB9/sWLT9fFM+0iSbeOiY48=
+        ///Args:  { }
+        ///Hash:  pjJuhW1PkXFR1mRv/cV6+1Y/HF8=
         ///
-        ///{ }
-        ///Id:  685f85da-07ac-4eb3-b7f5-f52bcd543e84
-        ///Timestamp:  0001-01-01T00:00:00.0000000
+        ///Id:    685f85da-07ac-4eb3-b7f5-f52bcd543e84
+        ///Time:  0001-01-01T00:00:00.0000000
         ///Type:  EventStreams.Domain.Events.BankAccount.MadePurchase, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-        ///Hash [rest of string was truncated]&quot;;.
+        ///Args:  { [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string FirstEvents {
             get {
@@ -101,16 +99,15 @@ namespace EventStreams.Persistence {
         /// <summary>
         ///   Looks up a localized string similar to Hash:  YXNkYXNkYXNkYWFzZGFzZGFzZGE=
         ///
-        ///{ }
-        ///Id:  20f65c10-d7de-43b0-a527-4ccc43496bfe
-        ///Timestamp:  0001-01-01T00:00:00.0000000
+        ///Id:    20f65c10-d7de-43b0-a527-4ccc43496bfe
+        ///Time:  0001-01-01T00:00:00.0000000
         ///Type:  EventStreams.Domain.Events.BankAccount.PayeSalaryDeposited, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-        ///Hash:  uOKQfueUeHBsBOd/tCRJDf9w3m4=
+        ///Args:  { }
+        ///Hash:  dWyDdzTQivXEnPpWIvVcGWtz8G4=
         ///
-        ///{ }
-        ///Id:  685f85da-07ac-4eb3-b7f5-f52bcd543e84
-        ///Timestamp:  0001-01-01T00:00:00.0000000
-        ///Type:  EventStreams.Domain.Events.BankAccount.MadePurchase, EventStreams.Tests.Domain, Version=0.0.0.0, Cul [rest of string was truncated]&quot;;.
+        ///Id:    685f85da-07ac-4eb3-b7f5-f52bcd543e84
+        ///Time:  0001-01-01T00:00:00.0000000
+        ///Type:  EventStreams.Domain.Events.BankAccount.MadePurchase, EventStreams.Tests.Domain, Version=0.0.0.0, Culture [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string FirstEvents_WithHashSeed {
             get {
