@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="firstAndSecondEventStreams" xml:space="preserve">
+  <data name="FirstAndSecondEvents" xml:space="preserve">
     <value>{ }
 Id:  20f65c10-d7de-43b0-a527-4ccc43496bfe
 Timestamp:  0001-01-01T00:00:00.0000000
@@ -144,7 +144,7 @@ Hash:  Bbnc1AGRDA0w3xp/Mz2y7IMcTlY=
 
 </value>
   </data>
-  <data name="firstEventsStream" xml:space="preserve">
+  <data name="FirstEvents" xml:space="preserve">
     <value>{ }
 Id:  20f65c10-d7de-43b0-a527-4ccc43496bfe
 Timestamp:  0001-01-01T00:00:00.0000000
@@ -156,6 +156,23 @@ Id:  685f85da-07ac-4eb3-b7f5-f52bcd543e84
 Timestamp:  0001-01-01T00:00:00.0000000
 Type:  EventStreams.Domain.Events.BankAccount.MadePurchase, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 Hash:  mPaAMrv5R0V8evLNWL222HmZI0o=
+
+</value>
+  </data>
+  <data name="FirstEvents_WithHashSeed" xml:space="preserve">
+    <value>Hash:  YXNkYXNkYXNkYWFzZGFzZGFzZGE=
+
+{ }
+Id:  20f65c10-d7de-43b0-a527-4ccc43496bfe
+Timestamp:  0001-01-01T00:00:00.0000000
+Type:  EventStreams.Domain.Events.BankAccount.PayeSalaryDeposited, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+Hash:  uOKQfueUeHBsBOd/tCRJDf9w3m4=
+
+{ }
+Id:  685f85da-07ac-4eb3-b7f5-f52bcd543e84
+Timestamp:  0001-01-01T00:00:00.0000000
+Type:  EventStreams.Domain.Events.BankAccount.MadePurchase, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+Hash:  5Bf7A2vHKhjpTjp1EMMchYdUx80=
 
 </value>
   </data>

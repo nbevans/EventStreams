@@ -73,9 +73,9 @@ namespace EventStreams.Persistence {
         ///Type:  EventStreams.Domain.Events.BankAccount.MadePurchase, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
         ///Hash [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string firstAndSecondEventStreams {
+        internal static string FirstAndSecondEvents {
             get {
-                return ResourceManager.GetString("firstAndSecondEventStreams", resourceCulture);
+                return ResourceManager.GetString("FirstAndSecondEvents", resourceCulture);
             }
         }
         
@@ -92,9 +92,29 @@ namespace EventStreams.Persistence {
         ///Type:  EventStreams.Domain.Events.BankAccount.MadePurchase, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
         ///Hash [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string firstEventsStream {
+        internal static string FirstEvents {
             get {
-                return ResourceManager.GetString("firstEventsStream", resourceCulture);
+                return ResourceManager.GetString("FirstEvents", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hash:  YXNkYXNkYXNkYWFzZGFzZGFzZGE=
+        ///
+        ///{ }
+        ///Id:  20f65c10-d7de-43b0-a527-4ccc43496bfe
+        ///Timestamp:  0001-01-01T00:00:00.0000000
+        ///Type:  EventStreams.Domain.Events.BankAccount.PayeSalaryDeposited, EventStreams.Tests.Domain, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+        ///Hash:  uOKQfueUeHBsBOd/tCRJDf9w3m4=
+        ///
+        ///{ }
+        ///Id:  685f85da-07ac-4eb3-b7f5-f52bcd543e84
+        ///Timestamp:  0001-01-01T00:00:00.0000000
+        ///Type:  EventStreams.Domain.Events.BankAccount.MadePurchase, EventStreams.Tests.Domain, Version=0.0.0.0, Cul [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string FirstEvents_WithHashSeed {
+            get {
+                return ResourceManager.GetString("FirstEvents_WithHashSeed", resourceCulture);
             }
         }
     }

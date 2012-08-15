@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-
+using System.Text;
 using Moq;
 
 using NUnit.Framework;
@@ -30,7 +30,7 @@ namespace EventStreams.Persistence {
                     esw.Write(_firstEvents);
                     ms.Position = 0;
                     using (var sr = new StreamReader(ms)) {
-                        Assert.That(sr.ReadToEnd(), Is.EqualTo(Strings.firstEventsStream));
+                        Assert.That(sr.ReadToEnd(), Is.EqualTo(Strings.FirstEvents));
                     }
                 }
             }
@@ -44,8 +44,36 @@ namespace EventStreams.Persistence {
                     esw.Write(_secondEvents);
                     ms.Position = 0;
                     using (var sr = new StreamReader(ms)) {
-                        Assert.That(sr.ReadToEnd(), Is.EqualTo(Strings.firstAndSecondEventStreams));
+                        Assert.That(sr.ReadToEnd(), Is.EqualTo(Strings.FirstAndSecondEvents));
                     }
+                }
+            }
+        }
+
+        [Test]
+        public void Given_a_hash_seeded_stream_when_appended_to_with_first_set_then_hashing_continues_from_seed_hash() {
+            using (var ms = new MemoryStream()) {
+                var hashSeedLine = Encoding.UTF8.GetBytes("Hash:  YXNkYXNkYXNkYWFzZGFzZGFzZGE=\r\n\r\n");
+                ms.Write(hashSeedLine, 0, hashSeedLine.Length);
+
+                using (var esw = new EventStreamWriter(ms, new NullEventWriter())) {
+                    esw.Write(_firstEvents);
+                    ms.Position = 0;
+                    using (var sr = new StreamReader(ms)) {
+                        Assert.That(sr.ReadToEnd(), Is.EqualTo(Strings.FirstEvents_WithHashSeed));
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void Given_a_malformed_hash_seeded_stream_when_appended_to_with_first_set_then_it_will_throw() {
+            using (var ms = new MemoryStream()) {
+                var hashSeedLine = Encoding.UTF8.GetBytes("HaSH:  YXNkYXNkYXNkYWFzZGFzZGFzZGE=\r\n\r\n");
+                ms.Write(hashSeedLine, 0, hashSeedLine.Length);
+
+                using (var esw = new EventStreamWriter(ms, new NullEventWriter())) {
+                    Assert.Throws<InvalidOperationException>(() => esw.Write(_firstEvents));
                 }
             }
         }

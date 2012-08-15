@@ -81,8 +81,8 @@ namespace EventStreams.Persistence {
                             buffer.Length,
                             bytesRead));
 
-                if (buffer[0] != 'H' && buffer[1] != 'a' && buffer[2] != 's' && buffer[3] != 'h' &&
-                    buffer[4] != ':' && buffer[5] != ' ' && buffer[6] != ' ')
+                if (buffer[0] != 'H' || buffer[1] != 'a' || buffer[2] != 's' || buffer[3] != 'h' ||
+                    buffer[4] != ':' || buffer[5] != ' ' || buffer[6] != ' ')
                     throw new InvalidOperationException("The buffer read from the stream does not start with a hash prefix.");
 
                 var str = Encoding.UTF8.GetString(buffer, _hashHeaderPrefixLength, _hashBase64Length);

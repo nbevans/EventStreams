@@ -36,7 +36,7 @@ namespace EventStreams.Persistence {
 
                 var content = File.ReadAllText(filename);
 
-                Assert.That(content, Is.EqualTo(Strings.firstEventsStream));
+                Assert.That(content, Is.EqualTo(Strings.FirstEvents));
             }
         }
 
@@ -54,7 +54,7 @@ namespace EventStreams.Persistence {
 
                 var content = File.ReadAllText(filename);
 
-                Assert.That(content, Is.EqualTo(Strings.firstAndSecondEventStreams));
+                Assert.That(content, Is.EqualTo(Strings.FirstAndSecondEvents));
             }
         }
     }
