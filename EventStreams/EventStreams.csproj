@@ -56,6 +56,7 @@
     <Compile Include="Persistence\NullPersistEvents.cs" />
     <Compile Include="Persistence\Serialization\Events\JsonEventReader.cs" />
     <Compile Include="Persistence\Serialization\Events\IEventReader.cs" />
+    <Compile Include="Persistence\Serialization\Events\NullEventReader.cs" />
     <Compile Include="Persistence\Serialization\Events\NullEventWriter.cs" />
     <Compile Include="Persistence\Serialization\Events\XmlEventWriter.cs" />
     <Compile Include="Persistence\Serialization\Events\IEventWriter.cs" />
