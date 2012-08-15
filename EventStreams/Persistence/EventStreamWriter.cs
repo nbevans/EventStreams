@@ -14,7 +14,7 @@ namespace EventStreams.Persistence {
             "Hash:  ".Length;
 
         private static readonly int _hashBase64Length =
-            ((new SHA1Managed().HashSize / 8) + 2) / 3 * 4;
+            ((new ShaHash().HashSize / 8) + 2) / 3 * 4;
 
         private static readonly byte[] _separatorBytes =
             Encoding.UTF8.GetBytes("\r\n");
@@ -41,7 +41,7 @@ namespace EventStreams.Persistence {
             var previousHash = ReadHashSeedOrNull();
 
             foreach (var se in streamedEvents) {
-                using (var hashAlgo = new SHA1Managed())
+                using (var hashAlgo = new ShaHash())
                 using (var cryptoStream = new CryptoStream(new NonClosingStreamWrapper(_innerStream), hashAlgo, CryptoStreamMode.Write)) {
                     InjectHashSeed(hashAlgo, previousHash);
 
