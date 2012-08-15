@@ -8,7 +8,7 @@ namespace EventStreams.Persistence {
     /// Wraps a stream for all operations except <see cref="Stream.Close"/> and <see cref="Stream.Dispose"/>,
     /// which merely flush the stream and prevent further operations from being carried out using this wrapper.
     /// </summary>
-    internal sealed class NonClosingStreamWrapper : Stream {
+    internal sealed class NonClosingStream : Stream {
 
         private readonly Stream _stream;
         private bool _closed;
@@ -17,7 +17,7 @@ namespace EventStreams.Persistence {
             get { return _stream; }
         }
 
-        public NonClosingStreamWrapper(Stream stream) {
+        public NonClosingStream(Stream stream) {
             if (stream == null) throw new ArgumentNullException("stream");
             _stream = stream;
         }

@@ -10,7 +10,7 @@ namespace EventStreams.Persistence.Serialization.Events {
             if (innerStream == null) throw new ArgumentNullException("innerStream");
             if (concreteType == null) throw new ArgumentNullException("concreteType");
 
-            using (var sr = new StreamReader(new NonClosingStreamWrapper(innerStream), Encoding.UTF8, false, 128))
+            using (var sr = new StreamReader(new NonClosingStream(innerStream), Encoding.UTF8, false, 128))
             using (var jtr = new JsonTextReader(sr)) {
                 SetupJsonTextReader(jtr);
                 return
