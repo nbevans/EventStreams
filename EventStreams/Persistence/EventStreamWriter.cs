@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -11,9 +10,11 @@ namespace EventStreams.Persistence {
 
     public class EventStreamWriter : IDisposable {
 
-        private static readonly int _hashHeaderPrefixLength = "Hash:  ".Length;
+        private static readonly int _hashHeaderPrefixLength =
+            "Hash:  ".Length;
 
-        private static readonly int _hashBase64Length = 44;
+        private static readonly int _hashBase64Length =
+            ((new SHA1Managed().HashSize / 8) + 2) / 3 * 4;
 
         private static readonly byte[] _separatorBytes =
             Encoding.UTF8.GetBytes("\r\n");
@@ -40,7 +41,7 @@ namespace EventStreams.Persistence {
             var previousHash = ReadHashSeedOrNull();
 
             foreach (var se in streamedEvents) {
-                using (var hashAlgo = SHA256.Create())
+                using (var hashAlgo = new SHA1Managed())
                 using (var cryptoStream = new CryptoStream(new NonClosingStreamWrapper(_innerStream), hashAlgo, CryptoStreamMode.Write)) {
                     InjectHashSeed(hashAlgo, previousHash);
 
@@ -72,12 +73,17 @@ namespace EventStreams.Persistence {
                 _innerStream.Position = peekBackPosition;
 
                 var buffer = new byte[_hashHeaderPrefixLength + _hashBase64Length];
-                if (_innerStream.Read(buffer, 0, buffer.Length) != buffer.Length)
-                    throw new InvalidOperationException("WTF? Corrupt stream.");
+                int bytesRead;
+                if ((bytesRead = _innerStream.Read(buffer, 0, buffer.Length)) != buffer.Length)
+                    throw new InvalidOperationException(
+                        string.Format(
+                            "An unexpected number of bytes were read from the stream. Expected {0}, but got {1}.",
+                            buffer.Length,
+                            bytesRead));
 
                 if (buffer[0] != 'H' && buffer[1] != 'a' && buffer[2] != 's' && buffer[3] != 'h' &&
                     buffer[4] != ':' && buffer[5] != ' ' && buffer[6] != ' ')
-                    throw new InvalidOperationException("WTF? This ain't no hash line!");
+                    throw new InvalidOperationException("The buffer read from the stream does not start with a hash prefix.");
 
                 var str = Encoding.UTF8.GetString(buffer, _hashHeaderPrefixLength, _hashBase64Length);
                 return Convert.FromBase64String(str);
