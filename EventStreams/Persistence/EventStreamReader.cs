@@ -26,6 +26,26 @@ namespace EventStreams.Persistence {
         }
 
         public IEnumerable<IStreamedEvent> Read() {
+            using (var hashAlgo = new ShaHash())
+            using (var cryptoStream = new CryptoStream(new NonClosingStream(_innerStream), hashAlgo, CryptoStreamMode.Read))
+            using (var sr = new StreamReader(cryptoStream, Encoding.UTF8, false, 1)) {
+
+                var id = sr.ReadLine();
+                var ts = sr.ReadLine();
+                var ty = sr.ReadLine(); // streamreader is broken, its buffering reads too far ahead and screws up the hash block transform.
+                var ag = sr.ReadLine();
+
+                //var buf = new byte[242];
+                //cryptoStream.Read(buf, 0, 242);
+
+                var pos = _innerStream.Position;
+
+                cryptoStream.FlushFinalBlock();
+                var hash = Convert.ToBase64String(hashAlgo.Hash);
+            }
+
+
+
             return Enumerable.Empty<IStreamedEvent>();
             //var previousHash = ReadHashSeedOrNull();
 

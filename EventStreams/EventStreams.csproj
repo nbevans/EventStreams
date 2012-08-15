@@ -53,7 +53,7 @@
     <Compile Include="Persistence\EventStreamWriter.cs" />
     <Compile Include="Persistence\FileSystemPersistEvents.cs" />
     <Compile Include="Persistence\IPersistEvents.cs" />
-    <Compile Include="Persistence\NonClosingStreamWrapper.cs" />
+    <Compile Include="Persistence\NonClosingStream.cs" />
     <Compile Include="Persistence\NullPersistEvents.cs" />
     <Compile Include="Persistence\Serialization\Events\JsonEventReader.cs" />
     <Compile Include="Persistence\Serialization\Events\IEventReader.cs" />
