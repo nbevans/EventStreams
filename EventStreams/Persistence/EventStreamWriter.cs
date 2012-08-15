@@ -10,9 +10,6 @@ namespace EventStreams.Persistence {
 
     public class EventStreamWriter : IDisposable {
 
-        private static readonly byte[] _newLineBytes =
-            Encoding.UTF8.GetBytes("\r\n");
-
         private readonly Stream _innerStream;
         private readonly IEventWriter _eventWriter;
 
@@ -42,14 +39,14 @@ namespace EventStreams.Persistence {
                     InjectHashSeed(hashAlgo, previousHash);
 
                     var wc = new WriteContext(cryptoStream, se); {
-                        wc.Header("Id", se.Id.ToString());
-                        wc.Header("Time", se.Timestamp.ToString("O"));
-                        wc.Header("Type", se.Arguments.GetType().AssemblyQualifiedName);
-                        wc.Header("Args", (s, e) => _eventWriter.Write(s, e.Arguments));
+                        wc.Header(EventStreamTokens.Id, se.Id.ToString());
+                        wc.Header(EventStreamTokens.Time, se.Timestamp.ToString("O"));
+                        wc.Header(EventStreamTokens.Type, se.Arguments.GetType().AssemblyQualifiedName);
+                        wc.Header(EventStreamTokens.Args, (s, e) => _eventWriter.Write(s, e.Arguments));
 
                         cryptoStream.FlushFinalBlock();
                         previousHash = hashAlgo.Hash;
-                        wc.Header("Hash", Convert.ToBase64String(previousHash));
+                        wc.Header(EventStreamTokens.Hash, Convert.ToBase64String(previousHash));
                         wc.Separator();
                     }
                 }
@@ -86,7 +83,7 @@ namespace EventStreams.Persistence {
             }
 
             public void Header(string name, Action<Stream, IStreamedEvent> valueWriter) {
-                var line = string.Concat(name, ":", GetSpaces(name));
+                var line = string.Concat(name, EventStreamTokens.HeaderSuffix, GetSpaces(name));
                 var bytes = Encoding.UTF8.GetBytes(line);
                 _stream.Write(bytes, 0, bytes.Length);
                 valueWriter(_stream, _streamedEvent);
@@ -94,17 +91,17 @@ namespace EventStreams.Persistence {
             }
 
             public void Header(string name, string value) {
-                var line = string.Concat(name, ":", GetSpaces(name), value, "\r\n");
+                var line = string.Concat(name, EventStreamTokens.HeaderSuffix, GetSpaces(name), value, EventStreamTokens.NewLine);
                 var bytes = Encoding.UTF8.GetBytes(line);
                 _stream.Write(bytes, 0, bytes.Length);
             }
 
             public void Separator() {
-                _stream.Write(_newLineBytes, 0, _newLineBytes.Length);
+                _stream.Write(EventStreamTokens.NewLineBytes, 0, EventStreamTokens.NewLineBytes.Length);
             }
 
             private static string GetSpaces(string name) {
-                return new string(' ', Math.Max(7 - name.Length - 1, 2));
+                return new string(EventStreamTokens.HeaderSuffixWhitespace, Math.Max(7 - name.Length - 1, 2));
             }
         }
     }

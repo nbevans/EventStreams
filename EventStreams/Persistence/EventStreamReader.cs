@@ -11,9 +11,6 @@ namespace EventStreams.Persistence {
 
     public class EventStreamReader : IDisposable {
 
-        private static readonly byte[] _separatorBytes =
-            Encoding.UTF8.GetBytes("\r\n");
-
         private readonly Stream _innerStream;
         private readonly IEventReader _eventReader;
 

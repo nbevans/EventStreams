@@ -7,13 +7,10 @@ namespace EventStreams.Persistence {
     internal class EventStreamBacktracker {
 
         private static readonly int _hashHeaderPrefixLength =
-            "Hash:  ".Length;
+            EventStreamTokens.HashHeaderBytes.Length;
 
         private static readonly int _hashBase64Length =
             ((new ShaHash().HashSize / 8) + 2) / 3 * 4;
-
-        private static readonly byte[] _newLineBytes =
-            Encoding.UTF8.GetBytes("\r\n");
 
         private readonly Stream _innerStream;
 
@@ -23,7 +20,7 @@ namespace EventStreams.Persistence {
         }
 
         public byte[] HashSeedOrNull() {
-            var peekBackLength = _hashHeaderPrefixLength + _hashBase64Length + (_newLineBytes.Length * 2);
+            var peekBackLength = _hashHeaderPrefixLength + _hashBase64Length + (EventStreamTokens.NewLineBytes.Length * 2);
             var peekBackPosition = _innerStream.Position - peekBackLength;
             var restorePosition = _innerStream.Position;
 
@@ -42,8 +39,7 @@ namespace EventStreams.Persistence {
                             buffer.Length,
                             bytesRead));
 
-                if (buffer[0] != 'H' || buffer[1] != 'a' || buffer[2] != 's' || buffer[3] != 'h' ||
-                    buffer[4] != ':' || buffer[5] != ' ' || buffer[6] != ' ')
+                if (!StartsWith(buffer, EventStreamTokens.HashHeaderBytes))
                     throw new InvalidOperationException(
                         "The buffer read from the stream does not start with a hash prefix.");
 
@@ -53,6 +49,17 @@ namespace EventStreams.Persistence {
             } finally {
                 _innerStream.Position = restorePosition;
             }
+        }
+
+        private static bool StartsWith(byte[] haystack, byte[] needle) {
+            if (haystack.Length < needle.Length)
+                return false;
+
+            for (var i = 0; i < needle.Length; i++)
+                if (haystack[i] != needle[i])
+                    return false;
+
+            return true;
         }
     }
 }

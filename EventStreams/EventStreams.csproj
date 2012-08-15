@@ -49,6 +49,7 @@
     <Compile Include="EventSource.cs" />
     <Compile Include="Persistence\EventStreamBacktracker.cs" />
     <Compile Include="Persistence\EventStreamReader.cs" />
+    <Compile Include="Persistence\EventStreamTokens.cs" />
     <Compile Include="Persistence\EventStreamWriter.cs" />
     <Compile Include="Persistence\FileSystemPersistEvents.cs" />
     <Compile Include="Persistence\IPersistEvents.cs" />
