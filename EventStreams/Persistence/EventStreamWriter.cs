@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -31,35 +32,22 @@ namespace EventStreams.Persistence {
         public void Write(IEnumerable<IStreamedEvent> streamedEvents) {
             var previousHash =
                 new EventStreamBacktracker(_innerStream)
-                    .HashSeedOrNull();
+                    .HashOrNull();
 
             foreach (var se in streamedEvents) {
                 using (var hashAlgo = new ShaHash())
                 using (var cryptoStream = new CryptoStream(new NonClosingStream(_innerStream), hashAlgo, CryptoStreamMode.Write)) {
-                    InjectHashSeed(hashAlgo, previousHash);
+                    var wc = new WriteContext(cryptoStream, hashAlgo, se); {
+                        wc.Seed(previousHash);
+                        wc.Body(_eventWriter);
+                        wc.Header();
+                        wc.Body();
+                        wc.Footer();
 
-                    var wc = new WriteContext(cryptoStream, se); {
-                        wc.Header(EventStreamTokens.Id, se.Id.ToString());
-                        wc.Header(EventStreamTokens.Time, se.Timestamp.ToString("O"));
-                        wc.Header(EventStreamTokens.Type, se.Arguments.GetType().AssemblyQualifiedName);
-                        wc.Header(EventStreamTokens.Args, (s, e) => _eventWriter.Write(s, e.Arguments));
-
-                        cryptoStream.FlushFinalBlock();
-                        previousHash = hashAlgo.Hash;
-                        wc.Header(EventStreamTokens.Hash, Convert.ToBase64String(previousHash));
-                        wc.Separator();
+                        previousHash = wc.Hash;
                     }
                 }
             }
-        }
-
-        private void InjectHashSeed(ICryptoTransform cryptoTransform, byte[] seedHash) {
-            if (seedHash == null || seedHash.Length == 0)
-                return;
-
-            var numBytes = cryptoTransform.TransformBlock(seedHash, 0, seedHash.Length, null, 0);
-            if (numBytes != seedHash.Length)
-                throw new InvalidOperationException("The seed hash was injected but the number of bytes written does not match the number of bytes injected.");
         }
 
         protected virtual void Dispose(bool disposing) {
@@ -74,34 +62,96 @@ namespace EventStreams.Persistence {
         }
 
         private sealed class WriteContext {
-            private readonly Stream _stream;
+            private readonly CryptoStream _cryptoStream;
+            private readonly HashAlgorithm _hashAlgo;
             private readonly IStreamedEvent _streamedEvent;
+            private readonly BinaryWriter _binaryWriter;
+            private readonly string _argumentsType;
+            private byte[] _bodyBuffer;
+            private int _bodyLength;
 
-            public WriteContext(Stream stream, IStreamedEvent streamedEvent) {
-                _stream = stream;
+            public byte[] Hash { get; private set; }
+
+            public WriteContext(CryptoStream cryptoStream, HashAlgorithm hashAlgo, IStreamedEvent streamedEvent) {
+                _cryptoStream = cryptoStream;
+                _hashAlgo = hashAlgo;
+                _binaryWriter = new BinaryWriter(cryptoStream, Encoding.UTF8);
                 _streamedEvent = streamedEvent;
+                _argumentsType = _streamedEvent.Arguments.GetType().AssemblyQualifiedName;
             }
 
-            public void Header(string name, Action<Stream, IStreamedEvent> valueWriter) {
-                var line = string.Concat(name, EventStreamTokens.HeaderSuffix, GetSpaces(name));
-                var bytes = Encoding.UTF8.GetBytes(line);
-                _stream.Write(bytes, 0, bytes.Length);
-                valueWriter(_stream, _streamedEvent);
-                Separator();
+            public void Seed(byte[] hash) {
+                if (hash == null || hash.Length == 0)
+                    return;
+
+                var numBytes = _hashAlgo.TransformBlock(hash, 0, hash.Length, null, 0);
+                if (numBytes != hash.Length)
+                    throw new InvalidOperationException("The seed hash was injected but the number of bytes written does not match the number of bytes injected.");
             }
 
-            public void Header(string name, string value) {
-                var line = string.Concat(name, EventStreamTokens.HeaderSuffix, GetSpaces(name), value, EventStreamTokens.NewLine);
-                var bytes = Encoding.UTF8.GetBytes(line);
-                _stream.Write(bytes, 0, bytes.Length);
+            public void Header() {
+                Debug.Assert(_bodyBuffer != null);
+
+                _binaryWriter.Write(EventStreamTokens.RecordStartIndicator);
+                _binaryWriter.Write(CalculateRecordLength());
+                _binaryWriter.Write(_streamedEvent.Id.ToByteArray());
+                _binaryWriter.Write(_streamedEvent.Timestamp.Ticks);
+                _binaryWriter.Write(_argumentsType);
             }
 
-            public void Separator() {
-                _stream.Write(EventStreamTokens.NewLineBytes, 0, EventStreamTokens.NewLineBytes.Length);
+            public void Body(IEventWriter eventWriter) {
+                using (var bodyStream = new MemoryStream(512)) {
+                    using (var cryptoBodyStream = new CryptoStream(new NonClosingStream(bodyStream), _hashAlgo, CryptoStreamMode.Write))
+                        eventWriter.Write(cryptoBodyStream, _streamedEvent.Arguments);
+
+                    _bodyBuffer = bodyStream.GetBuffer();
+                    _bodyLength = (int)bodyStream.Length;
+                }
             }
 
-            private static string GetSpaces(string name) {
-                return new string(EventStreamTokens.HeaderSuffixWhitespace, Math.Max(7 - name.Length - 1, 2));
+            public void Body() {
+                Debug.Assert(_bodyBuffer != null);
+
+                _binaryWriter.Write(_bodyLength);
+                _binaryWriter.Write(_bodyBuffer, 0, _bodyLength);
+            }
+
+            public void Footer() {
+                FinaliseHash();
+
+                _binaryWriter.Write(Hash);
+                _binaryWriter.Write(CalculateRecordLength());
+                _binaryWriter.Write(EventStreamTokens.RecordEndIndicator);
+            }
+
+            private int CalculateRecordLength() {
+                Debug.Assert(_bodyBuffer != null);
+
+                // Every record is laid out in the follow structure, and order.
+                // We can therefore calculate precisely the record length before
+                // it has even been (fully) written.
+                // Note that the record length is written at the start *and* end.
+                // This is to allow efficient record iteration in both directions.
+                // It's basically a doubly linked list structure set within a
+                // contiguous block of memory (and obviously we're optimising for
+                // a file stream!)
+
+                var len = 0;
+                len += sizeof(int); // record length prefix (this!)
+                len += 16; // guid
+                len += sizeof(long); // timestamp
+                len += _argumentsType.Length;
+                len += sizeof(int); // the body length prefix
+                len += _bodyLength; // the actual body
+                len += ShaHash.ByteLength;
+                len += sizeof(int); // record length suffix (this!)
+                return len;
+            }
+
+            private void FinaliseHash() {
+                _cryptoStream.FlushFinalBlock();
+                Hash = _hashAlgo.Hash;
+                Debug.Assert(Hash.Length == ShaHash.ByteLength);
             }
         }
     }

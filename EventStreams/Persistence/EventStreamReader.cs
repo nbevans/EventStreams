@@ -78,5 +78,14 @@ namespace EventStreams.Persistence {
         public void Dispose() {
             Dispose(true);
         }
+
+        private sealed class ReadContext {
+            private readonly Stream _stream;
+
+            public ReadContext(Stream stream) {
+                _stream = stream;
+            }
+
+        }
     }
 }
