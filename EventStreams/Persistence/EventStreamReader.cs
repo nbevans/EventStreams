@@ -55,7 +55,7 @@ namespace EventStreams.Persistence {
             private readonly BinaryReader _rawBinaryReader;
             private readonly TemporaryContainer _tempContainer;
 
-            public IStreamedEvent Event { get { return Build(); } }
+            public IStreamedEvent Event { get { return _tempContainer.Build(); } }
             public byte[] Hash { get; private set; }
 
             public ReadContext(Stream stream, CryptoStream cryptoStream, HashAlgorithm hashAlgo) {
@@ -101,16 +101,15 @@ namespace EventStreams.Persistence {
 
                 if (_rawBinaryReader.ReadByte() != EventStreamTokens.RecordEndIndicator)
                     throw new InvalidOperationException("The stream has reached the end of the current record but an indicator byte is not present.");
+
+                if (_tempContainer.HeadRecordLength != _tempContainer.TailRecordLength)
+                    throw new InvalidOperationException("The head and tail record length indicators are different; the stream may be invalid, malformed or corrupt.");
             }
 
             private void FinaliseHash() {
                 _cryptoStream.FlushFinalBlock();
                 Hash = _hashAlgo.Hash;
                 Debug.Assert(Hash.Length == ShaHash.ByteLength);
-            }
-
-            private IStreamedEvent Build() {
-                return new StreamedEvent(_tempContainer.Id, _tempContainer.Timestamp, _tempContainer.Arguments);
             }
 
             private sealed class TemporaryContainer {
@@ -121,6 +120,10 @@ namespace EventStreams.Persistence {
                 public EventArgs Arguments;
                 public byte[] Hash;
                 public int TailRecordLength;
+
+                public IStreamedEvent Build() {
+                    return new StreamedEvent(Id, Timestamp, Arguments);
+                }
             }
         }
     }
