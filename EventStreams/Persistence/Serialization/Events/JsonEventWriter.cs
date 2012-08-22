@@ -10,7 +10,7 @@ namespace EventStreams.Persistence.Serialization.Events {
             if (innerStream == null) throw new ArgumentNullException("innerStream");
             if (args == null) throw new ArgumentNullException("args");
 
-            using (var sw = new StreamWriter(new NonClosingStream(innerStream), Encoding.UTF8, 1024))
+            using (var sw = new StreamWriter(innerStream.PreventClosure(), Encoding.UTF8, 1024))
             using (var jtw = new JsonTextWriter(sw)) {
                 SetupJsonTextWriter(jtw);
                 new JsonSerializer { TypeNameHandling = TypeNameHandling.Auto }

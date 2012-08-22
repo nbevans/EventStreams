@@ -13,9 +13,16 @@ namespace EventStreams.Persistence {
         }
 
         public byte[] HashOrNull() {
+            long foo;
+            return HashOrNull(out foo);
+        }
+
+        public byte[] HashOrNull(out long hashPosition) {
             var peekBackLength = sizeof(byte) + sizeof(int) + ShaHash.ByteLength;
             var peekBackPosition = _innerStream.Position - peekBackLength;
             var restorePosition = _innerStream.Position;
+
+            hashPosition = peekBackPosition;
 
             if (peekBackPosition < 0)
                 return null;

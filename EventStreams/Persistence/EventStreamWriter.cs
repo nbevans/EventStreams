@@ -35,7 +35,7 @@ namespace EventStreams.Persistence {
 
             foreach (var se in streamedEvents) {
                 using (var hashAlgo = new ShaHash())
-                using (var cryptoStream = new CryptoStream(new NonClosingStream(_innerStream), hashAlgo, CryptoStreamMode.Write)) {
+                using (var cryptoStream = new CryptoStream(_innerStream.PreventClosure(), hashAlgo, CryptoStreamMode.Write)) {
                     var wc = new WriteContext(_innerStream, cryptoStream, hashAlgo, se); {
                         wc.Seed(previousHash);
                         wc.Body(_eventWriter);

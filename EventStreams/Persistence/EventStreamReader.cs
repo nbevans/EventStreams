@@ -25,22 +25,26 @@ namespace EventStreams.Persistence {
         }
 
         public IStreamedEvent Next() {
+            long previousHashPosition;
             var previousHash =
                 new EventStreamBacktracker(_innerStream)
-                    .HashOrNull();
+                    .HashOrNull(out previousHashPosition);
 
             using (var hashAlgo = new ShaHash())
-            using (var cryptoStream = new CryptoStream(new NonClosingStream(_innerStream), hashAlgo, CryptoStreamMode.Read)) {
+            using (var cryptoStream = new CryptoStream(_innerStream.PreventClosure(), hashAlgo, CryptoStreamMode.Read)) {
                 var rc = new ReadContext(_innerStream, cryptoStream, hashAlgo); {
-
                     rc.Seed(previousHash);
                     rc.Header();
                     rc.Body(_eventReader);
                     rc.Footer();
 
                     previousHash = rc.StreamHash;
-                    if (!previousHash.SequenceEqual(rc.CurrentHash))
-                        throw new InvalidOperationException("Hash mismatch.");
+
+                    if (ShaHash.AreNotEqual(previousHash, rc.CurrentHash))
+                        throw new InvalidOperationException(
+                            string.Format(
+                                "The sequenced SHA-1 hashes at byte positions {0} and {1} are not contiguous; the event stream has suffered fatal corruption.",
+                                previousHashPosition, rc.CurrentHashPosition));
 
                     return rc.Event;
                 }
@@ -69,6 +73,7 @@ namespace EventStreams.Persistence {
             public IStreamedEvent Event { get { return _tempContainer.Build(); } }
             public byte[] StreamHash { get; private set; }
             public byte[] CurrentHash { get { return _tempContainer.Hash; } }
+            public long CurrentHashPosition { get; private set; }
 
             public ReadContext(Stream stream, CryptoStream cryptoStream, HashAlgorithm hashAlgo) {
                 _stream = stream;
@@ -116,6 +121,8 @@ namespace EventStreams.Persistence {
 
                 // Must not use _cryptoBinaryReader or _cryptoStream now that the hash has been finalised.
                 // Use _rawBinaryReader from this point on.
+
+                CurrentHashPosition = _stream.Position;
 
                 _tempContainer.Hash = _rawBinaryReader.ReadBytes(ShaHash.ByteLength);
                 _tempContainer.TailRecordLength = _rawBinaryReader.ReadInt32();
