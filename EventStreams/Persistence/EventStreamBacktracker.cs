@@ -2,6 +2,7 @@
 using System.IO;
 
 namespace EventStreams.Persistence {
+    using Resources;
 
     internal class EventStreamBacktracker {
 
@@ -34,9 +35,9 @@ namespace EventStreams.Persistence {
                 var hashBuffer = new byte[ShaHash.ByteLength];
                 int bytesRead;
                 if ((bytesRead = _innerStream.Read(hashBuffer, 0, hashBuffer.Length)) != hashBuffer.Length)
-                    throw new InvalidOperationException(
+                    throw new DataVerificationPersistenceException(
                         string.Format(
-                            "An unexpected number of bytes were read from the stream. Expected {0}, but got {1}.",
+                            ExceptionStrings.Unexpected_length_returned_from_stream_read_while_backtracking,
                             hashBuffer.Length,
                             bytesRead));
 
@@ -45,9 +46,8 @@ namespace EventStreams.Persistence {
 
                 // Do a quick sanity check to make sure there is a record-end-indicator where we would expect.
                 if (_innerStream.ReadByte() != EventStreamTokens.TailIndicator)
-                    throw new InvalidOperationException(
-                        "The buffer read from the stream does not end with a record suffix; " +
-                        "the stream appears to be invalid, malformed or corrupt.");
+                    throw new DataVerificationPersistenceException(
+                        ExceptionStrings.Tail_indicator_byte_not_present_while_backtracking);
 
                 return hashBuffer;
 

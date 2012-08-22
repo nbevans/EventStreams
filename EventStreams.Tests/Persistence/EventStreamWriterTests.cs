@@ -63,13 +63,13 @@ namespace EventStreams.Persistence {
         [Test]
         public void Given_a_malformed_supposedly_hash_seeded_stream_when_appended_to_with_first_set_then_it_will_throw() {
             using (var ms = new MemoryStream()) {
-                // This is just some malformed junk that is of sufficient length to produce the behaviour.
-                ms.Write(new byte[20], 0, 20);
-                ms.Write(new byte[4], 0, 4);
-                ms.Write(new byte[] { 0x02 }, 0, 1);
+                // This is just some malformed junk that is of sufficient length and structure to produce the behaviour.
+                ms.Write(new byte[20], 0, 20); // hash
+                ms.Write(new byte[4], 0, 4); // tail record length
+                ms.Write(new byte[] { 0x02 }, 0, 1); // (an incorrect) tail indicator byte
 
                 using (var esw = new EventStreamWriter(ms, new NullEventWriter())) {
-                    Assert.Throws<InvalidOperationException>(() => esw.Write(MockEventStreams.First));
+                    Assert.Throws<DataVerificationPersistenceException>(() => esw.Write(MockEventStreams.First));
                 }
             }
         }

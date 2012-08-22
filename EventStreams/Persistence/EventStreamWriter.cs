@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 namespace EventStreams.Persistence {
     using Core;
     using Serialization.Events;
+    using Resources;
 
     public class EventStreamWriter : IDisposable {
 
@@ -88,7 +89,8 @@ namespace EventStreams.Persistence {
 
                 var numBytes = _hashAlgo.TransformBlock(hash, 0, hash.Length, null, 0);
                 if (numBytes != hash.Length)
-                    throw new InvalidOperationException("The seed hash was injected but the number of bytes written does not match the number of bytes injected.");
+                    throw new DataVerificationPersistenceException(
+                        ExceptionStrings.Seed_hash_injected_but_unexpected_number_of_written_bytes);
             }
 
             public void Header() {

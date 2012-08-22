@@ -117,10 +117,34 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Body_length_indicator_mismatches_actual_body_length" xml:space="preserve">
+    <value>The stream has advanced further than expected whilst reading the body stream; it may be invalid, malformed or corrupt.</value>
+  </data>
   <data name="Data_corruption_with_current_position_only" xml:space="preserve">
     <value>The sequenced SHA-1 hash at byte position {0} is invalid; the event stream has suffered fatal data corruption.</value>
   </data>
   <data name="Data_corruption_with_previous_and_current_position" xml:space="preserve">
     <value>The sequenced SHA-1 hashes at byte positions {0} and {1} are not contiguous; the event stream has suffered fatal data corruption.</value>
+  </data>
+  <data name="Head_and_tail_indicators_mismatch" xml:space="preserve">
+    <value>The head and tail record length values are different; the stream may be invalid, malformed or corrupt.</value>
+  </data>
+  <data name="Head_indicator_byte_not_present" xml:space="preserve">
+    <value>The stream is not positioned at the start of a record as the head indicator byte is not present.</value>
+  </data>
+  <data name="Seed_hash_injected_but_unexpected_number_of_written_bytes" xml:space="preserve">
+    <value>The seed hash was injected but the number of bytes written does not match the number of bytes injected.</value>
+  </data>
+  <data name="Seed_hash_is_invalid_length" xml:space="preserve">
+    <value>The seed hash is not of a valid length; it must be {0} bytes long.</value>
+  </data>
+  <data name="Tail_indicator_byte_not_present" xml:space="preserve">
+    <value>The stream has reached the end of the current record but a tail indicator byte is not present.</value>
+  </data>
+  <data name="Tail_indicator_byte_not_present_while_backtracking" xml:space="preserve">
+    <value>The buffer read from the stream does not end with a tail indicator byte; the stream appears to be invalid, malformed or corrupt.</value>
+  </data>
+  <data name="Unexpected_length_returned_from_stream_read_while_backtracking" xml:space="preserve">
+    <value>An unexpected number of bytes were read from the stream. Expected {0}, but got {1}.</value>
   </data>
 </root>

@@ -4,10 +4,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 
-using EventStreams.Core;
-using EventStreams.Persistence.Serialization.Events;
-
 namespace EventStreams.Persistence {
+    using Core;
+    using Resources;
+    using Serialization.Events;
 
     internal sealed class EventStreamReaderContext : IEventStreamReaderContext {
         private static readonly ConcurrentDictionary<string, Type> _typeCache =
@@ -43,19 +43,19 @@ namespace EventStreams.Persistence {
                 return;
 
             if (hash.Length != ShaHash.ByteLength)
-                throw new InvalidOperationException(
-                    string.Format(
-                        "The seed hash is not of a valid length; it must be {0} bytes long.",
-                        ShaHash.ByteLength));
+                throw new DataVerificationPersistenceException(
+                    string.Format(ExceptionStrings.Seed_hash_is_invalid_length, ShaHash.ByteLength));
 
             var numBytes = _hashAlgo.TransformBlock(hash, 0, hash.Length, null, 0);
             if (numBytes != hash.Length)
-                throw new InvalidOperationException("The seed hash was injected but the number of bytes written does not match the number of bytes injected.");
+                throw new DataVerificationPersistenceException(
+                    ExceptionStrings.Seed_hash_injected_but_unexpected_number_of_written_bytes);
         }
 
         public void HeadIndicator() {
             if (_cryptoBinaryReader.ReadByte() != EventStreamTokens.HeadIndicator)
-                throw new InvalidOperationException("The stream is not positioned at the start of a record as the indicator byte is not present.");
+                throw new DataVerificationPersistenceException(
+                    ExceptionStrings.Head_indicator_byte_not_present);
         }
 
         public void HeadRecordLength() {
@@ -87,7 +87,8 @@ namespace EventStreams.Persistence {
             _tempContainer.Arguments = eventReader.Read(_cryptoStream, _tempContainer.ArgumentsType);
 
             if (positionBefore + bodyLength != _stream.Position)
-                throw new InvalidOperationException("The stream has advanced further than expected whilst reading the body stream; it may be invalid, malformed or corrupt.");
+                throw new DataVerificationPersistenceException(
+                    ExceptionStrings.Body_length_indicator_mismatches_actual_body_length);
         }
 
         public void Hash() {
@@ -106,12 +107,14 @@ namespace EventStreams.Persistence {
         public void TailRecordLength() {
             _tempContainer.TailRecordLength = _rawBinaryReader.ReadInt32();
             if (_tempContainer.TailRecordLength != _tempContainer.HeadRecordLength)
-                throw new InvalidOperationException("The head and tail record length values are different; the stream may be invalid, malformed or corrupt.");
+                throw new DataVerificationPersistenceException(
+                    ExceptionStrings.Head_and_tail_indicators_mismatch);
         }
 
         public void TailIndicator() {
             if (_rawBinaryReader.ReadByte() != EventStreamTokens.TailIndicator)
-                throw new InvalidOperationException("The stream has reached the end of the current record but a tail indicator byte is not present.");
+                throw new DataVerificationPersistenceException(
+                    ExceptionStrings.Tail_indicator_byte_not_present);
         }
 
         private sealed class TemporaryContainer {

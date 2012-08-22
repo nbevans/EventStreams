@@ -10,7 +10,13 @@ namespace EventStreams.Persistence {
     }
 
     [Serializable]
-    public class DataCorruptionPersistenceException : PersistenceException {
+    public class DataVerificationPersistenceException : PersistenceException {
+        public DataVerificationPersistenceException(string message) : base(message) { }
+        public DataVerificationPersistenceException(string message, Exception innerException) : base(message, innerException) { }
+    }
+
+    [Serializable]
+    public class DataCorruptionPersistenceException : DataVerificationPersistenceException {
         public long PreviousHashPosition { get; private set; }
         public long CurrentHashPosition { get; private set; }
 
