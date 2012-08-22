@@ -24,5 +24,14 @@ namespace EventStreams.Persistence.Resources {
                 stream.Write(buffer, 0, buffer.Length);
             }
         }
+
+        public static void Dump(Stream stream, string path, string name) {
+            stream.Position = 0;
+            var filename = Path.Combine(path, name);
+            var buffer = new byte[stream.Length];
+            stream.Read(buffer, 0, buffer.Length);
+            File.WriteAllBytes(filename, buffer);
+            stream.Position = 0;
+        }
     }
 }
