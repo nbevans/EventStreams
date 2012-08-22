@@ -9,6 +9,8 @@ namespace EventStreams.Domain.Events.BankAccount {
         [DataMember]
         public decimal Value { get; private set; }
 
+        public Credited() { }
+
         public Credited(decimal value) {
             Value = value;
         }

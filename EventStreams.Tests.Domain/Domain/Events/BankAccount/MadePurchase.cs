@@ -8,6 +8,8 @@ namespace EventStreams.Domain.Events.BankAccount {
         [DataMember]
         public string Name { get; private set; }
 
+        public MadePurchase() { }
+
         public MadePurchase(decimal value, string name)
             : base(value) {
 

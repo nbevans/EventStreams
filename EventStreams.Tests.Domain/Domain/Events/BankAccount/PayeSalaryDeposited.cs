@@ -8,6 +8,8 @@ namespace EventStreams.Domain.Events.BankAccount {
         [DataMember]
         public string Source { get; private set; }
 
+        public PayeSalaryDeposited() { }
+
         public PayeSalaryDeposited(decimal takeHomeValue, string source)
             : base(takeHomeValue) {
 

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace EventStreams.Persistence {
     using Core;
@@ -25,23 +23,17 @@ namespace EventStreams.Persistence {
             Dispose(false);
         }
 
-        public IEnumerable<IStreamedEvent> Read() {
+        public IStreamedEvent Next() {
             using (var hashAlgo = new ShaHash())
-            using (var cryptoStream = new CryptoStream(new NonClosingStream(_innerStream), hashAlgo, CryptoStreamMode.Read))
-            using (var sr = new StreamReader(cryptoStream, Encoding.UTF8, false, 1)) {
+            using (var cryptoStream = new CryptoStream(new NonClosingStream(_innerStream), hashAlgo, CryptoStreamMode.Read)) {
+                var rc = new ReadContext(_innerStream, cryptoStream, hashAlgo); {
+                    rc.Header();
+                    rc.Body(_eventReader);
+                    rc.Footer();
 
-                var id = sr.ReadLine();
-                var ts = sr.ReadLine();
-                var ty = sr.ReadLine(); // streamreader is broken, its buffering reads too far ahead and screws up the hash block transform.
-                var ag = sr.ReadLine();
-
-                var pos = _innerStream.Position;
-
-                cryptoStream.FlushFinalBlock();
-                var hash = Convert.ToBase64String(hashAlgo.Hash);
+                    return rc.Event;
+                }
             }
-
-            return Enumerable.Empty<IStreamedEvent>();
         }
 
         protected virtual void Dispose(bool disposing) {
@@ -57,11 +49,79 @@ namespace EventStreams.Persistence {
 
         private sealed class ReadContext {
             private readonly Stream _stream;
+            private readonly CryptoStream _cryptoStream;
+            private readonly HashAlgorithm _hashAlgo;
+            private readonly BinaryReader _cryptoBinaryReader;
+            private readonly BinaryReader _rawBinaryReader;
+            private readonly TemporaryContainer _tempContainer;
 
-            public ReadContext(Stream stream) {
+            public IStreamedEvent Event { get { return Build(); } }
+            public byte[] Hash { get; private set; }
+
+            public ReadContext(Stream stream, CryptoStream cryptoStream, HashAlgorithm hashAlgo) {
                 _stream = stream;
+                _cryptoStream = cryptoStream;
+                _hashAlgo = hashAlgo;
+
+                _rawBinaryReader = stream.ForBinaryReading();
+                _cryptoBinaryReader = cryptoStream.ForBinaryReading();
+                _tempContainer = new TemporaryContainer();
             }
 
+            public void Header() {
+                if (_cryptoBinaryReader.ReadByte() != EventStreamTokens.RecordStartIndicator)
+                    throw new InvalidOperationException("The stream is not positioned at the start of a record as the indicator byte is not present.");
+
+                _tempContainer.HeadRecordLength = _cryptoBinaryReader.ReadInt32();
+                _tempContainer.Id = new Guid(_cryptoBinaryReader.ReadBytes(16));
+                _tempContainer.Timestamp = new DateTime(_cryptoBinaryReader.ReadInt64(), DateTimeKind.Utc);
+                _tempContainer.ArgumentsType = Type.GetType(_cryptoBinaryReader.ReadString(), true);
+            }
+
+            public void Body(IEventReader eventReader) {
+                Debug.Assert(_tempContainer.ArgumentsType != null);
+
+                var bodyLength = _cryptoBinaryReader.ReadInt32();
+                var positionBefore = _stream.Position;
+
+                _tempContainer.Arguments = eventReader.Read(_cryptoStream, _tempContainer.ArgumentsType);
+
+                if (positionBefore + bodyLength != _stream.Position)
+                    throw new InvalidOperationException("The stream has advanced further than expected whilst reading the body stream; it may be invalid, malformed or corrupt.");
+            }
+
+            public void Footer() {
+                FinaliseHash();
+
+                // Must not use _cryptoBinaryReader or _cryptoStream now that the hash has been finalised.
+                // Use _rawBinaryReader from this point on.
+
+                _tempContainer.Hash = _rawBinaryReader.ReadBytes(ShaHash.ByteLength);
+                _tempContainer.TailRecordLength = _rawBinaryReader.ReadInt32();
+
+                if (_rawBinaryReader.ReadByte() != EventStreamTokens.RecordEndIndicator)
+                    throw new InvalidOperationException("The stream has reached the end of the current record but an indicator byte is not present.");
+            }
+
+            private void FinaliseHash() {
+                _cryptoStream.FlushFinalBlock();
+                Hash = _hashAlgo.Hash;
+                Debug.Assert(Hash.Length == ShaHash.ByteLength);
+            }
+
+            private IStreamedEvent Build() {
+                return new StreamedEvent(_tempContainer.Id, _tempContainer.Timestamp, _tempContainer.Arguments);
+            }
+
+            private sealed class TemporaryContainer {
+                public int HeadRecordLength; // verify this turns out to be correct i.e. compare before and after stream positions
+                public Guid Id;
+                public DateTime Timestamp;
+                public Type ArgumentsType;
+                public EventArgs Arguments;
+                public byte[] Hash;
+                public int TailRecordLength;
+            }
         }
     }
 }

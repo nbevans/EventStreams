@@ -8,6 +8,8 @@ namespace EventStreams.Domain.Events.BankAccount {
         [DataMember]
         public decimal Value { get; private set; }
 
+        public Debited() { }
+
         public Debited(decimal value) {
             Value = value;
         }

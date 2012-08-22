@@ -63,6 +63,7 @@
     <Compile Include="Persistence\Serialization\Events\IEventWriter.cs" />
     <Compile Include="Persistence\Serialization\Events\JsonEventWriter.cs" />
     <Compile Include="Persistence\ShaHash.cs" />
+    <Compile Include="Persistence\StreamExtensions.cs" />
     <Compile Include="Projection\IProjector.cs" />
     <Compile Include="Projection\Projector.cs" />
     <Compile Include="Projection\Transformation\EventSequenceTransformer.cs" />

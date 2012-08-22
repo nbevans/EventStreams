@@ -37,7 +37,7 @@ namespace EventStreams.Persistence {
             foreach (var se in streamedEvents) {
                 using (var hashAlgo = new ShaHash())
                 using (var cryptoStream = new CryptoStream(new NonClosingStream(_innerStream), hashAlgo, CryptoStreamMode.Write)) {
-                    var wc = new WriteContext(cryptoStream, hashAlgo, se); {
+                    var wc = new WriteContext(_innerStream, cryptoStream, hashAlgo, se); {
                         wc.Seed(previousHash);
                         wc.Body(_eventWriter);
                         wc.Header();
@@ -62,21 +62,26 @@ namespace EventStreams.Persistence {
         }
 
         private sealed class WriteContext {
+            private readonly Stream _stream;
             private readonly CryptoStream _cryptoStream;
             private readonly HashAlgorithm _hashAlgo;
             private readonly IStreamedEvent _streamedEvent;
-            private readonly BinaryWriter _binaryWriter;
+            private readonly BinaryWriter _cryptoBinaryWriter;
+            private readonly BinaryWriter _rawBinaryWriter;
             private readonly string _argumentsType;
             private byte[] _bodyBuffer;
             private int _bodyLength;
 
             public byte[] Hash { get; private set; }
 
-            public WriteContext(CryptoStream cryptoStream, HashAlgorithm hashAlgo, IStreamedEvent streamedEvent) {
+            public WriteContext(Stream stream, CryptoStream cryptoStream, HashAlgorithm hashAlgo, IStreamedEvent streamedEvent) {
+                _stream = stream;
                 _cryptoStream = cryptoStream;
                 _hashAlgo = hashAlgo;
-                _binaryWriter = new BinaryWriter(cryptoStream, Encoding.UTF8);
                 _streamedEvent = streamedEvent;
+
+                _rawBinaryWriter = stream.ForBinaryWriting();
+                _cryptoBinaryWriter = cryptoStream.ForBinaryWriting();
                 _argumentsType = _streamedEvent.Arguments.GetType().AssemblyQualifiedName;
             }
 
@@ -92,11 +97,11 @@ namespace EventStreams.Persistence {
             public void Header() {
                 Debug.Assert(_bodyBuffer != null);
 
-                _binaryWriter.Write(EventStreamTokens.RecordStartIndicator);
-                _binaryWriter.Write(CalculateRecordLength());
-                _binaryWriter.Write(_streamedEvent.Id.ToByteArray());
-                _binaryWriter.Write(_streamedEvent.Timestamp.Ticks);
-                _binaryWriter.Write(_argumentsType);
+                _cryptoBinaryWriter.Write(EventStreamTokens.RecordStartIndicator);
+                _cryptoBinaryWriter.Write(CalculateRecordLength());
+                _cryptoBinaryWriter.Write(_streamedEvent.Id.ToByteArray());
+                _cryptoBinaryWriter.Write(_streamedEvent.Timestamp.Ticks);
+                _cryptoBinaryWriter.Write(_argumentsType);
             }
 
             public void Body(IEventWriter eventWriter) {
@@ -112,16 +117,19 @@ namespace EventStreams.Persistence {
             public void Body() {
                 Debug.Assert(_bodyBuffer != null);
 
-                _binaryWriter.Write(_bodyLength);
-                _binaryWriter.Write(_bodyBuffer, 0, _bodyLength);
+                _cryptoBinaryWriter.Write(_bodyLength);
+                _cryptoBinaryWriter.Write(_bodyBuffer, 0, _bodyLength);
             }
 
             public void Footer() {
                 FinaliseHash();
 
-                _binaryWriter.Write(Hash);
-                _binaryWriter.Write(CalculateRecordLength());
-                _binaryWriter.Write(EventStreamTokens.RecordEndIndicator);
+                // Must not use _cryptoBinaryReader or _cryptoStream now that the hash has been finalised.
+                // Use _rawBinaryReader from this point on.
+
+                _rawBinaryWriter.Write(Hash);
+                _rawBinaryWriter.Write(CalculateRecordLength());
+                _rawBinaryWriter.Write(EventStreamTokens.RecordEndIndicator);
             }
 
             private int CalculateRecordLength() {

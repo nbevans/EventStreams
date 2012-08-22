@@ -12,18 +12,25 @@ namespace EventStreams.Persistence {
     internal class EventStreamReaderTests {
 
         [Test]
-        public void Given_first_set_when_read_back_then_output_is_as_expected() {
+        public void Given_first_set_when_read_back_then_object_model_is_as_expected() {
             using (var ms = new MemoryStream()) {
                 ResourceProvider.AppendTo(ms, "First.e");
                 ms.Position = 0;
 
                 using (var esr = new EventStreamReader(ms, new NullEventReader())) {
-                    var items = esr.Read().ToArray();
-                    var first = items.ElementAt(0);
-                    var second = items.ElementAt(1);
+                    var firstExpected = MockEventStreams.First.ElementAt(0);
+                    var firstActual = esr.Next();
 
+                    Assert.AreEqual(firstActual.Id, firstExpected.Id);
+                    Assert.AreEqual(firstActual.Timestamp, firstExpected.Timestamp);
+                    Assert.AreEqual(firstActual.Arguments.GetType(), firstExpected.Arguments.GetType());
 
-                    //Assert.That(sr.ReadToEnd(), Is.EqualTo(Strings.FirstEvents));
+                    var secondExpected = MockEventStreams.First.ElementAt(1);
+                    var secondActual = esr.Next();
+
+                    Assert.AreEqual(secondActual.Id, secondExpected.Id);
+                    Assert.AreEqual(secondActual.Timestamp, secondExpected.Timestamp);
+                    Assert.AreEqual(secondActual.Arguments.GetType(), secondExpected.Arguments.GetType());
                 }
             }
         }
