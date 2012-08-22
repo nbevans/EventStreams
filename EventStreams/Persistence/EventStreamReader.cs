@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 
 namespace EventStreams.Persistence {
@@ -24,12 +25,22 @@ namespace EventStreams.Persistence {
         }
 
         public IStreamedEvent Next() {
+            var previousHash =
+                new EventStreamBacktracker(_innerStream)
+                    .HashOrNull();
+
             using (var hashAlgo = new ShaHash())
             using (var cryptoStream = new CryptoStream(new NonClosingStream(_innerStream), hashAlgo, CryptoStreamMode.Read)) {
                 var rc = new ReadContext(_innerStream, cryptoStream, hashAlgo); {
+
+                    rc.Seed(previousHash);
                     rc.Header();
                     rc.Body(_eventReader);
                     rc.Footer();
+
+                    previousHash = rc.StreamHash;
+                    if (!previousHash.SequenceEqual(rc.CurrentHash))
+                        throw new InvalidOperationException("Hash mismatch.");
 
                     return rc.Event;
                 }
@@ -56,7 +67,8 @@ namespace EventStreams.Persistence {
             private readonly TemporaryContainer _tempContainer;
 
             public IStreamedEvent Event { get { return _tempContainer.Build(); } }
-            public byte[] Hash { get; private set; }
+            public byte[] StreamHash { get; private set; }
+            public byte[] CurrentHash { get { return _tempContainer.Hash; } }
 
             public ReadContext(Stream stream, CryptoStream cryptoStream, HashAlgorithm hashAlgo) {
                 _stream = stream;
@@ -66,6 +78,15 @@ namespace EventStreams.Persistence {
                 _rawBinaryReader = stream.ForBinaryReading();
                 _cryptoBinaryReader = cryptoStream.ForBinaryReading();
                 _tempContainer = new TemporaryContainer();
+            }
+
+            public void Seed(byte[] hash) {
+                if (hash == null || hash.Length == 0)
+                    return;
+
+                var numBytes = _hashAlgo.TransformBlock(hash, 0, hash.Length, null, 0);
+                if (numBytes != hash.Length)
+                    throw new InvalidOperationException("The seed hash was injected but the number of bytes written does not match the number of bytes injected.");
             }
 
             public void Header() {
@@ -108,8 +129,8 @@ namespace EventStreams.Persistence {
 
             private void FinaliseHash() {
                 _cryptoStream.FlushFinalBlock();
-                Hash = _hashAlgo.Hash;
-                Debug.Assert(Hash.Length == ShaHash.ByteLength);
+                StreamHash = _hashAlgo.Hash;
+                Debug.Assert(StreamHash.Length == ShaHash.ByteLength);
             }
 
             private sealed class TemporaryContainer {
