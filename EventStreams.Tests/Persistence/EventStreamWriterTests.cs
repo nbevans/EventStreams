@@ -1,35 +1,20 @@
 ﻿using System;
 using System.IO;
-using System.Text;
-
-using Moq;
 
 using NUnit.Framework;
 
 namespace EventStreams.Persistence {
-    using Core;
     using Serialization.Events;
-    using Domain.Events.BankAccount;
     using Resources;
 
     [TestFixture]
     internal class EventStreamWriterTests {
 
-        private readonly IStreamedEvent[] _first = new[] {
-            Mock.Of<IStreamedEvent>(f => f.Id == new Guid("20F65C10-D7DE-43B0-A527-4CCC43496BFE") && f.Timestamp == DateTime.MinValue && f.Arguments == new PayeSalaryDeposited(100, "Acme Corp")),
-            Mock.Of<IStreamedEvent>(f => f.Id == new Guid("685F85DA-07AC-4EB3-B7F5-F52BCD543E84") && f.Timestamp == DateTime.MinValue && f.Arguments == new MadePurchase(45, "Wine"))
-        };
-
-        private readonly IStreamedEvent[] _second = new[] {
-            Mock.Of<IStreamedEvent>(f => f.Id == new Guid("1012E630-8325-47D4-9393-DCD7F5940E09") && f.Timestamp == DateTime.MinValue && f.Arguments == new PayeSalaryDeposited(150, "Acme Corp")),
-            Mock.Of<IStreamedEvent>(f => f.Id == new Guid("E19772BA-6DAE-408E-9F09-8561889C8154") && f.Timestamp == DateTime.MinValue && f.Arguments == new MadePurchase(25, "Cheese"))
-        };
-
         [Test]
         public void Given_first_set_when_read_back_then_output_is_as_expected() {
             using (var ms = new MemoryStream()) {
                 using (var esw = new EventStreamWriter(ms, new NullEventWriter())) {
-                    esw.Write(_first);
+                    esw.Write(MockEventStreams.First);
                     ms.Position = 0;
                     using (var sr = new StreamReader(ms)) {
                         var actual = sr.ReadToEnd();
@@ -44,8 +29,8 @@ namespace EventStreams.Persistence {
         public void Given_first_set_when_appended_to_with_second_set_then_hashes_continue_from_previous_hash() {
             using (var ms = new MemoryStream()) {
                 using (var esw = new EventStreamWriter(ms, new NullEventWriter())) {
-                    esw.Write(_first);
-                    esw.Write(_second);
+                    esw.Write(MockEventStreams.First);
+                    esw.Write(MockEventStreams.Second);
                     ms.Position = 0;
 
                     using (var sr = new StreamReader(ms)) {
@@ -63,7 +48,7 @@ namespace EventStreams.Persistence {
                 ResourceProvider.AppendTo(ms, "First.e");
 
                 using (var esw = new EventStreamWriter(ms, new NullEventWriter())) {
-                    esw.Write(_first);
+                    esw.Write(MockEventStreams.First);
                     ms.Position = 0;
 
                     using (var sr = new StreamReader(ms)) {
@@ -84,7 +69,7 @@ namespace EventStreams.Persistence {
                 ms.Write(new byte[] { 0x02 }, 0, 1);
 
                 using (var esw = new EventStreamWriter(ms, new NullEventWriter())) {
-                    Assert.Throws<InvalidOperationException>(() => esw.Write(_first));
+                    Assert.Throws<InvalidOperationException>(() => esw.Write(MockEventStreams.First));
                 }
             }
         }
