@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 
 namespace EventStreams.Persistence {
@@ -12,12 +10,18 @@ namespace EventStreams.Persistence {
 
         private readonly Stream _innerStream;
         private readonly IEventReader _eventReader;
+        private readonly Action<EventStreamReaderState> _beforeStateChange, _afterStateChange;
 
-        public EventStreamReader(Stream innerStream, IEventReader eventReader) {
+        public EventStreamReader(Stream innerStream, IEventReader eventReader)
+            : this(innerStream, eventReader, null, null) { }
+
+        public EventStreamReader(Stream innerStream, IEventReader eventReader, Action<EventStreamReaderState> beforeStateChange, Action<EventStreamReaderState> afterStateChange) {
             if (innerStream == null) throw new ArgumentNullException("innerStream");
             if (eventReader == null) throw new ArgumentNullException("eventReader");
             _innerStream = innerStream;
             _eventReader = eventReader;
+            _beforeStateChange = beforeStateChange;
+            _afterStateChange = afterStateChange;
         }
 
         ~EventStreamReader() {
@@ -32,22 +36,31 @@ namespace EventStreams.Persistence {
 
             using (var hashAlgo = new ShaHash())
             using (var cryptoStream = new CryptoStream(_innerStream.PreventClosure(), hashAlgo, CryptoStreamMode.Read)) {
-                var rc = new ReadContext(_innerStream, cryptoStream, hashAlgo); {
-                    rc.Seed(previousHash);
-                    rc.Header();
-                    rc.Body(_eventReader);
-                    rc.Footer();
+                var rc =
+                    new StatefulReadContext(
+                        new EventStreamReaderContext(_innerStream, cryptoStream, hashAlgo, previousHash),
+                        _beforeStateChange,
+                        _afterStateChange);
 
-                    previousHash = rc.StreamHash;
+                rc.HeadIndicator();
+                rc.HeadRecordLength();
+                rc.Id();
+                rc.Timestamp();
+                rc.ArgumentsType();
+                rc.Body(_eventReader);
+                rc.Hash();
+                rc.TailRecordLength();
+                rc.TailIndicator();
 
-                    if (ShaHash.AreNotEqual(previousHash, rc.CurrentHash))
-                        throw new InvalidOperationException(
-                            string.Format(
-                                "The sequenced SHA-1 hashes at byte positions {0} and {1} are not contiguous; the event stream has suffered fatal corruption.",
-                                previousHashPosition, rc.CurrentHashPosition));
+                previousHash = rc.StreamHash;
 
-                    return rc.Event;
-                }
+                if (ShaHash.AreNotEqual(previousHash, rc.CurrentHash))
+                    if (previousHashPosition > 0)
+                        throw new DataCorruptionPersistenceException(previousHashPosition, rc.CurrentHashPosition);
+                    else
+                        throw new DataCorruptionPersistenceException(rc.CurrentHashPosition);
+
+                return rc.Event;
             }
         }
 
@@ -62,96 +75,101 @@ namespace EventStreams.Persistence {
             Dispose(true);
         }
 
-        private sealed class ReadContext {
-            private readonly Stream _stream;
-            private readonly CryptoStream _cryptoStream;
-            private readonly HashAlgorithm _hashAlgo;
-            private readonly BinaryReader _cryptoBinaryReader;
-            private readonly BinaryReader _rawBinaryReader;
-            private readonly TemporaryContainer _tempContainer;
+        private sealed class StatefulReadContext : IEventStreamReaderContext {
+            private readonly IEventStreamReaderContext _innerReader;
+            private readonly Action<EventStreamReaderState> _beforeStateChange, _afterStateChange;
 
-            public IStreamedEvent Event { get { return _tempContainer.Build(); } }
-            public byte[] StreamHash { get; private set; }
-            public byte[] CurrentHash { get { return _tempContainer.Hash; } }
-            public long CurrentHashPosition { get; private set; }
-
-            public ReadContext(Stream stream, CryptoStream cryptoStream, HashAlgorithm hashAlgo) {
-                _stream = stream;
-                _cryptoStream = cryptoStream;
-                _hashAlgo = hashAlgo;
-
-                _rawBinaryReader = stream.ForBinaryReading();
-                _cryptoBinaryReader = cryptoStream.ForBinaryReading();
-                _tempContainer = new TemporaryContainer();
+            public StatefulReadContext(IEventStreamReaderContext innerReader, Action<EventStreamReaderState> beforeStateChange, Action<EventStreamReaderState> afterStateChange) {
+                _innerReader = innerReader;
+                _beforeStateChange = beforeStateChange;
+                _afterStateChange = afterStateChange;
             }
 
-            public void Seed(byte[] hash) {
-                if (hash == null || hash.Length == 0)
-                    return;
-
-                var numBytes = _hashAlgo.TransformBlock(hash, 0, hash.Length, null, 0);
-                if (numBytes != hash.Length)
-                    throw new InvalidOperationException("The seed hash was injected but the number of bytes written does not match the number of bytes injected.");
+            private void Before(EventStreamReaderState state) {
+                if (_beforeStateChange != null)
+                    _beforeStateChange(state);
             }
 
-            public void Header() {
-                if (_cryptoBinaryReader.ReadByte() != EventStreamTokens.RecordStartIndicator)
-                    throw new InvalidOperationException("The stream is not positioned at the start of a record as the indicator byte is not present.");
+            private void After(EventStreamReaderState state) {
+                if (_afterStateChange != null)
+                    _afterStateChange(state);
+            }
 
-                _tempContainer.HeadRecordLength = _cryptoBinaryReader.ReadInt32();
-                _tempContainer.Id = new Guid(_cryptoBinaryReader.ReadBytes(16));
-                _tempContainer.Timestamp = new DateTime(_cryptoBinaryReader.ReadInt64(), DateTimeKind.Utc);
-                _tempContainer.ArgumentsType = Type.GetType(_cryptoBinaryReader.ReadString(), true);
+            public IStreamedEvent Event { get { return _innerReader.Event; } }
+            public byte[] StreamHash { get { return _innerReader.StreamHash; } }
+            public byte[] CurrentHash { get { return _innerReader.CurrentHash; } }
+            public long CurrentHashPosition { get { return _innerReader.CurrentHashPosition; } }
+
+            public void HeadIndicator() {
+                Before(EventStreamReaderState.HeadIndicator);
+                {
+                    _innerReader.HeadIndicator();
+                }
+                After(EventStreamReaderState.HeadIndicator);
+            }
+
+            public void HeadRecordLength() {
+                Before(EventStreamReaderState.HeadRecordLength);
+                {
+                    _innerReader.HeadRecordLength();
+                }
+                After(EventStreamReaderState.HeadRecordLength);
+            }
+
+            public void Id() {
+                Before(EventStreamReaderState.Id);
+                {
+                    _innerReader.Id();
+                }
+                After(EventStreamReaderState.Id);
+            }
+
+            public void Timestamp() {
+                Before(EventStreamReaderState.Timestamp);
+                {
+                    _innerReader.Timestamp();
+                }
+                After(EventStreamReaderState.Timestamp);
+            }
+
+            public void ArgumentsType() {
+                Before(EventStreamReaderState.ArgumentsType);
+                {
+                    _innerReader.ArgumentsType();
+                }
+                After(EventStreamReaderState.ArgumentsType);
             }
 
             public void Body(IEventReader eventReader) {
-                Debug.Assert(_tempContainer.ArgumentsType != null);
-
-                var bodyLength = _cryptoBinaryReader.ReadInt32();
-                var positionBefore = _stream.Position;
-
-                _tempContainer.Arguments = eventReader.Read(_cryptoStream, _tempContainer.ArgumentsType);
-
-                if (positionBefore + bodyLength != _stream.Position)
-                    throw new InvalidOperationException("The stream has advanced further than expected whilst reading the body stream; it may be invalid, malformed or corrupt.");
-            }
-
-            public void Footer() {
-                FinaliseHash();
-
-                // Must not use _cryptoBinaryReader or _cryptoStream now that the hash has been finalised.
-                // Use _rawBinaryReader from this point on.
-
-                CurrentHashPosition = _stream.Position;
-
-                _tempContainer.Hash = _rawBinaryReader.ReadBytes(ShaHash.ByteLength);
-                _tempContainer.TailRecordLength = _rawBinaryReader.ReadInt32();
-
-                if (_rawBinaryReader.ReadByte() != EventStreamTokens.RecordEndIndicator)
-                    throw new InvalidOperationException("The stream has reached the end of the current record but an indicator byte is not present.");
-
-                if (_tempContainer.HeadRecordLength != _tempContainer.TailRecordLength)
-                    throw new InvalidOperationException("The head and tail record length indicators are different; the stream may be invalid, malformed or corrupt.");
-            }
-
-            private void FinaliseHash() {
-                _cryptoStream.FlushFinalBlock();
-                StreamHash = _hashAlgo.Hash;
-                Debug.Assert(StreamHash.Length == ShaHash.ByteLength);
-            }
-
-            private sealed class TemporaryContainer {
-                public int HeadRecordLength; // verify this turns out to be correct i.e. compare before and after stream positions
-                public Guid Id;
-                public DateTime Timestamp;
-                public Type ArgumentsType;
-                public EventArgs Arguments;
-                public byte[] Hash;
-                public int TailRecordLength;
-
-                public IStreamedEvent Build() {
-                    return new StreamedEvent(Id, Timestamp, Arguments);
+                Before(EventStreamReaderState.Body);
+                {
+                    _innerReader.Body(eventReader);
                 }
+                After(EventStreamReaderState.Body);
+            }
+
+            public void Hash() {
+                Before(EventStreamReaderState.Hash);
+                {
+                    _innerReader.Hash();
+                }
+                After(EventStreamReaderState.Hash);
+            }
+
+            public void TailRecordLength() {
+                Before(EventStreamReaderState.TailRecordLength);
+                {
+                    _innerReader.TailRecordLength();
+                }
+                After(EventStreamReaderState.TailRecordLength);
+            }
+
+            public void TailIndicator() {
+                Before(EventStreamReaderState.TailIndicator);
+                {
+                    _innerReader.TailIndicator();
+                }
+                After(EventStreamReaderState.TailIndicator);
             }
         }
     }

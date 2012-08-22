@@ -44,7 +44,7 @@ namespace EventStreams.Persistence {
                 _innerStream.Position += sizeof(int);
 
                 // Do a quick sanity check to make sure there is a record-end-indicator where we would expect.
-                if (_innerStream.ReadByte() != EventStreamTokens.RecordEndIndicator)
+                if (_innerStream.ReadByte() != EventStreamTokens.TailIndicator)
                     throw new InvalidOperationException(
                         "The buffer read from the stream does not end with a record suffix; " +
                         "the stream appears to be invalid, malformed or corrupt.");

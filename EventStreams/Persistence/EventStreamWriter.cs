@@ -94,7 +94,7 @@ namespace EventStreams.Persistence {
             public void Header() {
                 Debug.Assert(_bodyBuffer != null);
 
-                _cryptoBinaryWriter.Write(EventStreamTokens.RecordStartIndicator);
+                _cryptoBinaryWriter.Write(EventStreamTokens.HeadIndicator);
                 _cryptoBinaryWriter.Write(CalculateRecordLength());
                 _cryptoBinaryWriter.Write(_streamedEvent.Id.ToByteArray());
                 _cryptoBinaryWriter.Write(_streamedEvent.Timestamp.Ticks);
@@ -125,7 +125,7 @@ namespace EventStreams.Persistence {
 
                 _rawBinaryWriter.Write(StreamHash);
                 _rawBinaryWriter.Write(CalculateRecordLength());
-                _rawBinaryWriter.Write(EventStreamTokens.RecordEndIndicator);
+                _rawBinaryWriter.Write(EventStreamTokens.TailIndicator);
             }
 
             private int CalculateRecordLength() {

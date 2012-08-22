@@ -34,5 +34,31 @@ namespace EventStreams.Persistence {
                 }
             }
         }
+
+        [Test]
+        public void Given_first_and_second_set_when_artificially_corrupted_and_read_back_then_it_will_throw() {
+            using (var ms = new MemoryStream()) {
+                ResourceProvider.AppendTo(ms, "First_and_second.e");
+                ms.Position = 0;
+
+                var i = 0;
+                Action<EventStreamReaderState> corruptor = s => {
+                    if (s == EventStreamReaderState.HeadIndicator)
+                        i++;
+
+                    if (s == EventStreamReaderState.Hash && i == 4) {
+                        ms.Write(new byte[] { 0, 0, 0 }, 0, 3);
+                        ms.Position -= 3;
+                    }
+                };
+
+                using (var esr = new EventStreamReader(ms, new NullEventReader(), corruptor, null)) {
+                    Assert.DoesNotThrow(() => esr.Next());
+                    Assert.DoesNotThrow(() => esr.Next());
+                    Assert.DoesNotThrow(() => esr.Next());
+                    Assert.Throws<DataCorruptionPersistenceException>(() => esr.Next());
+                }
+            }
+        }
     }
 }
