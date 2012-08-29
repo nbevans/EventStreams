@@ -81,16 +81,5 @@ namespace EventStreams.Persistence {
                 }
             }
         }
-
-        [Test]
-        public void Given_first_set_when_artificially_truncated_and_appended_to_with_second_set_then_it_will_throw_on_write() {
-            using (var ms = new MemoryStream()) {
-                ResourceProvider.AppendTo(ms, "First.e", 7 /* magic sauce to truncate by an arbitrary 7 bytes */);
-                
-                using (var esw = new EventStreamWriter(ms, new NullEventWriter())) {
-                    Assert.Throws<TruncationCorruptionPersistenceException>(() => esw.Write(MockEventStreams.Second));
-                }
-            }
-        }
     }
 }
