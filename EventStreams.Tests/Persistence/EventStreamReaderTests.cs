@@ -47,16 +47,20 @@ namespace EventStreams.Persistence {
                         i++;
 
                     if (s == EventStreamReaderState.Hash && i == 4) {
+                        // ReSharper disable AccessToDisposedClosure
                         ms.Write(new byte[] { 0, 0, 0 }, 0, 3);
                         ms.Position -= 3;
+                        // ReSharper restore AccessToDisposedClosure
                     }
                 };
 
                 using (var esr = new EventStreamReader(ms, new NullEventReader(), corruptor, null)) {
+                    // ReSharper disable AccessToDisposedClosure
                     Assert.DoesNotThrow(() => esr.Next());
                     Assert.DoesNotThrow(() => esr.Next());
                     Assert.DoesNotThrow(() => esr.Next());
                     Assert.Throws<DataCorruptionPersistenceException>(() => esr.Next());
+                    // ReSharper restore AccessToDisposedClosure
                 }
             }
         }
