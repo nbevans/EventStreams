@@ -15,6 +15,8 @@ namespace EventStreams.Persistence.Serialization.Events {
                 OmitXmlDeclaration = true
             };
 
+        public IEventReader Opposite { get { throw new NotImplementedException(); } }
+
         public void Write(Stream innerStream, EventArgs args) {
             if (innerStream == null) throw new ArgumentNullException("innerStream");
             if (args == null) throw new ArgumentNullException("args");

@@ -39,9 +39,12 @@ namespace EventStreams.Persistence {
         public long Offset { get; private set; }
 
         public TruncationCorruptionPersistenceException(long offset)
-            : base(string.Format(ExceptionStrings.Truncation_corruption, offset)) {
+            : this(offset, null) { }
 
-                Offset = offset;
+        public TruncationCorruptionPersistenceException(long offset, Exception innerException)
+            : base(string.Format(ExceptionStrings.Truncation_corruption, offset), innerException) {
+
+            Offset = offset;
         }
     }
 }

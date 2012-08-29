@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 
 namespace EventStreams.Persistence.Serialization.Events {
     internal sealed class JsonEventReader : IEventReader {
+        public IEventWriter Opposite { get { return new JsonEventWriter();} }
+
         public EventArgs Read(Stream innerStream, Type concreteType) {
             if (innerStream == null) throw new ArgumentNullException("innerStream");
             if (concreteType == null) throw new ArgumentNullException("concreteType");

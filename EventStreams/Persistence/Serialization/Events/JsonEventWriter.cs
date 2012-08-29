@@ -6,7 +6,10 @@ using Newtonsoft.Json;
 
 namespace EventStreams.Persistence.Serialization.Events {
     internal sealed class JsonEventWriter : IEventWriter {
-        public void Write(Stream innerStream, EventArgs args) {
+        public IEventReader Opposite { get { return new JsonEventReader(); } }
+
+        public void Write(Stream innerStream, EventArgs args)
+        {
             if (innerStream == null) throw new ArgumentNullException("innerStream");
             if (args == null) throw new ArgumentNullException("args");
 

@@ -28,7 +28,7 @@ namespace EventStreams.Persistence {
         public void Given_first_set_when_written_to_disk_and_when_read_back_in_then_content_is_as_expected() {
             var arId = new Guid("E34900D6-6C63-4066-988F-DCEC25B482FA");
             var ar = Mock.Of<IAggregateRoot>(f => f.Identity == arId);
-            var fspe = new FileSystemPersistEvents(new NullEventWriter()); {
+            var fspe = new FileSystemPersistEvents(EventReaderWriterPair.Null); {
                 var filename = fspe.GetFileName(ar);
 
                 File.Delete(filename);
@@ -45,7 +45,7 @@ namespace EventStreams.Persistence {
         public void Given_first_set_and_second_set_when_written_to_disk_individually_and_when_read_back_in_then_content_is_as_expected() {
             var arId = new Guid("E34900D6-6C63-4066-988F-DCEC25B482FA");
             var ar = Mock.Of<IAggregateRoot>(f => f.Identity == arId);
-            var fspe = new FileSystemPersistEvents(new NullEventWriter()); {
+            var fspe = new FileSystemPersistEvents(EventReaderWriterPair.Null); {
                 var filename = fspe.GetFileName(ar);
 
                 File.Delete(filename);

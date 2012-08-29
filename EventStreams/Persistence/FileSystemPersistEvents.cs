@@ -10,13 +10,14 @@ namespace EventStreams.Persistence {
 
     public class FileSystemPersistEvents : IPersistEvents {
 
-        private readonly IEventWriter _eventWriter;
+        private readonly IEventReaderWriterPair _eventReaderWriterPair;
 
         public string RootPath { get; set; }
 
-        public FileSystemPersistEvents(IEventWriter eventWriter) {
-            if (eventWriter == null) throw new ArgumentNullException("eventWriter");
-            _eventWriter = eventWriter;
+        public FileSystemPersistEvents(IEventReaderWriterPair eventReaderWriterPair) {
+            if (eventReaderWriterPair == null) throw new ArgumentNullException("eventReaderWriterPair");
+
+            _eventReaderWriterPair = eventReaderWriterPair;
 
             RootPath = AppDomain.CurrentDomain.BaseDirectory;
         }
@@ -25,7 +26,7 @@ namespace EventStreams.Persistence {
             using (var fs = new FileStream(GetFileName(aggregateRoot), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.SequentialScan)) {
                 fs.Position = fs.Length;
 
-                using (var esw = new EventStreamWriter(fs, _eventWriter))
+                using (var esw = new EventStreamWriter(fs, _eventReaderWriterPair.Writer))
                     esw.Write(eventsToAppend);
             }
         }

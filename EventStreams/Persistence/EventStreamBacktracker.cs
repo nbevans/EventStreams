@@ -4,7 +4,10 @@ using System.IO;
 namespace EventStreams.Persistence {
     using Resources;
 
-    internal class EventStreamBacktracker {
+    internal class EventStreamBacktracker : IEventStreamBacktracker {
+
+        public static readonly Func<Stream, IEventStreamBacktracker> Factory =
+            innerStream => new EventStreamBacktracker(innerStream);
 
         private readonly Stream _innerStream;
 

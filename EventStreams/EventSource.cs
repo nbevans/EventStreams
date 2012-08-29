@@ -16,7 +16,7 @@ namespace EventStreams {
             new Projector();
 
         private readonly IPersistEvents _persistEvents =
-            new FileSystemPersistEvents(new JsonEventWriter());
+            new FileSystemPersistEvents(EventReaderWriterPair.Json);
 
         public TAggregateRoot Create<TAggregateRoot>() where TAggregateRoot : class, IAggregateRoot, new() {
             return Observe(new TAggregateRoot());
