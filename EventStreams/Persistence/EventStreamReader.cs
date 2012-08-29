@@ -42,18 +42,23 @@ namespace EventStreams.Persistence {
                         _beforeStateChange,
                         _afterStateChange);
 
-                rc.HeadIndicator();
-                rc.HeadRecordLength();
-                rc.Id();
-                rc.Timestamp();
-                rc.ArgumentsType();
-                rc.Body(_eventReader);
-                rc.Hash();
-                rc.TailRecordLength();
-                rc.TailIndicator();
+                var recordOffset = _innerStream.Position;
+                try {
+                    rc.HeadIndicator();
+                    rc.HeadRecordLength();
+                    rc.Id();
+                    rc.Timestamp();
+                    rc.ArgumentsType();
+                    rc.Body(_eventReader);
+                    rc.Hash();
+                    rc.TailRecordLength();
+                    rc.TailIndicator();
+
+                } catch (EndOfStreamException) {
+                    throw new TruncationCorruptionPersistenceException(recordOffset);
+                }
 
                 previousHash = rc.StreamHash;
-
                 if (ShaHash.AreNotEqual(previousHash, rc.CurrentHash))
                     if (previousHashPosition > 0)
                         throw new DataCorruptionPersistenceException(previousHashPosition, rc.CurrentHashPosition);

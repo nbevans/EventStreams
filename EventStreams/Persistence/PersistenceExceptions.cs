@@ -32,6 +32,16 @@ namespace EventStreams.Persistence {
 
             CurrentHashPosition = currentHashPosition;
         }
+    }
 
+    [Serializable]
+    public class TruncationCorruptionPersistenceException : DataVerificationPersistenceException {
+        public long Offset { get; private set; }
+
+        public TruncationCorruptionPersistenceException(long offset)
+            : base(string.Format(ExceptionStrings.Truncation_corruption, offset)) {
+
+                Offset = offset;
+        }
     }
 }

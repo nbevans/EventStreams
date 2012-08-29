@@ -18,10 +18,20 @@ namespace EventStreams.Persistence.Resources {
         }
 
         public static void AppendTo(Stream stream, string name) {
+            AppendTo(stream, name, 0);
+        }
+
+        public static void AppendTo(Stream stream, string name, int truncateLength) {
             using (var rs = Assembly.GetCallingAssembly().GetManifestResourceStream(typeof(ResourceProvider), name)) {
-                var buffer = new byte[rs.Length];
-                rs.Read(buffer, 0, buffer.Length);
-                stream.Write(buffer, 0, buffer.Length);
+                if (rs != null) {
+                    var buffer = new byte[rs.Length];
+                    rs.Read(buffer, 0, buffer.Length);
+                    stream.Write(buffer, 0, buffer.Length - truncateLength);
+                } else
+                    throw new InvalidOperationException(
+                        string.Format(
+                            "The test resource file ({0}) does not exist.",
+                            name));
             }
         }
 

@@ -144,6 +144,9 @@
   <data name="Tail_indicator_byte_not_present_while_backtracking" xml:space="preserve">
     <value>The buffer read from the stream does not end with a tail indicator byte; the stream appears to be invalid, malformed or corrupt.</value>
   </data>
+  <data name="Truncation_corruption" xml:space="preserve">
+    <value>The stream is in an abruptly truncated state starting at byte position {0}. This type of corruption is usually repairable and is typically caused by a system crash, power cut or any other situation where the program or operating system was interrupted during writing of the event stream.</value>
+  </data>
   <data name="Unexpected_length_returned_from_stream_read_while_backtracking" xml:space="preserve">
     <value>An unexpected number of bytes were read from the stream. Expected {0}, but got {1}.</value>
   </data>
