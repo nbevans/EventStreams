@@ -59,7 +59,7 @@ namespace EventStreams.Persistence {
                     Assert.DoesNotThrow(() => esr.Next());
                     Assert.DoesNotThrow(() => esr.Next());
                     Assert.DoesNotThrow(() => esr.Next());
-                    Assert.Throws<DataCorruptionPersistenceException>(() => esr.Next());
+                    Assert.Throws<HashVerificationPersistenceException>(() => esr.Next());
                     // ReSharper restore AccessToDisposedClosure
                 }
             }
@@ -76,7 +76,7 @@ namespace EventStreams.Persistence {
                     Assert.DoesNotThrow(() => esr.Next());
                     Assert.DoesNotThrow(() => esr.Next());
                     Assert.DoesNotThrow(() => esr.Next());
-                    Assert.Throws<TruncationCorruptionPersistenceException>(() => esr.Next());
+                    Assert.Throws<TruncationVerificationPersistenceException>(() => esr.Next());
                     // ReSharper restore AccessToDisposedClosure
                 }
             }

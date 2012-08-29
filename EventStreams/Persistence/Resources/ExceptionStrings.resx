@@ -132,6 +132,9 @@
   <data name="Head_indicator_byte_not_present" xml:space="preserve">
     <value>The stream is not positioned at the start of a record as the head indicator byte is not present.</value>
   </data>
+  <data name="Irreparable_corruption" xml:space="preserve">
+    <value>The stream has suffered irreparable data corruption. Due to the type of corruption a repair was not possible.</value>
+  </data>
   <data name="Seed_hash_injected_but_unexpected_number_of_written_bytes" xml:space="preserve">
     <value>The seed hash was injected but the number of bytes written does not match the number of bytes injected.</value>
   </data>

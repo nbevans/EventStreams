@@ -24,10 +24,24 @@ namespace EventStreams.Persistence.SelfHealing {
 
         public void Write(IEnumerable<IStreamedEvent> streamedEvents) {
             try {
+                // ReSharper disable PossibleMultipleEnumeration
                 _innerWriter.Write(streamedEvents);
+                // ReSharper restore PossibleMultipleEnumeration
 
             } catch (DataVerificationPersistenceException) {
-                _eventStreamVerifierFactory(InnerStream, EventWriter.Opposite);
+                // Attempt to repair the corruption
+                // by running a full stream verification.
+                _eventStreamVerifierFactory(InnerStream, EventWriter.Opposite)
+                    .Verify();
+
+                try {
+                    // ReSharper disable PossibleMultipleEnumeration
+                    _innerWriter.Write(streamedEvents);
+                    // ReSharper restore PossibleMultipleEnumeration
+
+                } catch (DataVerificationPersistenceException x) {
+                    throw new IrreparableCorruptionPersistenceException(x);
+                }
             }
         }
 

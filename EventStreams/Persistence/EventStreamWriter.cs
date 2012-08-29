@@ -13,19 +13,13 @@ namespace EventStreams.Persistence {
 
         private readonly Stream _innerStream;
         private readonly IEventWriter _eventWriter;
-        private readonly Func<Stream, IEventStreamBacktracker> _eventStreamBacktrackerFactory;
 
-        public EventStreamWriter(Stream innerStream, IEventWriter eventWriter)
-            : this(innerStream, eventWriter, EventStreamBacktracker.Factory) { }
-
-        public EventStreamWriter(Stream innerStream, IEventWriter eventWriter, Func<Stream, IEventStreamBacktracker> eventStreamBacktrackerFactory) {
+        public EventStreamWriter(Stream innerStream, IEventWriter eventWriter) {
             if (innerStream == null) throw new ArgumentNullException("innerStream");
             if (eventWriter == null) throw new ArgumentNullException("eventWriter");
-            if (eventStreamBacktrackerFactory == null) throw new ArgumentNullException("eventStreamBacktrackerFactory");
 
             _innerStream = innerStream;
             _eventWriter = eventWriter;
-            _eventStreamBacktrackerFactory = eventStreamBacktrackerFactory;
 
             Debug.Assert(innerStream.CanRead);
             Debug.Assert(innerStream.CanWrite);
@@ -41,7 +35,7 @@ namespace EventStreams.Persistence {
 
         public void Write(IEnumerable<IStreamedEvent> streamedEvents) {
             var previousHash =
-                _eventStreamBacktrackerFactory(_innerStream)
+                new EventStreamBacktracker(_innerStream)
                     .HashOrNull();
 
             foreach (var se in streamedEvents) {

@@ -16,18 +16,18 @@ namespace EventStreams.Persistence {
     }
 
     [Serializable]
-    public class DataCorruptionPersistenceException : DataVerificationPersistenceException {
+    public class HashVerificationPersistenceException : DataVerificationPersistenceException {
         public long PreviousHashPosition { get; private set; }
         public long CurrentHashPosition { get; private set; }
 
-        public DataCorruptionPersistenceException(long previousHashPosition, long currentHashPosition)
+        public HashVerificationPersistenceException(long previousHashPosition, long currentHashPosition)
             : base(string.Format(ExceptionStrings.Data_corruption_with_previous_and_current_position, previousHashPosition, currentHashPosition)) {
 
             PreviousHashPosition = previousHashPosition;
             CurrentHashPosition = currentHashPosition;
         }
 
-        public DataCorruptionPersistenceException(long currentHashPosition)
+        public HashVerificationPersistenceException(long currentHashPosition)
             : base(string.Format(ExceptionStrings.Data_corruption_with_current_position_only, currentHashPosition)) {
 
             CurrentHashPosition = currentHashPosition;
@@ -35,16 +35,26 @@ namespace EventStreams.Persistence {
     }
 
     [Serializable]
-    public class TruncationCorruptionPersistenceException : DataVerificationPersistenceException {
+    public class TruncationVerificationPersistenceException : DataVerificationPersistenceException {
         public long Offset { get; private set; }
 
-        public TruncationCorruptionPersistenceException(long offset)
+        public TruncationVerificationPersistenceException(long offset)
             : this(offset, null) { }
 
-        public TruncationCorruptionPersistenceException(long offset, Exception innerException)
+        public TruncationVerificationPersistenceException(long offset, Exception innerException)
             : base(string.Format(ExceptionStrings.Truncation_corruption, offset), innerException) {
 
             Offset = offset;
         }
+    }
+
+    [Serializable]
+    public class IrreparableCorruptionPersistenceException : DataVerificationPersistenceException {
+
+        public IrreparableCorruptionPersistenceException()
+            : this(null) { }
+
+        public IrreparableCorruptionPersistenceException(Exception innerException)
+            : base(string.Format(ExceptionStrings.Truncation_corruption), innerException) { }
     }
 }

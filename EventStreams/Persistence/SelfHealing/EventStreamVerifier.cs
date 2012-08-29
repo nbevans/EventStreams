@@ -26,18 +26,22 @@ namespace EventStreams.Persistence.SelfHealing {
         }
 
         public void Verify() {
-            using (var esr = new EventStreamReader(_innerStream, _eventReader)) {
+            _innerStream.Position = 0;
+
+            using (var esr = new EventStreamReader(_innerStream.PreventClosure(), _eventReader)) {
                 while (_innerStream.Position < _innerStream.Length) {
                     try {
                         esr.Next();
 
-                    } catch (TruncationCorruptionPersistenceException x) {
+                    } catch (TruncationVerificationPersistenceException x) {
                         // A trailing commit was unfinished possibly due to power cut or system crash.
                         // This can be repaired easily just by truncating the stream.
                         _innerStream.SetLength(x.Offset);
                     }
                 }
             }
+
+            _innerStream.Position = _innerStream.Length;
         }
     }
 }

@@ -54,10 +54,8 @@
     <Compile Include="Persistence\EventStreamTokens.cs" />
     <Compile Include="Persistence\EventStreamWriter.cs" />
     <Compile Include="Persistence\FileSystemPersistEvents.cs" />
-    <Compile Include="Persistence\IEventStreamBacktracker.cs" />
     <Compile Include="Persistence\IEventStreamWriter.cs" />
     <Compile Include="Persistence\SelfHealing\EventStreamVerifier.cs" />
-    <Compile Include="Persistence\SelfHealing\EventStreamSelfHealingBacktracker.cs" />
     <Compile Include="Persistence\SelfHealing\EventStreamSelfHealingWriter.cs" />
     <Compile Include="Persistence\SelfHealing\IEventStreamVerifier.cs" />
     <Compile Include="Persistence\IPersistEvents.cs" />

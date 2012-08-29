@@ -18,6 +18,7 @@ namespace EventStreams.Persistence {
         public EventStreamReader(Stream innerStream, IEventReader eventReader, Action<EventStreamReaderState> beforeStateChange, Action<EventStreamReaderState> afterStateChange) {
             if (innerStream == null) throw new ArgumentNullException("innerStream");
             if (eventReader == null) throw new ArgumentNullException("eventReader");
+
             _innerStream = innerStream;
             _eventReader = eventReader;
             _beforeStateChange = beforeStateChange;
@@ -55,15 +56,15 @@ namespace EventStreams.Persistence {
                     rc.TailIndicator();
 
                 } catch (EndOfStreamException) {
-                    throw new TruncationCorruptionPersistenceException(recordOffset);
+                    throw new TruncationVerificationPersistenceException(recordOffset);
                 }
 
                 previousHash = rc.StreamHash;
                 if (ShaHash.AreNotEqual(previousHash, rc.CurrentHash))
                     if (previousHashPosition > 0)
-                        throw new DataCorruptionPersistenceException(previousHashPosition, rc.CurrentHashPosition);
+                        throw new HashVerificationPersistenceException(previousHashPosition, rc.CurrentHashPosition);
                     else
-                        throw new DataCorruptionPersistenceException(rc.CurrentHashPosition);
+                        throw new HashVerificationPersistenceException(rc.CurrentHashPosition);
 
                 return rc.Event;
             }
