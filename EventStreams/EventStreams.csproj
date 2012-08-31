@@ -72,6 +72,7 @@
     <Compile Include="Persistence\Serialization\Events\XmlEventWriter.cs" />
     <Compile Include="Persistence\Serialization\Events\IEventWriter.cs" />
     <Compile Include="Persistence\Serialization\Events\JsonEventWriter.cs" />
+    <Compile Include="Persistence\Serialization\LengthLimitedStream.cs" />
     <Compile Include="Persistence\ShaHash.cs" />
     <Compile Include="Persistence\StreamExtensions.cs" />
     <Compile Include="Persistence\Resources\ExceptionStrings.Designer.cs">

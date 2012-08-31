@@ -66,6 +66,7 @@
     <Compile Include="Persistence\EventStreamReaderTests.cs" />
     <Compile Include="Persistence\EventStreamWriterTests.cs" />
     <Compile Include="Persistence\FileSystemPersistEventsTests.cs" />
+    <Compile Include="Persistence\LengthLimitedStreamTests.cs" />
     <Compile Include="Persistence\MockEventStreams.cs" />
     <Compile Include="Persistence\Resources\ResourceProvider.cs" />
     <Compile Include="Persistence\SelfHealing\EventStreamSelfHealingWriterTests.cs" />
