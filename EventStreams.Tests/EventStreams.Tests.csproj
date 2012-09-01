@@ -71,7 +71,7 @@
     <Compile Include="Core\StreamedEventExtensionsTests.cs" />
     <Compile Include="Persistence\Streams\EventStreamReaderTests.cs" />
     <Compile Include="Persistence\Streams\EventStreamWriterTests.cs" />
-    <Compile Include="Persistence\FileSystemPersistEventsTests.cs" />
+    <Compile Include="Persistence\FileSystem\FileSystemPersistenceStrategyTests.cs" />
     <Compile Include="Persistence\Resources\TrustedRebuild.cs" />
     <Compile Include="Persistence\Streams\Decorators\VirtualLengthStreamTests.cs" />
     <Compile Include="Persistence\Streams\MockEventStreams.cs" />

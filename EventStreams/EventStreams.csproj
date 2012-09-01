@@ -56,18 +56,23 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="EventSource.cs" />
+    <Compile Include="Persistence\FileSystem\FileSystemLoader.cs" />
+    <Compile Include="Persistence\FileSystem\FileSystemStorer.cs" />
+    <Compile Include="Persistence\FileSystem\RepositoryPath.cs" />
+    <Compile Include="Persistence\ILoader.cs" />
+    <Compile Include="Persistence\IStorer.cs" />
     <Compile Include="Persistence\Streams\EventStreamBacktracker.cs" />
     <Compile Include="Persistence\Streams\EventStreamReader.cs" />
     <Compile Include="Persistence\Streams\EventStreamReaderContext.cs" />
     <Compile Include="Persistence\Streams\EventStreamReaderState.cs" />
     <Compile Include="Persistence\Streams\EventStreamTokens.cs" />
     <Compile Include="Persistence\Streams\EventStreamWriter.cs" />
-    <Compile Include="Persistence\FileSystemPersistEvents.cs" />
+    <Compile Include="Persistence\FileSystem\FileSystemPersistenceStrategy.cs" />
     <Compile Include="Persistence\Streams\IEventStreamWriter.cs" />
     <Compile Include="Persistence\Streams\SelfHealing\EventStreamVerifier.cs" />
     <Compile Include="Persistence\Streams\SelfHealing\EventStreamSelfHealingWriter.cs" />
     <Compile Include="Persistence\Streams\SelfHealing\IEventStreamVerifier.cs" />
-    <Compile Include="Persistence\IPersistEvents.cs" />
+    <Compile Include="Persistence\IPersistenceStrategy.cs" />
     <Compile Include="Persistence\Streams\IEventStreamReaderContext.cs" />
     <Compile Include="Persistence\Streams\Decorators\NonClosingStream.cs" />
     <Compile Include="Persistence\NullPersistEvents.cs" />

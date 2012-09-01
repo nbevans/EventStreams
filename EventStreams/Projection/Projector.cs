@@ -6,14 +6,14 @@ namespace EventStreams.Projection {
     using Core;
     using Transformation;
 
-    // ReSharper disable PossibleMultipleEnumeration
-    public class Projector : IProjector {
+    internal sealed class Projector : IProjector {
 
         private readonly IEventSequenceTransformer _eventSequenceTransformer = new EventSequenceTransformer();
 
         public IEventSequenceTransformer Transformations { get { return _eventSequenceTransformer; } }
 
         public TAggregateRoot Project<TAggregateRoot>(IEnumerable<IStreamedEvent> events) where TAggregateRoot : class, IObserver<EventArgs>, new() {
+            // ReSharper disable PossibleMultipleEnumeration
             // Short-circuit (for performance) if there is nothing to actually project.
             if (events == null || !events.Any())
                 return new TAggregateRoot();
@@ -23,6 +23,7 @@ namespace EventStreams.Projection {
             var transformedEvents =
                 _eventSequenceTransformer
                     .Transform<TAggregateRoot>(events);
+            // ReSharper restore PossibleMultipleEnumeration
 
             // Project the events by injecting them into the aggregate root.
             //
@@ -41,5 +42,4 @@ namespace EventStreams.Projection {
             return aggregateRoot;
         }
     }
-    // ReSharper restore PossibleMultipleEnumeration
 }
