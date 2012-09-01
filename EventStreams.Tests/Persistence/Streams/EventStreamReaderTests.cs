@@ -4,7 +4,7 @@ using System.IO;
 
 using NUnit.Framework;
 
-namespace EventStreams.Persistence {
+namespace EventStreams.Persistence.Streams {
     using Serialization.Events;
     using Resources;
 

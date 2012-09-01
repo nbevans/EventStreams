@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace EventStreams.Persistence.StreamDecorators {
+namespace EventStreams.Persistence.Streams.Decorators {
 
     /// <summary>
     /// Wraps a stream for all operations except <see cref="Stream.Close"/> and <see cref="Stream.Dispose"/>,

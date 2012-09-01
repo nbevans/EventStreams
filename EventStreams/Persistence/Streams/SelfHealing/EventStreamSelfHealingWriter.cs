@@ -4,7 +4,8 @@ using System.IO;
 using EventStreams.Core;
 using EventStreams.Persistence.Serialization.Events;
 
-namespace EventStreams.Persistence.SelfHealing {
+namespace EventStreams.Persistence.Streams.SelfHealing {
+
     public class EventStreamSelfHealingWriter : IEventStreamWriter {
         private readonly IEventStreamWriter _innerWriter;
         private readonly Func<Stream, IEventReader, IEventStreamVerifier> _eventStreamVerifierFactory;

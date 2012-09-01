@@ -4,10 +4,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 
-namespace EventStreams.Persistence {
+namespace EventStreams.Persistence.Streams {
     using Core;
     using Resources;
-    using StreamDecorators;
+    using Decorators;
     using Serialization.Events;
 
     internal sealed class EventStreamReaderContext : IEventStreamReaderContext {

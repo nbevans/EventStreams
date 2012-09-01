@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace EventStreams.Persistence.StreamDecorators {
+namespace EventStreams.Persistence.Streams.Decorators {
 
     internal sealed class VirtualLengthStream : Stream {
         private readonly Stream _innerStream;

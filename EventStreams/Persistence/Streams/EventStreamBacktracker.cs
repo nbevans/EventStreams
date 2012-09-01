@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace EventStreams.Persistence {
+namespace EventStreams.Persistence.Streams {
     using Resources;
 
     internal class EventStreamBacktracker {

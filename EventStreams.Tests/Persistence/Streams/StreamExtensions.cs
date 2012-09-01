@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace EventStreams.Persistence {
+namespace EventStreams.Persistence.Streams {
     internal static class StreamExtensions {
         public static string ReadStartToEnd(this Stream stream) {
             stream.Position = 0;

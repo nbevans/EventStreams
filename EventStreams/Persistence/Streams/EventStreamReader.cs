@@ -2,9 +2,9 @@
 using System.IO;
 using System.Security.Cryptography;
 
-namespace EventStreams.Persistence {
+namespace EventStreams.Persistence.Streams {
     using Core;
-    using StreamDecorators;
+    using Decorators;
     using Serialization.Events;
 
     public class EventStreamReader : IDisposable {

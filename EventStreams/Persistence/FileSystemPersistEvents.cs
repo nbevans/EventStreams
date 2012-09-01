@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 
-using EventStreams.Persistence.Serialization.Events;
-
 namespace EventStreams.Persistence {
     using Core;
     using Core.Domain;
+    using Streams;
+    using Serialization.Events;
 
     public class FileSystemPersistEvents : IPersistEvents {
 

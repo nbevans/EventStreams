@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 
-namespace EventStreams.Persistence {
+namespace EventStreams.Persistence.Streams {
     internal class ShaHash : SHA1Managed {
 
         public static readonly int ByteLength = new ShaHash().HashSize / 8;

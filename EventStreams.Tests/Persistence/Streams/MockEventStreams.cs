@@ -2,7 +2,7 @@
 
 using Moq;
 
-namespace EventStreams.Persistence {
+namespace EventStreams.Persistence.Streams {
     using Core;
     using Domain.Events.BankAccount;
 

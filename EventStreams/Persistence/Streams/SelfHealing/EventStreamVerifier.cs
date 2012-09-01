@@ -2,8 +2,8 @@
 using System.Diagnostics;
 using System.IO;
 
-namespace EventStreams.Persistence.SelfHealing {
-    using StreamDecorators;
+namespace EventStreams.Persistence.Streams.SelfHealing {
+    using Decorators;
     using Serialization.Events;
 
     public class EventStreamVerifier : IEventStreamVerifier {

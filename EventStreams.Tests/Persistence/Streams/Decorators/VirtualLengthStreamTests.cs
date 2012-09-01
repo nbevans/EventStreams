@@ -4,7 +4,7 @@ using System.Text;
 
 using NUnit.Framework;
 
-namespace EventStreams.Persistence.StreamDecorators {
+namespace EventStreams.Persistence.Streams.Decorators {
 
     [TestFixture]
     public class VirtualLengthStreamTests {

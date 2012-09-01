@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EventStreams.Persistence {
+namespace EventStreams.Persistence.Streams {
     public enum EventStreamReaderState {
         HeadIndicator,
         HeadRecordLength,

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace EventStreams.Persistence.StreamDecorators {
+namespace EventStreams.Persistence.Streams.Decorators {
     using Serialization;
 
     internal static class StreamDecoratorExtensions {

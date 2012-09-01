@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EventStreams.Persistence {
+namespace EventStreams.Persistence.Streams {
     using Core;
     using Serialization.Events;
 

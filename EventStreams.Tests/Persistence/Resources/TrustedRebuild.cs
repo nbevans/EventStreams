@@ -4,6 +4,7 @@ using System.IO;
 using NUnit.Framework;
 
 namespace EventStreams.Persistence.Resources {
+    using Streams;
     using Serialization.Events;
 
     [TestFixture]

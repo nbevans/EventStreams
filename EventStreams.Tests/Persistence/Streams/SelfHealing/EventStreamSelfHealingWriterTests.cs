@@ -4,7 +4,7 @@ using System.Linq;
 
 using NUnit.Framework;
 
-namespace EventStreams.Persistence.SelfHealing {
+namespace EventStreams.Persistence.Streams.SelfHealing {
     using Serialization.Events;
     using Resources;
 
