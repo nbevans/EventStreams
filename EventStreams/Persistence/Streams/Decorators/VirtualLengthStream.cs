@@ -6,19 +6,20 @@ namespace EventStreams.Persistence.Streams.Decorators {
     internal sealed class VirtualLengthStream : Stream {
         private readonly Stream _innerStream;
         private readonly long _lengthLimit;
+        private long _bytesRead;
 
         public VirtualLengthStream(Stream innerStream, long length) {
             if (innerStream == null) throw new ArgumentNullException("innerStream");
             _innerStream = innerStream;
-            _lengthLimit = innerStream.Position + length;
+            _lengthLimit = length;
         }
 
         public override void Flush() {
-            throw new NotSupportedException();
+            _innerStream.Flush();
         }
 
         public override long Seek(long offset, SeekOrigin origin) {
-            throw new NotSupportedException();
+            return _innerStream.Seek(offset, origin);
         }
 
         public override void SetLength(long value) {
@@ -26,11 +27,13 @@ namespace EventStreams.Persistence.Streams.Decorators {
         }
 
         public override int Read(byte[] buffer, int offset, int count) {
-            if (_lengthLimit - Position > 0) {
-                var a = Math.Min(_lengthLimit, Position + count);
+            if (_lengthLimit - _bytesRead > 0) {
+                var a = Math.Min(_lengthLimit, _bytesRead + count);
                 var b = Math.Min(a, count);
+                var r = _innerStream.Read(buffer, offset, (int)b);
 
-                return _innerStream.Read(buffer, offset, (int)b);
+                _bytesRead += r;
+                return r;
             }
 
             return 0;

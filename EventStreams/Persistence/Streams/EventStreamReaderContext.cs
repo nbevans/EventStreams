@@ -85,7 +85,7 @@ namespace EventStreams.Persistence.Streams {
             var bodyLength = _cryptoBinaryReader.ReadInt32();
             var positionBefore = _stream.Position;
 
-            _tempContainer.Arguments = eventReader.Read(_cryptoStream, _tempContainer.ArgumentsType);
+            _tempContainer.Arguments = eventReader.Read(_cryptoStream.VirtualLength(bodyLength), _tempContainer.ArgumentsType);
 
             if (positionBefore + bodyLength != _stream.Position)
                 throw new DataVerificationPersistenceException(

@@ -72,9 +72,7 @@ namespace EventStreams.Persistence.Streams.Decorators {
             using (var ms = new MemoryStream())
             using (var lls = ms.VirtualLength(3)) {
                 Assert.Throws<NotSupportedException>(() => lls.Write(new byte[5], 0, 5));
-                Assert.Throws<NotSupportedException>(() => lls.Seek(5, SeekOrigin.Current));
                 Assert.Throws<NotSupportedException>(() => lls.SetLength(5));
-                Assert.Throws<NotSupportedException>(lls.Flush);
             }
         }
     }
