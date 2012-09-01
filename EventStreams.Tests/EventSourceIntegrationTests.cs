@@ -28,5 +28,18 @@ namespace EventStreams {
                 ba.Purchase(20, "Steak");
             }
         }
+
+        [Test]
+        public void bar() {
+            var es =
+                new EventSource(
+                    new FileSystemPersistenceStrategy(
+                        new RepositoryHierarchy("T:\\EventStreams"),
+                        EventReaderWriterPair.Json));
+
+            using (var ba = es.Open<BankAccount>(new Guid("a2d06e1b-a311-45c7-9097-d288d61a8c33"))) {
+                ba.Purchase(5, "Broadband");
+            }
+        }
     }
 }

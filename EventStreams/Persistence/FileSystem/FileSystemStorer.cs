@@ -20,7 +20,7 @@ namespace EventStreams.Persistence.FileSystem {
         }
 
         public void Store(IAggregateRoot aggregateRoot, IEnumerable<IStreamedEvent> eventsToAppend) {
-            var filename = _repositoryPath.For(aggregateRoot);
+            var filename = _repositoryPath.For(aggregateRoot, true);
             using (var fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.SequentialScan)) {
                 fs.Position = fs.Length;
 

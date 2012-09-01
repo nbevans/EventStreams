@@ -56,9 +56,10 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="EventSource.cs" />
+    <Compile Include="Persistence\FileSystem\ByteExtensions.cs" />
     <Compile Include="Persistence\FileSystem\FileSystemLoader.cs" />
     <Compile Include="Persistence\FileSystem\FileSystemStorer.cs" />
-    <Compile Include="Persistence\FileSystem\RepositoryPath.cs" />
+    <Compile Include="Persistence\FileSystem\RepositoryHierarchy.cs" />
     <Compile Include="Persistence\ILoader.cs" />
     <Compile Include="Persistence\IStorer.cs" />
     <Compile Include="Persistence\Streams\EventStreamBacktracker.cs" />

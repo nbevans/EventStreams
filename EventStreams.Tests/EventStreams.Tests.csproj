@@ -69,6 +69,7 @@
     <Compile Include="Core\Domain\ConventionEventHandlerTests.cs" />
     <Compile Include="Core\Domain\DelegatedEventHandlerTests.cs" />
     <Compile Include="Core\StreamedEventExtensionsTests.cs" />
+    <Compile Include="EventSourceIntegrationTests.cs" />
     <Compile Include="Persistence\Streams\EventStreamReaderTests.cs" />
     <Compile Include="Persistence\Streams\EventStreamWriterTests.cs" />
     <Compile Include="Persistence\FileSystem\FileSystemPersistenceStrategyTests.cs" />

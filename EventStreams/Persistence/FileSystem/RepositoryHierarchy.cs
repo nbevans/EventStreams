@@ -12,22 +12,20 @@ namespace EventStreams.Persistence.FileSystem {
             RootPath = rootPath;
         }
 
-        public void Initialize(IAggregateRoot aggregateRoot) {
-            if (aggregateRoot == null) throw new ArgumentNullException("aggregateRoot");
-            Initialize(aggregateRoot.Identity);
-        }
-
-        public void Initialize(Guid identity) {
-            var path = GetPath(identity);
-            Directory.CreateDirectory(path);
-        }
-
         public string For(IAggregateRoot aggregateRoot) {
+            return For(aggregateRoot, false);
+        }
+
+        public string For(IAggregateRoot aggregateRoot, bool initializePath) {
             if (aggregateRoot == null) throw new ArgumentNullException("aggregateRoot");
-            return For(aggregateRoot.Identity);
+            return For(aggregateRoot.Identity, initializePath);
         }
 
         public string For(Guid identity) {
+            return For(identity, false);
+        }
+
+        public string For(Guid identity, bool initializePath) {
             var path = GetPath(identity);
             Directory.CreateDirectory(path);
             return Path.Combine(RootPath, path, identity + ".e");

@@ -19,10 +19,8 @@ namespace EventStreams.Persistence.FileSystem {
         }
 
         public IEnumerable<IStreamedEvent> Load(Guid identity) {
-            var filename = _repositoryPath.For(identity);
+            var filename = _repositoryPath.For(identity, false);
             using (var fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Read, FileShare.None, 4096, FileOptions.SequentialScan)) {
-                fs.Position = fs.Length;
-
                 using (var esw = new EventStreamReader(fs, _eventReader))
                     yield return esw.Next();
             }
