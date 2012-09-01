@@ -1,6 +1,15 @@
 ﻿using System;
 
 namespace EventStreams.Persistence.FileSystem {
+
+    /// <summary>
+    /// Provides a very fast lookup table to allow conversion of individual bytes to hex values.
+    /// </summary>
+    /// <remarks>
+    /// It was implemented in this way because <see cref="BitConverter"/> is optimised around
+    /// conversion of multi-byte arrays, so we would be throwing away performance needlessly.
+    /// But also, it seems to output the hex in uppercase which looks ugly in the file system.
+    /// </remarks>
     internal static class ByteExtensions {
         private static string[] _table = {
             "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "0a", "0b", "0c",
