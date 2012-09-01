@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 namespace EventStreams.Persistence {
     using Core;
     using Resources;
+    using StreamDecorators;
     using Serialization.Events;
 
     internal sealed class EventStreamReaderContext : IEventStreamReaderContext {

@@ -1,15 +1,16 @@
 ﻿using System;
 using System.IO;
 
-namespace EventStreams.Persistence.Serialization {
-    public class LengthLimitedStream : Stream {
+namespace EventStreams.Persistence.StreamDecorators {
+
+    internal sealed class VirtualLengthStream : Stream {
         private readonly Stream _innerStream;
         private readonly long _lengthLimit;
 
-        public LengthLimitedStream(Stream innerStream, long count) {
+        public VirtualLengthStream(Stream innerStream, long length) {
             if (innerStream == null) throw new ArgumentNullException("innerStream");
             _innerStream = innerStream;
-            _lengthLimit = innerStream.Position + count;
+            _lengthLimit = innerStream.Position + length;
         }
 
         public override void Flush() {

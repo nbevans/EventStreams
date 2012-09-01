@@ -33,6 +33,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\StrongName.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
@@ -66,7 +72,8 @@
     <Compile Include="Persistence\EventStreamReaderTests.cs" />
     <Compile Include="Persistence\EventStreamWriterTests.cs" />
     <Compile Include="Persistence\FileSystemPersistEventsTests.cs" />
-    <Compile Include="Persistence\LengthLimitedStreamTests.cs" />
+    <Compile Include="Persistence\Resources\TrustedRebuild.cs" />
+    <Compile Include="Persistence\StreamDecorators\VirtualLengthStreamTests.cs" />
     <Compile Include="Persistence\MockEventStreams.cs" />
     <Compile Include="Persistence\Resources\ResourceProvider.cs" />
     <Compile Include="Persistence\SelfHealing\EventStreamSelfHealingWriterTests.cs" />

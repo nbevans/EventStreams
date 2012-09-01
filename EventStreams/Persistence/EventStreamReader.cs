@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 
 namespace EventStreams.Persistence {
     using Core;
+    using StreamDecorators;
     using Serialization.Events;
 
     public class EventStreamReader : IDisposable {

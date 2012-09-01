@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 
 namespace EventStreams.Persistence.SelfHealing {
+    using StreamDecorators;
     using Serialization.Events;
 
     public class EventStreamVerifier : IEventStreamVerifier {

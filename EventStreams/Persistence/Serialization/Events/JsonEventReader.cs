@@ -5,6 +5,8 @@ using System.Text;
 using Newtonsoft.Json;
 
 namespace EventStreams.Persistence.Serialization.Events {
+    using StreamDecorators;
+
     internal sealed class JsonEventReader : IEventReader {
         public IEventWriter Opposite { get { return new JsonEventWriter();} }
 

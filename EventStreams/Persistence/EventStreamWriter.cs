@@ -6,8 +6,9 @@ using System.Security.Cryptography;
 
 namespace EventStreams.Persistence {
     using Core;
-    using Serialization.Events;
     using Resources;
+    using StreamDecorators;
+    using Serialization.Events;
 
     public class EventStreamWriter : IEventStreamWriter {
 

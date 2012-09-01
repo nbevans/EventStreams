@@ -1,8 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.Remoting;
 
-namespace EventStreams.Persistence {
+namespace EventStreams.Persistence.StreamDecorators {
 
     /// <summary>
     /// Wraps a stream for all operations except <see cref="Stream.Close"/> and <see cref="Stream.Dispose"/>,
@@ -60,10 +59,6 @@ namespace EventStreams.Persistence {
             _closed = true;
         }
 
-        public override ObjRef CreateObjRef(Type requestedType) {
-            throw new NotSupportedException();
-        }
-
         public override int EndRead(IAsyncResult asyncResult) {
             CheckClosed();
             return _stream.EndRead(asyncResult);
@@ -77,10 +72,6 @@ namespace EventStreams.Persistence {
         public override void Flush() {
             CheckClosed();
             _stream.Flush();
-        }
-
-        public override object InitializeLifetimeService() {
-            throw new NotSupportedException();
         }
 
         public override long Length {
