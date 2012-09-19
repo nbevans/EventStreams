@@ -53,6 +53,7 @@
     <Compile Include="Core\Domain\EventHandler.cs" />
     <Compile Include="Core\Domain\IAggregateRoot.cs" />
     <Compile Include="Core\Domain\IAggregateRootRepository.cs" />
+    <Compile Include="Core\Domain\Memento.cs" />
     <Compile Include="Core\EventArgsExtensions.cs" />
     <Compile Include="Core\IStreamedEvent.cs" />
     <Compile Include="Core\IStreamedEventDiagnostics.cs" />

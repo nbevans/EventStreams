@@ -19,7 +19,7 @@ namespace EventStreams {
             var es =
                 new EventSource(
                     new FileSystemPersistenceStrategy(
-                        new RepositoryHierarchy("T:\\EventStreams"),
+                        new RepositoryHierarchy("C:\\EventStreams"),
                         EventReaderWriterPair.Json));
 
             using (var ba = es.Create<BankAccount>()) {
@@ -34,7 +34,7 @@ namespace EventStreams {
             var es =
                 new EventSource(
                     new FileSystemPersistenceStrategy(
-                        new RepositoryHierarchy("T:\\EventStreams"),
+                        new RepositoryHierarchy("C:\\EventStreams"),
                         EventReaderWriterPair.Json));
 
             using (var ba = es.Open<BankAccount>(new Guid("a2d06e1b-a311-45c7-9097-d288d61a8c33"))) {

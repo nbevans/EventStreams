@@ -5,15 +5,16 @@ namespace EventStreams.Domain {
     using Events.BankAccount;
 
     public class BankAccount : IAggregateRoot {
-        private readonly Guid _identity = Guid.NewGuid();
-        private readonly BankAccountState _state;
+        private readonly Memento<BankAccountState> _memento;
         private readonly EventHandler<BankAccount> _eventHandler;
         private readonly CommandHandler<BankAccount> _commandHandler;
-        public decimal Balance { get { return _state.Balance; } }
+        public decimal Balance { get { return _memento.State.Balance; } }
 
         public BankAccount()
-            : this(null) {
+            : this(null) { }
 
+        public BankAccount(Memento<BankAccountState> memento) {
+            _memento = memento ?? new Memento<BankAccountState>();
             _eventHandler = new ConventionEventHandler<BankAccount>(this);
             _commandHandler = new CommandHandler<BankAccount>(this);
 
@@ -23,10 +24,6 @@ namespace EventStreams.Domain {
             //        .Bind<Debited>(e => _state.Balance -= e.Assume<Debited>().Value)
             //        .Bind<MadePurchase>(e => _state.Balance -= e.Assume<MadePurchase>().Value)
             //        .Bind<PayeSalaryDeposited>(e => _state.Balance += e.Assume<PayeSalaryDeposited>().Value);
-        }
-
-        public BankAccount(BankAccountState state) {
-            _state = state ?? new BankAccountState();
         }
 
         public void Credit(decimal value) {
@@ -46,27 +43,27 @@ namespace EventStreams.Domain {
         }
 
         protected void Handle(Credited args) {
-            _state.Balance += args.Value;
+            _memento.State.Balance += args.Value;
         }
 
         protected void Handle(Debited args) {
-            _state.Balance -= args.Value;
+            _memento.State.Balance -= args.Value;
         }
 
         protected void Handle(MadePurchase args) {
-            _state.Balance -= args.Value;
+            _memento.State.Balance -= args.Value;
         }
 
         protected void Handle(PayeSalaryDeposited args) {
-            _state.Balance += args.Value;
+            _memento.State.Balance += args.Value;
         }
 
         Guid IAggregateRoot.Identity {
-            get { return _identity; }
+            get { return _memento.Identity; }
         }
 
         object IAggregateRoot.Memento {
-            get { return _state; }
+            get { return _memento.State; }
         }
 
         IDisposable IObservable<EventArgs>.Subscribe(IObserver<EventArgs> observer) {
