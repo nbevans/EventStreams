@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using EventStreams.Domain;
-using EventStreams.Persistence.FileSystem;
-using EventStreams.Persistence.Serialization.Events;
 
 using NUnit.Framework;
 
 namespace EventStreams {
+    using Domain;
+    using Persistence.FileSystem;
+    using Persistence.Serialization.Events;
 
     [TestFixture]
     public class EventSourceIntegrationTests {

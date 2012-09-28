@@ -47,6 +47,7 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Core\Disposable.cs" />
+    <Compile Include="Core\Domain\AggregateRootIdentity.cs" />
     <Compile Include="Core\Domain\CommandHandler.cs" />
     <Compile Include="Core\Domain\DelegatedEventHandler.cs" />
     <Compile Include="Core\Domain\ConventionEventHandler.cs" />

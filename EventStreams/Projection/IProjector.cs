@@ -10,5 +10,8 @@ namespace EventStreams.Projection {
 
         TAggregateRoot Project<TAggregateRoot>(IEnumerable<IStreamedEvent> events)
             where TAggregateRoot : class, IObserver<EventArgs>, new();
+
+        TAggregateRoot Project<TAggregateRoot>(Guid identity, IEnumerable<IStreamedEvent> events)
+            where TAggregateRoot : class, IObserver<EventArgs>, new();
     }
 }

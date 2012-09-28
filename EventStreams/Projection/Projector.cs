@@ -9,14 +9,23 @@ namespace EventStreams.Projection {
     internal sealed class Projector : IProjector {
 
         private readonly IEventSequenceTransformer _eventSequenceTransformer = new EventSequenceTransformer();
-
+        
         public IEventSequenceTransformer Transformations { get { return _eventSequenceTransformer; } }
 
         public TAggregateRoot Project<TAggregateRoot>(IEnumerable<IStreamedEvent> events) where TAggregateRoot : class, IObserver<EventArgs>, new() {
+            return Project<TAggregateRoot>(Guid.NewGuid(), events);
+        }
+
+        public TAggregateRoot Project<TAggregateRoot>(Guid identity, IEnumerable<IStreamedEvent> events) where TAggregateRoot : class, IObserver<EventArgs>, new() {
+            // Initialize a suitable activator for the aggregate root type.
+            var activator =
+                new AggregateRootActivatorCache<TAggregateRoot>()
+                    .Activator();
+
             // ReSharper disable PossibleMultipleEnumeration
             // Short-circuit (for performance) if there is nothing to actually project.
             if (events == null || !events.Any())
-                return new TAggregateRoot();
+                return activator(identity);
 
             // Ensure all the events are transformed (if needed) before projecting them.
             // This can for instance ensure that any "old" events are upgraded to newer replacements.
@@ -30,7 +39,7 @@ namespace EventStreams.Projection {
             // We would normally use LINQ's Aggregate() operator here.
             // Unfortunately it is quite slow (relatively speaking) and with
             // 1mil iterations versus the code below, it's ~3 seconds slower.
-            var aggregateRoot = new TAggregateRoot();
+            var aggregateRoot = activator(identity);
             foreach (var e in transformedEvents)
                 aggregateRoot.OnNext(e.Arguments);
 

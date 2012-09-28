@@ -95,6 +95,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ExceptionStrings.resx</DependentUpon>
     </Compile>
+    <Compile Include="Projection\AggregateRootActivatorCache.cs" />
     <Compile Include="Projection\IProjector.cs" />
     <Compile Include="Projection\Projector.cs" />
     <Compile Include="Projection\Transformation\EventSequenceTransformer.cs" />

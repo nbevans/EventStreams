@@ -29,7 +29,7 @@ namespace EventStreams {
 
         public TAggregateRoot Open<TAggregateRoot>(Guid identity) where TAggregateRoot : class, IAggregateRoot, new() {
             var events = _persistenceStrategy.Load(identity);
-            var ar = _projector.Project<TAggregateRoot>(events);
+            var ar = _projector.Project<TAggregateRoot>(identity, events);
             return Observe(ar);
         }
 
