@@ -1,0 +1,43 @@
+# Ignore file for Visual Studio 2008
+
+# use glob syntax
+syntax: glob
+
+# MS-SQL databases
+*.mdf
+*.ldf
+
+# NCrunch
+*.ncrunchsolution
+*.ncrunchproject
+_NCrunch*/
+
+# Ignore Visual Studio 2008 files
+*.user
+*.aps
+*.pch
+*.vspscc
+*.vssscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.cache
+*.ilk
+*.log
+*.lib
+*.sbr
+*.scc
+*.vsp
+[Bb]in/
+[Dd]ebug/
+[Rr]elease/
+obj/
+_ReSharper*/
+[Tt]est[Rr]esult*
+[Bb]uild[Ll]og.*
+*.[Pp]ublish.xml
+[Pp]ackages/
