@@ -141,6 +141,9 @@
   <data name="Seed_hash_is_invalid_length" xml:space="preserve">
     <value>The seed hash is not of a valid length; it must be {0} bytes long.</value>
   </data>
+  <data name="Stream_not_found" xml:space="preserve">
+    <value>The requested stream identified as "{0}" does not exist within the event store named as "{1}".</value>
+  </data>
   <data name="Tail_indicator_byte_not_present" xml:space="preserve">
     <value>The stream has reached the end of the current record but a tail indicator byte is not present.</value>
   </data>

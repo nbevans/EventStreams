@@ -27,10 +27,24 @@ namespace EventStreams {
             return Observe(new TAggregateRoot());
         }
 
+        public TAggregateRoot Create<TAggregateRoot>(Guid identity) where TAggregateRoot : class, IAggregateRoot, new() {
+            var ar = _projector.Project<TAggregateRoot>(identity, null);
+            return Observe(ar);
+        }
+
         public TAggregateRoot Open<TAggregateRoot>(Guid identity) where TAggregateRoot : class, IAggregateRoot, new() {
             var events = _persistenceStrategy.Load(identity);
             var ar = _projector.Project<TAggregateRoot>(identity, events);
             return Observe(ar);
+        }
+
+        public TAggregateRoot OpenOrCreate<TAggregateRoot>(Guid identity) where TAggregateRoot : class, IAggregateRoot, new() {
+            try {
+                return Open<TAggregateRoot>(identity);
+
+            } catch (StreamNotFoundPersistenceException) {
+                return Create<TAggregateRoot>(identity);
+            }
         }
 
         private void Close(IAggregateRoot aggregateRoot) {

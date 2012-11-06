@@ -10,6 +10,19 @@ namespace EventStreams.Persistence {
     }
 
     [Serializable]
+    public class StreamNotFoundPersistenceException : PersistenceException {
+        public Guid Identifier { get; set; }
+        public string EventStoreName { get; set; }
+
+        public StreamNotFoundPersistenceException(Guid identifier, string eventStoreName, Exception innerException)
+            : base(string.Format(ExceptionStrings.Stream_not_found, identifier, eventStoreName), innerException) {
+
+            Identifier = identifier;
+            EventStoreName = eventStoreName;
+        }
+    }
+
+    [Serializable]
     public class DataVerificationPersistenceException : PersistenceException {
         public DataVerificationPersistenceException(string message) : base(message) { }
         public DataVerificationPersistenceException(string message, Exception innerException) : base(message, innerException) { }
