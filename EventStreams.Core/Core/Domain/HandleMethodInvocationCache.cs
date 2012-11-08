@@ -44,6 +44,7 @@ namespace EventStreams.Core.Domain {
                     .GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
                     .Where(mi =>
                            mi.Name.Equals("Handle", StringComparison.OrdinalIgnoreCase) ||
+                           mi.Name.Equals("Apply", StringComparison.OrdinalIgnoreCase) ||
                            mi.Name.Equals("When", StringComparison.OrdinalIgnoreCase))
                     .Where(mi => mi.GetParameters().Length == 1)
                     .Where(mi => typeof(EventArgs).IsAssignableFrom(mi.GetParameters().First().ParameterType));

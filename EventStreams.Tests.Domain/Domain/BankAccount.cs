@@ -6,7 +6,6 @@ namespace EventStreams.Domain {
 
     public class BankAccount : IAggregateRoot {
         private readonly Memento<BankAccountState> _memento;
-        private readonly EventHandler<BankAccount> _eventHandler;
         private readonly CommandHandler<BankAccount> _commandHandler;
         public decimal Balance { get { return _memento.State.Balance; } }
 
@@ -15,15 +14,7 @@ namespace EventStreams.Domain {
 
         public BankAccount(Memento<BankAccountState> memento) {
             _memento = memento ?? new Memento<BankAccountState>();
-            _eventHandler = new ConventionEventHandler<BankAccount>(this);
             _commandHandler = new CommandHandler<BankAccount>(this);
-
-            //_handler =
-            //    new DelegatedEventHandler<BankAccount>(this)
-            //        .Bind<Credited>(e => _state.Balance += e.Assume<Credited>().Value)
-            //        .Bind<Debited>(e => _state.Balance -= e.Assume<Debited>().Value)
-            //        .Bind<MadePurchase>(e => _state.Balance -= e.Assume<MadePurchase>().Value)
-            //        .Bind<PayeSalaryDeposited>(e => _state.Balance += e.Assume<PayeSalaryDeposited>().Value);
         }
 
         public void Credit(decimal value) {
@@ -68,18 +59,6 @@ namespace EventStreams.Domain {
 
         IDisposable IObservable<EventArgs>.Subscribe(IObserver<EventArgs> observer) {
             return _commandHandler.Subscribe(observer);
-        }
-
-        void IObserver<EventArgs>.OnNext(EventArgs value) {
-            _eventHandler.OnNext(value);
-        }
-
-        void IObserver<EventArgs>.OnError(Exception error) {
-            _eventHandler.OnError(error);
-        }
-
-        void IObserver<EventArgs>.OnCompleted() {
-            _eventHandler.OnCompleted();
         }
 
         public void Dispose() {

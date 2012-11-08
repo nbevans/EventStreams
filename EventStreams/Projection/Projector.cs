@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace EventStreams.Projection {
     using Core;
+    using Core.Domain;
     using Transformation;
 
     internal sealed class Projector : IProjector {
@@ -12,11 +13,11 @@ namespace EventStreams.Projection {
         
         public IEventSequenceTransformer Transformations { get { return _eventSequenceTransformer; } }
 
-        public TAggregateRoot Project<TAggregateRoot>(IEnumerable<IStreamedEvent> events) where TAggregateRoot : class, IObserver<EventArgs>, new() {
+        public TAggregateRoot Project<TAggregateRoot>(IEnumerable<IStreamedEvent> events) where TAggregateRoot : class, IAggregateRoot, new() {
             return Project<TAggregateRoot>(Guid.NewGuid(), events);
         }
 
-        public TAggregateRoot Project<TAggregateRoot>(Guid identity, IEnumerable<IStreamedEvent> events) where TAggregateRoot : class, IObserver<EventArgs>, new() {
+        public TAggregateRoot Project<TAggregateRoot>(Guid identity, IEnumerable<IStreamedEvent> events) where TAggregateRoot : class, IAggregateRoot, new() {
             // Initialize a suitable activator for the aggregate root type.
             var activator =
                 new AggregateRootActivatorCache<TAggregateRoot>()
@@ -40,13 +41,14 @@ namespace EventStreams.Projection {
             // Unfortunately it is quite slow (relatively speaking) and with
             // 1mil iterations versus the code below, it's ~3 seconds slower.
             var aggregateRoot = activator(identity);
+            var applier = new ConventionEventHandler<TAggregateRoot>(aggregateRoot);
             foreach (var e in transformedEvents)
-                aggregateRoot.OnNext(e.Arguments);
+                applier.OnNext(e.Arguments);
 
             // Send a signal to notify that event projection has finished.
             // Typically an aggregate root would then not allow itself to receive
             // any further IObserver<EventArgs> notifications.
-            aggregateRoot.OnCompleted();
+            applier.OnCompleted();
 
             return aggregateRoot;
         }

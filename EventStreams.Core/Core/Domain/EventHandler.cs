@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace EventStreams.Core.Domain {
-    public abstract class EventHandler<TAggregateRoot> : IObserver<EventArgs> where TAggregateRoot : class, IObserver<EventArgs>, new() {
+    public abstract class EventHandler<TAggregateRoot> : IObserver<EventArgs> where TAggregateRoot : class, IAggregateRoot, new() {
         public TAggregateRoot Owner { get; private set; }
         public bool IsCompleted { get; private set; }
 
