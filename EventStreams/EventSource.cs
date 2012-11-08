@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace EventStreams {
     using Core;
@@ -8,8 +9,8 @@ namespace EventStreams {
     using Projection;
 
     public class EventSource {
-        private readonly IDictionary<Guid, AggregateRootObserver> _objects =
-            new Dictionary<Guid, AggregateRootObserver>();
+        private readonly ConditionalWeakTable<IAggregateRoot, AggregateRootObserver> _objects =
+            new ConditionalWeakTable<IAggregateRoot, AggregateRootObserver>();
 
         private readonly IProjector _projector;
         private readonly IPersistenceStrategy _persistenceStrategy;
@@ -48,12 +49,12 @@ namespace EventStreams {
         }
 
         private void Close(IAggregateRoot aggregateRoot) {
-            _objects.Remove(aggregateRoot.Identity);
+            _objects.Remove(aggregateRoot);
         }
 
         private void Commit(IAggregateRoot aggregateRoot, IEnumerable<IStreamedEvent> uncommittedEvents) {
             AggregateRootObserver observer;
-            if (!_objects.TryGetValue(aggregateRoot.Identity, out observer))
+            if (!_objects.TryGetValue(aggregateRoot, out observer))
                 throw new InvalidOperationException("Commit cannot be performed because the aggregate root did not originate from this event source.");
 
             _persistenceStrategy.Store(aggregateRoot, uncommittedEvents);
@@ -61,7 +62,7 @@ namespace EventStreams {
 
         private TAggregateRoot Observe<TAggregateRoot>(TAggregateRoot aggregateRoot) where TAggregateRoot : class, IAggregateRoot, new() {
             var observer = new AggregateRootObserver(this, aggregateRoot);
-            _objects.Add(aggregateRoot.Identity, observer);
+            _objects.Add(aggregateRoot, observer);
             aggregateRoot.Subscribe(observer);
             return aggregateRoot;
         }
