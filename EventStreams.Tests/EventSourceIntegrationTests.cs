@@ -22,6 +22,8 @@ namespace EventStreams {
                 ba.Credit(150);
                 ba.DepositPayeSalary(1500, "Acme Corp");
                 ba.Purchase(20, "Steak");
+
+                Assert.That(ba.Balance == 1630);
             }
         }
 

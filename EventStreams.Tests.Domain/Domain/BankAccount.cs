@@ -6,7 +6,7 @@ namespace EventStreams.Domain {
 
     public class BankAccount : IAggregateRoot {
         private readonly Memento<BankAccountState> _memento;
-        private readonly CommandHandler<BankAccount> _commandHandler;
+        private readonly CommandObservation<BankAccount> _commandObservation;
         public decimal Balance { get { return _memento.State.Balance; } }
 
         public BankAccount()
@@ -14,38 +14,38 @@ namespace EventStreams.Domain {
 
         public BankAccount(Memento<BankAccountState> memento) {
             _memento = memento ?? new Memento<BankAccountState>();
-            _commandHandler = new CommandHandler<BankAccount>(this);
+            _commandObservation = new CommandObservation<BankAccount>(this);
         }
 
         public void Credit(decimal value) {
-            _commandHandler.OnNext(new Credited(value));
+            _commandObservation.Apply(new Credited(value));
         }
 
         public void Debit(decimal value) {
-            _commandHandler.OnNext(new Debited(value));
+            _commandObservation.Apply(new Debited(value));
         }
 
         public void Purchase(decimal value, string name) {
-            _commandHandler.OnNext(new MadePurchase(value, name));
+            _commandObservation.Apply(new MadePurchase(value, name));
         }
 
         public void DepositPayeSalary(decimal value, string source) {
-            _commandHandler.OnNext(new PayeSalaryDeposited(value, source));
+            _commandObservation.Apply(new PayeSalaryDeposited(value, source));
         }
 
-        protected void Handle(Credited args) {
+        protected void Apply(Credited args) {
             _memento.State.Balance += args.Value;
         }
 
-        protected void Handle(Debited args) {
+        protected void Apply(Debited args) {
             _memento.State.Balance -= args.Value;
         }
 
-        protected void Handle(MadePurchase args) {
+        protected void Apply(MadePurchase args) {
             _memento.State.Balance -= args.Value;
         }
 
-        protected void Handle(PayeSalaryDeposited args) {
+        protected void Apply(PayeSalaryDeposited args) {
             _memento.State.Balance += args.Value;
         }
 
@@ -58,11 +58,11 @@ namespace EventStreams.Domain {
         }
 
         IDisposable IObservable<EventArgs>.Subscribe(IObserver<EventArgs> observer) {
-            return _commandHandler.Subscribe(observer);
+            return _commandObservation.Subscribe(observer);
         }
 
         public void Dispose() {
-            _commandHandler.OnCompleted();
+            _commandObservation.Dispose();
         }
     }
 }
