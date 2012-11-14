@@ -30,6 +30,10 @@ namespace EventStreams.Persistence.Streams {
             Dispose(false);
         }
 
+        public bool HasNext() {
+            return _innerStream.Position < _innerStream.Length;
+        }
+
         public IStreamedEvent Next() {
             long previousHashPosition;
             var previousHash =

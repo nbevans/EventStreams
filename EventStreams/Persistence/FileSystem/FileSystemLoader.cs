@@ -40,8 +40,10 @@ namespace EventStreams.Persistence.FileSystem {
             //       the C# compiler dislikes using the 'yield return' inside a try..catch block.
 
             using (fs) {
-                using (var esw = new EventStreamReader(fs, _eventReader))
-                    yield return esw.Next();
+                using (var esw = new EventStreamReader(fs, _eventReader)) {
+                    while (esw.HasNext())
+                        yield return esw.Next();
+                }
             }
         }
     }
