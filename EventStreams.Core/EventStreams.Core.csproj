@@ -65,7 +65,12 @@
     <Compile Include="Core\StreamedEvent.cs" />
     <Compile Include="Core\StreamedEventExtensions.cs" />
     <Compile Include="Core\TimeSource.cs" />
+    <Compile Include="Projection\Transformation\IEventSequenceTransformer.cs" />
+    <Compile Include="Projection\Transformation\IEventTransformer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReadModelling\IReadModel.cs" />
+    <Compile Include="ReadModelling\ReadModelContext.cs" />
+    <Compile Include="ReadModelling\ReadModelEventTransformer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

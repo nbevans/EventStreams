@@ -100,8 +100,7 @@
     <Compile Include="Projection\IProjector.cs" />
     <Compile Include="Projection\Projector.cs" />
     <Compile Include="Projection\Transformation\EventSequenceTransformer.cs" />
-    <Compile Include="Projection\Transformation\IEventSequenceTransformer.cs" />
-    <Compile Include="Projection\Transformation\IEventTransformer.cs" />
+    <Compile Include="Projection\Transformation\ReadModelEventTransformer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Persistence\Serialization\Snapshots\ISerializer.cs" />
     <Compile Include="Persistence\Serialization\Snapshots\Serializer.cs" />
