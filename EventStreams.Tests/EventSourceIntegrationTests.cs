@@ -49,7 +49,10 @@ namespace EventStreams {
                         EventReaderWriterPair.Json));
 
             using (var ba = es.OpenOrCreate(new Guid("1c8854ec-6399-4464-ade8-3a0e9c914b6c"))) {
+                Assert.AreEqual(((IAggregateRoot)ba).Identity, new Guid("1c8854ec-6399-4464-ade8-3a0e9c914b6c"));
+                ba.Credit(40);
                 ba.Purchase(40, "Sky+");
+                Assert.AreEqual(0, ba.Balance);
             }
         }
     }

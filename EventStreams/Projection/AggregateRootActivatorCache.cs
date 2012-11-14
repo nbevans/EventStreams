@@ -40,7 +40,7 @@ namespace EventStreams.Projection {
                 var mementoActivator = GetCompiledActivator(memCtorInfo);
                 var aggregateRootActivator = GetCompiledActivator(arCtorInfo);
 
-                var memento = mementoActivator(arId != Guid.Empty ? arId : Guid.NewGuid());
+                var memento = mementoActivator(arId);
                 return (TAggregateRoot)aggregateRootActivator(memento);
             };
         }

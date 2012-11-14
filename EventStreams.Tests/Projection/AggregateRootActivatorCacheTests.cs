@@ -19,12 +19,12 @@ namespace EventStreams.Projection {
         }
 
         [Test]
-        public void Given_a_bank_account_activator_when_activated_with_empty_guid_then_the_created_bank_account_does_not_have_empty_guid_as_its_identity() {
+        public void Given_a_bank_account_activator_when_activated_with_empty_guid_then_the_created_bank_account_will_have_empty_guid_as_its_identity() {
             var activator = new AggregateRootActivatorCache<BankAccount>().Activator();
             var arId = Guid.Empty;
             var ar = activator(arId);
 
-            Assert.That(((IAggregateRoot)ar).Identity != arId);
+            Assert.That(((IAggregateRoot)ar).Identity == arId);
         }
     }
 }
