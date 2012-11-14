@@ -35,7 +35,7 @@ namespace EventStreams.Persistence.FileSystem {
             var bytes = identity.ToByteArray();
             var a = bytes[3].ToHex();
             var b = bytes[2].ToHex();
-            return Path.Combine(RootPath, ".es", a, b);
+            return Path.Combine(RootPath, a, b);
         }
     }
 }
