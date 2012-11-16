@@ -1,13 +1,15 @@
 ﻿using System;
 
 namespace EventStreams.Core.Domain {
-    public abstract class EventHandler<TAggregateRoot> : IObserver<EventArgs> where TAggregateRoot : class, IAggregateRoot, new() {
-        public TAggregateRoot Owner { get; private set; }
+    public abstract class EventHandler<TEventSourced> : IObserver<EventArgs> where TEventSourced : class, IEventSourced, new() {
+        public TEventSourced Owner { get; private set; }
+        public EventHandlerBehavior Behavior { get; private set; }
         public bool IsCompleted { get; private set; }
 
-        protected EventHandler(TAggregateRoot owner) {
+        protected EventHandler(TEventSourced owner, EventHandlerBehavior behavior) {
             if (owner == null) throw new ArgumentNullException("owner");
             Owner = owner;
+            Behavior = behavior;
         }
 
         public virtual void OnNext(EventArgs value) {
@@ -25,14 +27,16 @@ namespace EventStreams.Core.Domain {
 
         protected void ThrowIfCompleted() {
             if (IsCompleted)
-                throw new InvalidOperationException("The aggregate root has already completed handling events.");
+                throw new InvalidOperationException("The event sourced object has already completed handling events.");
         }
 
-        protected void ThrowEventHandlerNotFound(EventArgs args) {
-            throw new InvalidOperationException(
-                string.Format(
-                    "The event handler for '{0}' does not exist on the '{1}' entity type.",
-                    args.GetType().Name, typeof(TAggregateRoot)));
+        protected void HandleEventHandlerNotFound(EventArgs args) {
+            if (Behavior == EventHandlerBehavior.Lossless) {
+                throw new InvalidOperationException(
+                    string.Format(
+                        "The event handler for '{0}' does not exist on the '{1}' type.",
+                        args.GetType().Name, typeof (TEventSourced)));
+            }
         }
     }
 }

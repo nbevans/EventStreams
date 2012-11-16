@@ -49,12 +49,13 @@
     <Compile Include="Core\Disposable.cs" />
     <Compile Include="Core\Domain\AggregateRootIdentity.cs" />
     <Compile Include="Core\Domain\CommandObservation.cs" />
-    <Compile Include="Core\Domain\IAggregate.cs" />
     <Compile Include="Core\Domain\DelegatedEventHandler.cs" />
+    <Compile Include="Core\Domain\EventHandlerBehavior.cs" />
+    <Compile Include="Core\Domain\IEventSourced.cs" />
     <Compile Include="Core\Domain\ConventionEventHandler.cs" />
     <Compile Include="Core\Domain\EventHandler.cs" />
-    <Compile Include="Core\Domain\IAggregateRoot.cs" />
     <Compile Include="Core\Domain\IAggregateRootRepository.cs" />
+    <Compile Include="Core\Domain\IAggregateRoot.cs" />
     <Compile Include="Core\Domain\Memento.cs" />
     <Compile Include="Core\EventArgsExtensions.cs" />
     <Compile Include="Core\IStreamedEvent.cs" />
@@ -68,9 +69,6 @@
     <Compile Include="Projection\Transformation\IEventSequenceTransformer.cs" />
     <Compile Include="Projection\Transformation\IEventTransformer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReadModelling\IReadModel.cs" />
-    <Compile Include="ReadModelling\ReadModelContext.cs" />
-    <Compile Include="ReadModelling\ReadModelEventTransformer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

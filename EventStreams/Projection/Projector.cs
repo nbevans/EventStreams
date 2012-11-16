@@ -8,19 +8,25 @@ namespace EventStreams.Projection {
     using Transformation;
 
     internal sealed class Projector : IProjector {
+        private readonly IEventSequenceTransformer _eventSequenceTransformer =
+            new EventSequenceTransformer();
 
-        private readonly IEventSequenceTransformer _eventSequenceTransformer = new EventSequenceTransformer();
-        
-        public IEventSequenceTransformer Transformations { get { return _eventSequenceTransformer; } }
-
-        public TAggregateRoot Project<TAggregateRoot>(IEnumerable<IStreamedEvent> events) where TAggregateRoot : class, IAggregateRoot, new() {
-            return Project<TAggregateRoot>(Guid.NewGuid(), events);
+        public IEventSequenceTransformer Transformations {
+            get { return _eventSequenceTransformer; }
         }
 
-        public TAggregateRoot Project<TAggregateRoot>(Guid identity, IEnumerable<IStreamedEvent> events) where TAggregateRoot : class, IAggregateRoot, new() {
+        public TEventSourced Project<TEventSourced>(IEnumerable<IStreamedEvent> events, Func<TEventSourced, EventHandler<TEventSourced>> eventHandlerFactory)
+            where TEventSourced : class, IEventSourced, new() {
+
+            return Project(Guid.NewGuid(), events, eventHandlerFactory);
+        }
+
+        public TEventSourced Project<TEventSourced>(Guid identity, IEnumerable<IStreamedEvent> events, Func<TEventSourced, EventHandler<TEventSourced>> eventHandlerFactory)
+            where TEventSourced : class, IEventSourced, new() {
+
             // Initialize a suitable activator for the aggregate root type.
             var activator =
-                new AggregateRootActivatorCache<TAggregateRoot>()
+                new ObjectActivatorCache<TEventSourced>()
                     .Activator();
 
             // ReSharper disable PossibleMultipleEnumeration
@@ -30,9 +36,7 @@ namespace EventStreams.Projection {
 
             // Ensure all the events are transformed (if needed) before projecting them.
             // This can for instance ensure that any "old" events are upgraded to newer replacements.
-            var transformedEvents =
-                _eventSequenceTransformer
-                    .Transform<TAggregateRoot>(events);
+            var transformedEvents = Transformations.Transform<TEventSourced>(events);
             // ReSharper restore PossibleMultipleEnumeration
 
             // Project the events by injecting them into the aggregate root.
@@ -41,7 +45,7 @@ namespace EventStreams.Projection {
             // Unfortunately it is quite slow (relatively speaking) and with
             // 1mil iterations versus the code below, it's ~3 seconds slower.
             var aggregateRoot = activator(identity);
-            var applier = new ConventionEventHandler<TAggregateRoot>(aggregateRoot);
+            var applier = eventHandlerFactory(aggregateRoot);
             foreach (var e in transformedEvents)
                 applier.OnNext(e.Arguments);
 

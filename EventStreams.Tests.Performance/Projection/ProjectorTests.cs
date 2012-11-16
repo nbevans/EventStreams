@@ -3,12 +3,17 @@ using System.Collections.Generic;
 
 namespace EventStreams.Projection {
     using Core;
+    using Core.Domain;
     using Domain;
     using Domain.Events.BankAccount;
 
     class ProjectorTests : IPerformanceTestSuite {
 
         private readonly Projector _projector = new Projector();
+
+        private readonly Func<BankAccount, EventHandler<BankAccount>> _defaultEventHandlerFactory =
+            ar => new ConventionEventHandler<BankAccount>(ar, EventHandlerBehavior.Lossless);
+
         private readonly StreamedEvent[] _events100 = new[] {
             new PayeSalaryDeposited(100, "Acme Corp").ToStreamedEvent(),
             new PayeSalaryDeposited(50, "Acme Corp").ToStreamedEvent(),
@@ -25,7 +30,7 @@ namespace EventStreams.Projection {
         }
 
         private void ProjectSequenceOfFourEvents() {
-            _projector.Project<BankAccount>(_events100);
+            _projector.Project(_events100, _defaultEventHandlerFactory);
         }
     }
 }

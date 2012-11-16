@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 
 namespace EventStreams.Projection.Transformation {
     using Core;
-    using ReadModelling;
+    using Core.Domain;
 
     public class EventSequenceTransformer : IEventSequenceTransformer {
         private readonly List<IEventTransformer> _eventTransformers = new List<IEventTransformer>();
@@ -16,14 +15,14 @@ namespace EventStreams.Projection.Transformation {
             return this;
         }
 
-        public IEnumerable<IStreamedEvent> Transform<TAggregateRoot>(IEnumerable<IStreamedEvent> events) {
+        public IEnumerable<IStreamedEvent> Transform<TEventSourced>(IEnumerable<IStreamedEvent> events) where TEventSourced : IEventSourced {
             EnsureChronology();
 
             foreach (var e in events) {
                 IEnumerable<IStreamedEvent> transformedEvents = new[] { e };
-                foreach (var transformer in GetAllEventTransformers()) {
+                foreach (var transformer in _eventTransformers) {
                     transformedEvents =
-                        TransformCore<TAggregateRoot>(
+                        TransformCore<TEventSourced>(
                             transformedEvents,
                             transformer);
                 }
@@ -33,23 +32,13 @@ namespace EventStreams.Projection.Transformation {
             }
         }
 
-        private IEnumerable<IStreamedEvent> TransformCore<TAggregateRoot>(IEnumerable<IStreamedEvent> events, IEventTransformer transformer) {
+        private IEnumerable<IStreamedEvent> TransformCore<TEventSourced>(IEnumerable<IStreamedEvent> events, IEventTransformer transformer) where TEventSourced : IEventSourced {
             foreach (var e in events) {
-                var transformedEvents = transformer.Transform<TAggregateRoot>(e);
+                var transformedEvents = transformer.Transform<TEventSourced>(e);
                 if (transformedEvents != null)
                     foreach (var transformedEvent in transformedEvents)
                         yield return transformedEvent;
             }
-        }
-
-        private IEnumerable<IEventTransformer> GetAllEventTransformers() {
-            var readModels = ReadModelContext.Current;
-            if (readModels != null) {
-                var readModelEventTransformers = readModels.Reverse().Select(rm => new ReadModelEventTransformer(rm));
-                return _eventTransformers.Concat(readModelEventTransformers);
-            }
-
-            return Enumerable.Empty<ReadModelEventTransformer>();
         }
 
         private void EnsureChronology() {

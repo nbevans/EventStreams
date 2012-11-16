@@ -79,7 +79,7 @@
     <Compile Include="Persistence\Resources\ResourceProvider.cs" />
     <Compile Include="Persistence\Streams\SelfHealing\EventStreamSelfHealingWriterTests.cs" />
     <Compile Include="Persistence\Streams\StreamExtensions.cs" />
-    <Compile Include="Projection\AggregateRootActivatorCacheTests.cs" />
+    <Compile Include="Projection\ObjectActivatorCacheTests.cs" />
     <Compile Include="Projection\ProjectorIntegrationTests.cs" />
     <Compile Include="Projection\Transformation\EventSequenceTransformerTests.cs" />
     <Compile Include="Persistence\Serialization\SerializerTests.cs" />

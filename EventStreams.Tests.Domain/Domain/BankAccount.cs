@@ -49,11 +49,11 @@ namespace EventStreams.Domain {
             _memento.State.Balance += args.Value;
         }
 
-        Guid IAggregateRoot.Identity {
+        Guid IEventSourced.Identity {
             get { return _memento.Identity; }
         }
 
-        object IAggregateRoot.Memento {
+        object IEventSourced.Memento {
             get { return _memento.State; }
         }
 

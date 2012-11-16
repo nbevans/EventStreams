@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 
 namespace EventStreams.Core.Domain {
-    public class DelegatedEventHandler<TAggregateRoot> : EventHandler<TAggregateRoot> where TAggregateRoot : class, IAggregateRoot, new() {
+    [Obsolete]
+    internal class DelegatedEventHandler<TAggregateRoot> : EventHandler<TAggregateRoot> where TAggregateRoot : class, IAggregateRoot, new() {
         private readonly Dictionary<Type, Action<EventArgs>> _handlers = new Dictionary<Type, Action<EventArgs>>();
 
         public DelegatedEventHandler(TAggregateRoot owner)
-            : base(owner) { }
+            : base(owner, EventHandlerBehavior.Lossless) { }
+
+        public DelegatedEventHandler(TAggregateRoot owner, EventHandlerBehavior behavior)
+            : base(owner, behavior) { }
 
         public DelegatedEventHandler<TAggregateRoot> Bind<T>(Action<EventArgs> handler) {
             _handlers.Add(typeof(T), handler);
@@ -20,7 +24,7 @@ namespace EventStreams.Core.Domain {
             if (_handlers.TryGetValue(value.GetType(), out handler))
                 handler(value);
             else
-                ThrowEventHandlerNotFound(value);
+                HandleEventHandlerNotFound(value);
         }
     }
 }

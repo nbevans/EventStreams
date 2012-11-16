@@ -5,30 +5,28 @@ using System.Linq.Expressions;
 using System.Reflection;
 
 namespace EventStreams.Core.Domain {
-    using HandleMethod = Action<object, EventArgs>;
- 
-    internal sealed class HandleMethodInvocationCache<TAggregateRoot> {
+    internal sealed class HandleMethodInvocationCache<T> {
         /// <summary>
-        /// Heuristic that predicts most aggregate roots will have up to 4 event handlers.
+        /// Heuristic that predicts most types will have up to 4 event handlers.
         /// For those that have more, not a problem as the dictionary will just expand itself.
         /// </summary>
         private const int InitialCapacity = 4;
 
-        private readonly Dictionary<Type, HandleMethod> _cache =
-            new Dictionary<Type, HandleMethod>(InitialCapacity);
+        private readonly Dictionary<Type, Action<T, EventArgs>> _cache =
+            new Dictionary<Type, Action<T, EventArgs>>(InitialCapacity);
 
         public HandleMethodInvocationCache() {
             var handledTypes = GetMethods().Select(mi => mi.GetParameters().First().ParameterType);
             foreach (var handledType in handledTypes) {
                 var mi = GetMethodFor(handledType);
                 if (mi != null) {
-                    var handleMethod = CreateOpenInstanceDelegate<HandleMethod>(mi);
+                    var handleMethod = CreateOpenInstanceDelegate<Action<T, EventArgs>>(mi);
                     _cache.Add(handledType, handleMethod);
                 }
             }
         }
 
-        public bool TryGetMethod(EventArgs args, out HandleMethod method) {
+        public bool TryGetMethod(EventArgs args, out Action<T, EventArgs> method) {
             return _cache.TryGetValue(args.GetType(), out method);
         }
 
@@ -40,7 +38,7 @@ namespace EventStreams.Core.Domain {
 
         private IEnumerable<MethodInfo> GetMethods() {
             return
-                typeof(TAggregateRoot)
+                typeof(T)
                     .GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
                     .Where(mi =>
                            mi.Name.Equals("Handle", StringComparison.OrdinalIgnoreCase) ||
@@ -59,6 +57,10 @@ namespace EventStreams.Core.Domain {
         /// </typeparam>
         /// <param name="method">The <see cref="MethodInfo"/> describing the method of the instance type.</param>
         private static TDelegate CreateOpenInstanceDelegate<TDelegate>(MethodInfo method) where TDelegate : class {
+            if (method == null) throw new ArgumentNullException("method");
+            if (method.DeclaringType == null) throw new InvalidOperationException("The method does not have a declaring type.");
+
+            // Get the special Invoke() method of the delegate.
             var delegateMethodInfo = typeof(TDelegate).GetMethod("Invoke");
             var delegateParameters = delegateMethodInfo.GetParameters();
 

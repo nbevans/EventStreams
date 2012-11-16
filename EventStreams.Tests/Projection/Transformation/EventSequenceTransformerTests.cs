@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using EventStreams.Core;
-using EventStreams.Domain;
-using EventStreams.Domain.Events.BankAccount;
-
 using NUnit.Framework;
 
 namespace EventStreams.Projection.Transformation {
+    using Core;
+    using Core.Domain;
+    using Domain;
+    using Domain.Events.BankAccount;
+
     [TestFixture]
     public class EventSequenceTransformerTests {
 
@@ -46,7 +47,7 @@ namespace EventStreams.Projection.Transformation {
                 get { return new DateTime(2012, 7, 29); }
             }
 
-            public IEnumerable<IStreamedEvent> Transform<TAggregateRoot>(IStreamedEvent candidateEvent) {
+            public IEnumerable<IStreamedEvent> Transform<TEventSourced>(IStreamedEvent candidateEvent) where TEventSourced : IEventSourced {
                 var tmp = candidateEvent.Arguments as SalaryDeposited;
                 if (tmp != null) {
                     var split = tmp.Value / 4;
@@ -67,7 +68,7 @@ namespace EventStreams.Projection.Transformation {
                 get { return new DateTime(2012, 7, 30); }
             }
 
-            public IEnumerable<IStreamedEvent> Transform<TAggregateRoot>(IStreamedEvent candidateEvent) {
+            public IEnumerable<IStreamedEvent> Transform<TEventSourced>(IStreamedEvent candidateEvent) where TEventSourced : IEventSourced {
                 var tmp = candidateEvent.Arguments as SalaryDeposited;
                 if (tmp != null) {
                     yield return new PayeSalaryDeposited(tmp.Value, "Unknown").ToStreamedEvent();

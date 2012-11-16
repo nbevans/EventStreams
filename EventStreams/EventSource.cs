@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace EventStreams {
+    using System.Linq;
     using Core;
     using Core.Domain;
     using Persistence;
     using Projection;
 
-    public class EventSource<TAggregateRoot> where TAggregateRoot : class, IAggregateRoot, new() {
-        private readonly ConditionalWeakTable<IAggregateRoot, AggregateRootObserver<TAggregateRoot>> _objects =
-            new ConditionalWeakTable<IAggregateRoot, AggregateRootObserver<TAggregateRoot>>();
+    public class EventSource : IEventSource {
+
+        private readonly ConditionalWeakTable<IAggregateRoot, AggregateRootObserver> _objects =
+            new ConditionalWeakTable<IAggregateRoot, AggregateRootObserver>();
 
         private readonly IProjector _projector;
         private readonly IPersistenceStrategy _persistenceStrategy;
@@ -24,28 +26,41 @@ namespace EventStreams {
             _projector = projector ?? new Projector();
         }
 
-        public TAggregateRoot Create() {
-            return Observe(new TAggregateRoot());
+        public TAggregateRoot Create<TAggregateRoot>() where TAggregateRoot : class, IAggregateRoot, new() {
+            var ar = new TAggregateRoot();
+            Observe(ar);
+            return ar;
         }
 
-        public TAggregateRoot Create(Guid identity) {
-            var ar = _projector.Project<TAggregateRoot>(identity, null);
-            return Observe(ar);
+        public TAggregateRoot Create<TAggregateRoot>(Guid identity) where TAggregateRoot : class, IAggregateRoot, new() {
+            return OpenCore<TAggregateRoot>(identity, false);
         }
 
-        public TAggregateRoot Open(Guid identity) {
-            var events = _persistenceStrategy.Load(identity);
-            var ar = _projector.Project<TAggregateRoot>(identity, events);
-            return Observe(ar);
+        public TReadModel Read<TReadModel>(Guid identity) where TReadModel : class, IEventSourced, new() {
+            return OpenCore<TReadModel>(identity, true, EventHandlerBehavior.Lossy);
         }
 
-        public TAggregateRoot OpenOrCreate(Guid identity) {
+        public TAggregateRoot Open<TAggregateRoot>(Guid identity) where TAggregateRoot : class, IAggregateRoot, new() {
+            return OpenCore<TAggregateRoot>(identity);
+        }
+
+        public TAggregateRoot OpenOrCreate<TAggregateRoot>(Guid identity) where TAggregateRoot : class, IAggregateRoot, new() {
             try {
-                return Open(identity);
+                return Open<TAggregateRoot>(identity);
 
             } catch (StreamNotFoundPersistenceException) {
-                return Create(identity);
+                return Create<TAggregateRoot>(identity);
             }
+        }
+
+        private TEventSourced OpenCore<TEventSourced>(Guid identity, bool loadEvents = true, EventHandlerBehavior eventHandlerBehavior = EventHandlerBehavior.Lossless) where TEventSourced : class, IEventSourced, new() {
+            var events = loadEvents ? _persistenceStrategy.Load(identity) : Enumerable.Empty<IStreamedEvent>();
+            var ar = _projector.Project<TEventSourced>(identity, events, x => new ConventionEventHandler<TEventSourced>(x, eventHandlerBehavior));
+            
+            if (typeof(IAggregateRoot).IsAssignableFrom(typeof(TEventSourced)))
+                Observe((IAggregateRoot)ar);
+
+            return ar;
         }
 
         private void Close(IAggregateRoot aggregateRoot) {
@@ -53,26 +68,25 @@ namespace EventStreams {
         }
 
         private void Commit(IAggregateRoot aggregateRoot, IEnumerable<IStreamedEvent> uncommittedEvents) {
-            AggregateRootObserver<TAggregateRoot> observer;
+            AggregateRootObserver observer;
             if (!_objects.TryGetValue(aggregateRoot, out observer))
                 throw new InvalidOperationException("Commit cannot be performed because the aggregate root did not originate from this event source.");
 
             _persistenceStrategy.Store(aggregateRoot, uncommittedEvents);
         }
 
-        private TAggregateRoot Observe(TAggregateRoot aggregateRoot) {
-            var observer = new AggregateRootObserver<TAggregateRoot>(this, aggregateRoot);
+        private void Observe(IAggregateRoot aggregateRoot) {
+            var observer = new AggregateRootObserver(this, aggregateRoot);
             _objects.Add(aggregateRoot, observer);
             aggregateRoot.Subscribe(observer);
-            return aggregateRoot;
         }
 
-        private sealed class AggregateRootObserver<TObservedAggregateRoot> : IObserver<EventArgs> where TObservedAggregateRoot : class, IAggregateRoot, new() {
-            private readonly EventSource<TObservedAggregateRoot> _parentSource;
-            private readonly TObservedAggregateRoot _aggregateRoot;
+        private sealed class AggregateRootObserver : IObserver<EventArgs> {
+            private readonly EventSource _parentSource;
+            private readonly IAggregateRoot _aggregateRoot;
             private readonly LinkedList<IStreamedEvent> _uncommitted = new LinkedList<IStreamedEvent>();
 
-            public AggregateRootObserver(EventSource<TObservedAggregateRoot> parentSource, TObservedAggregateRoot aggregateRoot) {
+            public AggregateRootObserver(EventSource parentSource, IAggregateRoot aggregateRoot) {
                 if (parentSource == null) throw new ArgumentNullException("parentSource");
                 if (aggregateRoot == null) throw new ArgumentNullException("aggregateRoot");
                 _parentSource = parentSource;
