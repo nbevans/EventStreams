@@ -3,6 +3,9 @@ using System;
 namespace EventStreams {
     using Core.Domain;
 
+    /// <summary>
+    /// A component that allows aggregate roots and read models to be sourced with observation and lifetime scope management from the underlying store.
+    /// </summary>
     public interface IEventSource {
         /// <summary>
         /// Creates a new aggregate root with a unique identity.
