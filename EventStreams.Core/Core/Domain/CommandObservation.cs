@@ -2,6 +2,17 @@
 using System.Collections.Generic;
 
 namespace EventStreams.Core.Domain {
+    /// <summary>
+    /// Serves as a boilerplate helper component that can, optionally, be used by aggregate roots to simplify their event dispatching.
+    /// This type manages the list of subscribed observers and allows events to be published to those observers.
+    /// 
+    /// Note that this implementation treats the aggregate root instance itself as an observer, so as to ensure that the event handler is called
+    /// on the AR first.
+    /// </summary>
+    /// <remarks>
+    /// An aggregate root can implement this type by forwarding its <code>IObservable.Subscribe()</code> invocations to a privately held instance of this type.
+    /// </remarks>
+    /// <typeparam name="TAggregateRoot">The type of aggregate root for which observation services will be performed.</typeparam>
     public class CommandObservation<TAggregateRoot> : IObservable<EventArgs>, IObserver<EventArgs>, IDisposable
         where TAggregateRoot : class, IAggregateRoot, new() {
 
