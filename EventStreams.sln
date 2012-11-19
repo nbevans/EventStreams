@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStreams", "EventStreams\EventStreams.csproj", "{BF0048D3-C7B2-4D31-BD26-49EA846455E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStreams.Tests", "EventStreams.Tests\EventStreams.Tests.csproj", "{2FEABB25-7F6E-4F1B-8BD5-305669C8014B}"
@@ -24,6 +24,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{90E071
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStreams.Tests.Domain", "EventStreams.Tests.Domain\EventStreams.Tests.Domain.csproj", "{6F890369-D7DD-4A2D-8590-E4550F8647A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStreams.Tests.Memory", "EventStreams.Tests.Memory\EventStreams.Tests.Memory.csproj", "{26744494-8E97-4C91-A8FC-FE873D9E3A14}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,6 +87,16 @@ Global
 		{6F890369-D7DD-4A2D-8590-E4550F8647A0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{6F890369-D7DD-4A2D-8590-E4550F8647A0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{6F890369-D7DD-4A2D-8590-E4550F8647A0}.Release|x86.ActiveCfg = Release|Any CPU
+		{26744494-8E97-4C91-A8FC-FE873D9E3A14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26744494-8E97-4C91-A8FC-FE873D9E3A14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26744494-8E97-4C91-A8FC-FE873D9E3A14}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{26744494-8E97-4C91-A8FC-FE873D9E3A14}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{26744494-8E97-4C91-A8FC-FE873D9E3A14}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{26744494-8E97-4C91-A8FC-FE873D9E3A14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26744494-8E97-4C91-A8FC-FE873D9E3A14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26744494-8E97-4C91-A8FC-FE873D9E3A14}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{26744494-8E97-4C91-A8FC-FE873D9E3A14}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{26744494-8E97-4C91-A8FC-FE873D9E3A14}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
