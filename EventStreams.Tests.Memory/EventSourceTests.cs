@@ -22,11 +22,15 @@ namespace EventStreams {
             var finalized = false;
             var ba = es.OpenOrCreate<BankAccountWithGcNotify>(new Guid("a2d06e1b-a311-45c7-9097-d288d61a8c33"));
             ba.FinalizeCallback = () => finalized = true;
+// ReSharper disable RedundantAssignment
             ba = null;
+// ReSharper restore RedundantAssignment
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
 
+            // Note: This test will fail in NCrunch with default settings. You must turn off the "Analyse line execution times"
+            //       function for this project only under the NCrunch -> Configuration screen.
             Assert.That(finalized);  
         }
 
@@ -37,7 +41,9 @@ namespace EventStreams {
             public BankAccountWithGcNotify()
                 : base(null) { }
 
+// ReSharper disable UnusedMember.Local
             public BankAccountWithGcNotify(Memento<BankAccountState> memento)
+// ReSharper restore UnusedMember.Local
                 : base(memento) { }
 
             ~BankAccountWithGcNotify() {
