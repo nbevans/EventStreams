@@ -79,7 +79,7 @@
     <Compile Include="Persistence\IPersistenceStrategy.cs" />
     <Compile Include="Persistence\Streams\IEventStreamReaderContext.cs" />
     <Compile Include="Persistence\Streams\Decorators\NonClosingStream.cs" />
-    <Compile Include="Persistence\NullPersistEvents.cs" />
+    <Compile Include="Persistence\NullPersistenceStrategy.cs" />
     <Compile Include="Persistence\PersistenceExceptions.cs" />
     <Compile Include="Persistence\Serialization\Events\EventReaderWriterPair.cs" />
     <Compile Include="Persistence\Serialization\Events\IEventReaderWriterPair.cs" />

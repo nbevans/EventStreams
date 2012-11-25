@@ -5,8 +5,7 @@ using NUnit.Framework;
 namespace EventStreams {
     using Core.Domain;
     using Domain;
-    using Persistence.FileSystem;
-    using Persistence.Serialization.Events;
+    using Persistence;
 
     [TestFixture]
     public class EventSourceTests {
@@ -14,10 +13,7 @@ namespace EventStreams {
         [Test]
         public void Given_an_event_source_when_a_object_is_retrieved_and_no_strong_reference_is_held_then_garbage_collection_of_retrieved_object_is_free_to_occur() {
             var es =
-                new EventSource(
-                    new FileSystemPersistenceStrategy(
-                        new RepositoryHierarchy("C:\\EventStreams"),
-                        EventReaderWriterPair.Json));
+                new EventSource(new NullPersistenceStrategy());
 
             var finalized = false;
             var ba = es.OpenOrCreate<BankAccountWithGcNotify>(new Guid("a2d06e1b-a311-45c7-9097-d288d61a8c33"));
