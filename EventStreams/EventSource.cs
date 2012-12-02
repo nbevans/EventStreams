@@ -18,8 +18,8 @@ namespace EventStreams {
         // We use the "little known" ConditionalWeakTable hidden in the depths of .NET 4 because it means we don't need to hold
         // strong references to our aggregate roots which would prevent them being garbage collected. This is important to prevent
         // serious memory leaks.
-        private readonly ConditionalWeakTable<IAggregateRoot, AggregateRootObserver> _objects =
-            new ConditionalWeakTable<IAggregateRoot, AggregateRootObserver>();
+        private readonly ConditionalWeakTable<IObservable<EventArgs>, AggregateRootObserver> _objects =
+            new ConditionalWeakTable<IObservable<EventArgs>, AggregateRootObserver>();
 
         private readonly IProjector _projector;
         private readonly IPersistenceStrategy _persistenceStrategy;
@@ -36,22 +36,20 @@ namespace EventStreams {
         /// <summary>
         /// Creates a new aggregate root with a unique identity.
         /// </summary>
-        /// <typeparam name="TAggregateRoot">The type of aggregate root to be created.</typeparam>
+        /// <typeparam name="TModel">The type of aggregate root to be created.</typeparam>
         /// <returns>The newly created aggregate root.</returns>
-        public TAggregateRoot Create<TAggregateRoot>() where TAggregateRoot : class, IAggregateRoot, new() {
-            var ar = new TAggregateRoot();
-            Observe(ar);
-            return ar;
+        public TModel Create<TModel>() where TModel : class, IObservable<EventArgs>, new() {
+            return Create<TModel>(Guid.NewGuid());
         }
 
         /// <summary>
         /// Creates a new aggregate root with a specific unique identity.
         /// </summary>
-        /// <typeparam name="TAggregateRoot">The type of aggregate root to be created.</typeparam>
+        /// <typeparam name="TModel">The type of aggregate root to be created.</typeparam>
         /// <param name="identity">The identity to be used for the new aggregate root.</param>
         /// <returns>The newly created aggregate root.</returns>
-        public TAggregateRoot Create<TAggregateRoot>(Guid identity) where TAggregateRoot : class, IAggregateRoot, new() {
-            return OpenCore<TAggregateRoot>(identity, false);
+        public TModel Create<TModel>(Guid identity) where TModel : class, IObservable<EventArgs>, new() {
+            return OpenCore<TModel>(identity, false);
         }
 
         /// <summary>
@@ -60,61 +58,57 @@ namespace EventStreams {
         /// <typeparam name="TReadModel">The of read model to be used for the projection.</typeparam>
         /// <param name="identity">The identity of the event stream to be read.</param>
         /// <returns>The projected read model.</returns>
-        public TReadModel Read<TReadModel>(Guid identity) where TReadModel : class, IEventSourced, new() {
+        public TReadModel Read<TReadModel>(Guid identity) where TReadModel : class, new() {
             return OpenCore<TReadModel>(identity, true, EventHandlerBehavior.Lossy);
         }
 
         /// <summary>
         /// Opens an existing aggregate root with a specific identity.
         /// </summary>
-        /// <typeparam name="TAggregateRoot">The type of aggregate root to be opened.</typeparam>
+        /// <typeparam name="TModel">The type of aggregate root to be opened.</typeparam>
         /// <param name="identity">The identity of the aggregate root to be opened.</param>
         /// <returns>The opened aggregate root.</returns>
-        public TAggregateRoot Open<TAggregateRoot>(Guid identity) where TAggregateRoot : class, IAggregateRoot, new() {
-            return OpenCore<TAggregateRoot>(identity);
+        public TModel Open<TModel>(Guid identity) where TModel : class, IObservable<EventArgs>, new() {
+            return OpenCore<TModel>(identity);
         }
 
         /// <summary>
         /// Opens or creates an aggregate root with a specific identity.
         /// </summary>
-        /// <typeparam name="TAggregateRoot">The type of aggregate root to be opened or created.</typeparam>
+        /// <typeparam name="TModel">The type of aggregate root to be opened or created.</typeparam>
         /// <param name="identity">The identity of the aggregate root to be opened or created.</param>
         /// <returns>The aggregate root that was either opened or created.</returns>
-        public TAggregateRoot OpenOrCreate<TAggregateRoot>(Guid identity) where TAggregateRoot : class, IAggregateRoot, new() {
+        public TModel OpenOrCreate<TModel>(Guid identity) where TModel : class, IObservable<EventArgs>, new() {
             try {
-                return Open<TAggregateRoot>(identity);
+                return Open<TModel>(identity);
 
             } catch (StreamNotFoundPersistenceException) {
-                return Create<TAggregateRoot>(identity);
+                return Create<TModel>(identity);
             }
         }
 
-        private TEventSourced OpenCore<TEventSourced>(Guid identity, bool loadEvents = true, EventHandlerBehavior eventHandlerBehavior = EventHandlerBehavior.Lossless) where TEventSourced : class, IEventSourced, new() {
+        private TModel OpenCore<TModel>(Guid identity, bool loadEvents = true, EventHandlerBehavior eventHandlerBehavior = EventHandlerBehavior.Lossless) where TModel : class, new() {
             var events = loadEvents ? _persistenceStrategy.Load(identity) : Enumerable.Empty<IStreamedEvent>();
-            var ar = _projector.Project<TEventSourced>(identity, events, x => new ConventionEventHandler<TEventSourced>(x, eventHandlerBehavior));
-            
-            if (typeof(IAggregateRoot).IsAssignableFrom(typeof(TEventSourced)))
-                Observe((IAggregateRoot)ar);
+            var ar = _projector.Project<TModel>(identity, events, x => new ConventionEventHandler<TModel>(x, eventHandlerBehavior));
+
+            if (typeof(IObservable<EventArgs>).IsAssignableFrom(typeof(TModel)))
+                Observe((IObservable<EventArgs>)ar, identity);
 
             return ar;
         }
 
-        private void Close(IAggregateRoot aggregateRoot) {
+        private void Close(IObservable<EventArgs> aggregateRoot) {
             _objects.Remove(aggregateRoot);
         }
 
-        private void Commit(IAggregateRoot aggregateRoot, IEnumerable<IStreamedEvent> uncommittedEvents) {
-            AggregateRootObserver observer;
-            if (!_objects.TryGetValue(aggregateRoot, out observer))
-                throw new InvalidOperationException("Commit cannot be performed because the aggregate root did not originate from this event source.");
-
-            _persistenceStrategy.Store(aggregateRoot, uncommittedEvents);
+        private void Commit(Guid identity, IEnumerable<IStreamedEvent> uncommittedEvents) {
+            _persistenceStrategy.Store(identity, uncommittedEvents);
         }
 
-        private void Observe(IAggregateRoot aggregateRoot) {
-            var observer = new AggregateRootObserver(this, aggregateRoot);
+        private void Observe(IObservable<EventArgs> aggregateRoot, Guid identity) {
+            var observer = new AggregateRootObserver(this, aggregateRoot, identity);
             _objects.Add(aggregateRoot, observer);
-            aggregateRoot.Subscribe(observer);
+            observer.Subscription = aggregateRoot.Subscribe(observer);
         }
 
         /// <summary>
@@ -126,18 +120,21 @@ namespace EventStreams {
         /// </remarks>
         private sealed class AggregateRootObserver : IObserver<EventArgs> {
             private readonly EventSource _parentSource;
-            private readonly IAggregateRoot _aggregateRoot;
-            private readonly LinkedList<IStreamedEvent> _uncommitted = new LinkedList<IStreamedEvent>();
+            private readonly IObservable<EventArgs> _aggregateRoot;
+            private readonly Guid _identity;
 
-            public AggregateRootObserver(EventSource parentSource, IAggregateRoot aggregateRoot) {
+            public IDisposable Subscription { get; set; }
+
+            public AggregateRootObserver(EventSource parentSource, IObservable<EventArgs> aggregateRoot, Guid identity) {
                 if (parentSource == null) throw new ArgumentNullException("parentSource");
                 if (aggregateRoot == null) throw new ArgumentNullException("aggregateRoot");
                 _parentSource = parentSource;
                 _aggregateRoot = aggregateRoot;
+                _identity = identity;
             }
 
             public void OnNext(EventArgs value) {
-                _uncommitted.AddLast(new StreamedEvent(value));
+                _parentSource.Commit(_identity, new[] { new StreamedEvent(value) });
             }
 
             public void OnError(Exception error) {
@@ -145,13 +142,11 @@ namespace EventStreams {
             }
 
             public void OnCompleted() {
-                if (_uncommitted.Count > 0) {
-                    _parentSource.Commit(_aggregateRoot, _uncommitted);
-                    _uncommitted.Clear();
+                // Notify the EventSource to purge its observer.
+                _parentSource.Close(_aggregateRoot);
 
-                } else {
-                    _parentSource.Close(_aggregateRoot);
-                }
+                // Unsubscribe from observation.
+                Subscription.Dispose();
             }
         }
     }

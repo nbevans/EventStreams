@@ -51,7 +51,7 @@ namespace EventStreams {
         [Test]
         public void Open_or_create_a_stream_with_a_specific_identifier_and_issue_a_command() {
             using (var ba = _eventSource.OpenOrCreate<BankAccount>(_b)) {
-                Assert.AreEqual(((IAggregateRoot)ba).Identity, _b);
+                Assert.AreEqual(ba.Identity, _b);
                 ba.Credit(40);
                 ba.Purchase(40, "Sky+");
                 Assert.AreEqual(0, ba.Balance);

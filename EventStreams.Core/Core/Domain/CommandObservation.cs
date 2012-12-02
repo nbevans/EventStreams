@@ -14,7 +14,7 @@ namespace EventStreams.Core.Domain {
     /// </remarks>
     /// <typeparam name="TAggregateRoot">The type of aggregate root for which observation services will be performed.</typeparam>
     public class CommandObservation<TAggregateRoot> : IObservable<EventArgs>, IObserver<EventArgs>, IDisposable
-        where TAggregateRoot : class, IAggregateRoot, new() {
+        where TAggregateRoot : class, IObservable<EventArgs>, new() {
 
         private readonly IList<IObserver<EventArgs>> _observers =
             new List<IObserver<EventArgs>>(1);

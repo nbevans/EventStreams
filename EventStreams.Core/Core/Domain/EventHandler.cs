@@ -1,12 +1,12 @@
 ﻿using System;
 
 namespace EventStreams.Core.Domain {
-    public abstract class EventHandler<TEventSourced> : IObserver<EventArgs> where TEventSourced : class, IEventSourced, new() {
-        public TEventSourced Owner { get; private set; }
+    public abstract class EventHandler<TModel> : IObserver<EventArgs> where TModel : class, new() {
+        public TModel Owner { get; private set; }
         public EventHandlerBehavior Behavior { get; private set; }
         public bool IsCompleted { get; private set; }
 
-        protected EventHandler(TEventSourced owner, EventHandlerBehavior behavior) {
+        protected EventHandler(TModel owner, EventHandlerBehavior behavior) {
             if (owner == null) throw new ArgumentNullException("owner");
             Owner = owner;
             Behavior = behavior;
@@ -35,7 +35,7 @@ namespace EventStreams.Core.Domain {
                 throw new InvalidOperationException(
                     string.Format(
                         "The event handler for '{0}' does not exist on the '{1}' type.",
-                        args.GetType().Name, typeof (TEventSourced)));
+                        args.GetType().Name, typeof(TModel)));
             }
         }
     }

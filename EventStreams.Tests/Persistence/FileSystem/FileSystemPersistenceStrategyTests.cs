@@ -1,11 +1,9 @@
 ﻿using System;
 using System.IO;
 
-using Moq;
 using NUnit.Framework;
 
 namespace EventStreams.Persistence.FileSystem {
-    using Core.Domain;
     using Resources;
     using Serialization.Events;
     using Streams;
@@ -19,13 +17,12 @@ namespace EventStreams.Persistence.FileSystem {
         [Test]
         public void Given_first_set_when_written_to_disk_and_when_read_back_in_then_content_is_as_expected() {
             var arId = new Guid("E34900D6-6C63-4066-988F-DCEC25B482FA");
-            var ar = Mock.Of<IAggregateRoot>(f => f.Identity == arId);
 
-            var filename = _repositoryPath.For(ar);
+            var filename = _repositoryPath.For(arId);
             File.Delete(filename);
 
             var fspe = new FileSystemPersistenceStrategy(_repositoryPath, EventReaderWriterPair.Null);
-            fspe.Store(ar, MockEventStreams.First);
+            fspe.Store(arId, MockEventStreams.First);
 
             Assert.AreEqual(File.ReadAllText(filename), ResourceProvider.Get("First.e"));
         }
@@ -33,14 +30,13 @@ namespace EventStreams.Persistence.FileSystem {
         [Test]
         public void Given_first_set_and_second_set_when_written_to_disk_individually_and_when_read_back_in_then_content_is_as_expected() {
             var arId = new Guid("E34900D6-6C63-4066-988F-DCEC25B482FA");
-            var ar = Mock.Of<IAggregateRoot>(f => f.Identity == arId);
 
-            var filename = _repositoryPath.For(ar);
+            var filename = _repositoryPath.For(arId);
             File.Delete(filename);
 
             var fspe = new FileSystemPersistenceStrategy(_repositoryPath, EventReaderWriterPair.Null);
-            fspe.Store(ar, MockEventStreams.First);
-            fspe.Store(ar, MockEventStreams.Second);
+            fspe.Store(arId, MockEventStreams.First);
+            fspe.Store(arId, MockEventStreams.Second);
 
             Assert.AreEqual(File.ReadAllText(filename), ResourceProvider.Get("First_and_second.e"));
         }

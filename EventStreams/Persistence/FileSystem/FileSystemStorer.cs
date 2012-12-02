@@ -4,7 +4,6 @@ using System.IO;
 
 namespace EventStreams.Persistence.FileSystem {
     using Core;
-    using Core.Domain;
     using Serialization.Events;
     using Streams;
 
@@ -19,8 +18,8 @@ namespace EventStreams.Persistence.FileSystem {
             _eventWriter = eventWriter;
         }
 
-        public void Store(IAggregateRoot aggregateRoot, IEnumerable<IStreamedEvent> eventsToAppend) {
-            var filename = _repositoryHierarchy.For(aggregateRoot, true);
+        public void Store(Guid identity, IEnumerable<IStreamedEvent> eventsToAppend) {
+            var filename = _repositoryHierarchy.For(identity, true);
             using (var fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.SequentialScan)) {
                 fs.Position = fs.Length;
 

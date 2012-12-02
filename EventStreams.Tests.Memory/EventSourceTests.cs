@@ -3,7 +3,6 @@
 using NUnit.Framework;
 
 namespace EventStreams {
-    using Core.Domain;
     using Domain;
     using Persistence;
 
@@ -38,7 +37,7 @@ namespace EventStreams {
                 : base(null) { }
 
 // ReSharper disable UnusedMember.Local
-            public BankAccountWithGcNotify(Memento<BankAccountState> memento)
+            public BankAccountWithGcNotify(BankAccountState memento)
 // ReSharper restore UnusedMember.Local
                 : base(memento) { }
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace EventStreams.Projection.Transformation {
     using Core;
-    using Core.Domain;
 
     public class EventSequenceTransformer : IEventSequenceTransformer {
         private readonly List<IEventTransformer> _eventTransformers = new List<IEventTransformer>();
@@ -15,14 +14,14 @@ namespace EventStreams.Projection.Transformation {
             return this;
         }
 
-        public IEnumerable<IStreamedEvent> Transform<TEventSourced>(IEnumerable<IStreamedEvent> events) where TEventSourced : IEventSourced {
+        public IEnumerable<IStreamedEvent> Transform<TModel>(IEnumerable<IStreamedEvent> events) {
             EnsureChronology();
 
             foreach (var e in events) {
                 IEnumerable<IStreamedEvent> transformedEvents = new[] { e };
                 foreach (var transformer in _eventTransformers) {
                     transformedEvents =
-                        TransformCore<TEventSourced>(
+                        TransformCore<TModel>(
                             transformedEvents,
                             transformer);
                 }
@@ -32,9 +31,9 @@ namespace EventStreams.Projection.Transformation {
             }
         }
 
-        private IEnumerable<IStreamedEvent> TransformCore<TEventSourced>(IEnumerable<IStreamedEvent> events, IEventTransformer transformer) where TEventSourced : IEventSourced {
+        private IEnumerable<IStreamedEvent> TransformCore<TModel>(IEnumerable<IStreamedEvent> events, IEventTransformer transformer) {
             foreach (var e in events) {
-                var transformedEvents = transformer.Transform<TEventSourced>(e);
+                var transformedEvents = transformer.Transform<TModel>(e);
                 if (transformedEvents != null)
                     foreach (var transformedEvent in transformedEvents)
                         yield return transformedEvent;

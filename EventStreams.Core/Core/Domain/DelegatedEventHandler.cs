@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace EventStreams.Core.Domain {
     [Obsolete]
-    internal class DelegatedEventHandler<TAggregateRoot> : EventHandler<TAggregateRoot> where TAggregateRoot : class, IAggregateRoot, new() {
+    internal class DelegatedEventHandler<TAggregateRoot> : EventHandler<TAggregateRoot> where TAggregateRoot : class, new() {
         private readonly Dictionary<Type, Action<EventArgs>> _handlers = new Dictionary<Type, Action<EventArgs>>();
 
         public DelegatedEventHandler(TAggregateRoot owner)

@@ -47,7 +47,7 @@ namespace EventStreams.Projection.Transformation {
                 get { return new DateTime(2012, 7, 29); }
             }
 
-            public IEnumerable<IStreamedEvent> Transform<TEventSourced>(IStreamedEvent candidateEvent) where TEventSourced : IEventSourced {
+            public IEnumerable<IStreamedEvent> Transform<TModel>(IStreamedEvent candidateEvent)  {
                 var tmp = candidateEvent.Arguments as SalaryDeposited;
                 if (tmp != null) {
                     var split = tmp.Value / 4;
@@ -68,7 +68,7 @@ namespace EventStreams.Projection.Transformation {
                 get { return new DateTime(2012, 7, 30); }
             }
 
-            public IEnumerable<IStreamedEvent> Transform<TEventSourced>(IStreamedEvent candidateEvent) where TEventSourced : IEventSourced {
+            public IEnumerable<IStreamedEvent> Transform<TModel>(IStreamedEvent candidateEvent) {
                 var tmp = candidateEvent.Arguments as SalaryDeposited;
                 if (tmp != null) {
                     yield return new PayeSalaryDeposited(tmp.Value, "Unknown").ToStreamedEvent();

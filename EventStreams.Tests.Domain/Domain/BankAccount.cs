@@ -4,16 +4,18 @@ namespace EventStreams.Domain {
     using Core.Domain;
     using Events.BankAccount;
 
-    public class BankAccount : IAggregateRoot {
-        private readonly Memento<BankAccountState> _memento;
+    public class BankAccount : IObservable<EventArgs>, IDisposable {
+        private readonly BankAccountState _memento;
         private readonly CommandObservation<BankAccount> _commandObservation;
-        public decimal Balance { get { return _memento.State.Balance; } }
+        
+        public Guid Identity { get { return _memento.Identity; }}
+        public decimal Balance { get { return _memento.Balance; } }
 
         public BankAccount()
             : this(null) { }
 
-        public BankAccount(Memento<BankAccountState> memento) {
-            _memento = memento ?? new Memento<BankAccountState>();
+        public BankAccount(BankAccountState memento) {
+            _memento = memento ?? new BankAccountState();
             _commandObservation = new CommandObservation<BankAccount>(this);
         }
 
@@ -34,27 +36,19 @@ namespace EventStreams.Domain {
         }
 
         protected void Apply(Credited args) {
-            _memento.State.Balance += args.Value;
+            _memento.Balance += args.Value;
         }
 
         protected void Apply(Debited args) {
-            _memento.State.Balance -= args.Value;
+            _memento.Balance -= args.Value;
         }
 
         protected void Apply(MadePurchase args) {
-            _memento.State.Balance -= args.Value;
+            _memento.Balance -= args.Value;
         }
 
         protected void Apply(PayeSalaryDeposited args) {
-            _memento.State.Balance += args.Value;
-        }
-
-        Guid IEventSourced.Identity {
-            get { return _memento.Identity; }
-        }
-
-        object IEventSourced.Memento {
-            get { return _memento.State; }
+            _memento.Balance += args.Value;
         }
 
         IDisposable IObservable<EventArgs>.Subscribe(IObserver<EventArgs> observer) {

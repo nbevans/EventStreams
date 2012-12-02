@@ -12,15 +12,6 @@ namespace EventStreams.Persistence.FileSystem {
             RootPath = rootPath;
         }
 
-        public string For(IAggregateRoot aggregateRoot) {
-            return For(aggregateRoot, false);
-        }
-
-        public string For(IAggregateRoot aggregateRoot, bool initializePath) {
-            if (aggregateRoot == null) throw new ArgumentNullException("aggregateRoot");
-            return For(aggregateRoot.Identity, initializePath);
-        }
-
         public string For(Guid identity) {
             return For(identity, false);
         }

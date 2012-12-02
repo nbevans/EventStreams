@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace EventStreams.Persistence.FileSystem {
     using Core;
-    using Core.Domain;
     using Serialization.Events;
 
     public class FileSystemPersistenceStrategy : IPersistenceStrategy {
@@ -20,8 +19,8 @@ namespace EventStreams.Persistence.FileSystem {
             _loader = new FileSystemLoader(repositoryHierarchy, eventReaderWriterPair.Reader);
         }
 
-        public void Store(IAggregateRoot aggregateRoot, IEnumerable<IStreamedEvent> eventsToAppend) {
-            _storer.Store(aggregateRoot, eventsToAppend);
+        public void Store(Guid identity, IEnumerable<IStreamedEvent> eventsToAppend) {
+            _storer.Store(identity, eventsToAppend);
         }
 
         public IEnumerable<IStreamedEvent> Load(Guid identity) {

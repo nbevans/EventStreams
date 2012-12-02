@@ -3,7 +3,6 @@
 using NUnit.Framework;
 
 namespace EventStreams.Projection {
-    using Core.Domain;
     using Domain;
 
     [TestFixture]
@@ -15,7 +14,7 @@ namespace EventStreams.Projection {
             var arId = new Guid("694B715F-5C81-485C-A0B9-C8156E06F188");
             var ar = activator(arId);
 
-            Assert.That(((IAggregateRoot)ar).Identity == arId);
+            Assert.That(ar.Identity == arId);
         }
 
         [Test]
@@ -24,7 +23,7 @@ namespace EventStreams.Projection {
             var arId = Guid.Empty;
             var ar = activator(arId);
 
-            Assert.That(((IAggregateRoot)ar).Identity == arId);
+            Assert.That(ar.Identity == arId);
         }
     }
 }
