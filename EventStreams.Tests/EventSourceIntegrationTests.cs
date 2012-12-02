@@ -34,6 +34,7 @@ namespace EventStreams {
                 ba.DepositPayeSalary(1500, "Acme Corp");
                 ba.Purchase(20, "Steak");
 
+                Assert.That(ba.Identity == _a);
                 Assert.That(ba.Balance == 1630);
             }
         }
@@ -44,6 +45,8 @@ namespace EventStreams {
 
             using (var ba = _eventSource.Open<BankAccount>(_a)) {
                 ba.Purchase(5, "Broadband");
+
+                Assert.That(ba.Identity == _a);
                 Assert.AreEqual(1625, ba.Balance);
             }
         }
@@ -54,6 +57,8 @@ namespace EventStreams {
                 Assert.AreEqual(ba.Identity, _b);
                 ba.Credit(40);
                 ba.Purchase(40, "Sky+");
+
+                Assert.That(ba.Identity == _b);
                 Assert.AreEqual(0, ba.Balance);
             }
         }
