@@ -28,7 +28,7 @@ namespace EventStreams.Projection {
 
         [Test]
         public void Given_an_activator_for_a_model_type_when_there_is_no_memento_or_state_parameter_on_its_constructor_then_expect_a_throw() {
-            Assert.Throws<InvalidOperationException>(() => new ObjectActivatorCache<BrokenModelType>().Activator());
+            Assert.Throws<InvalidOperationException>(() => new ObjectActivatorCache<BrokenModelTypeA>().Activator());
         }
 
         [Test]
@@ -41,19 +41,37 @@ namespace EventStreams.Projection {
             Assert.DoesNotThrow(() => new ObjectActivatorCache<ValidModelTypeB>().Activator());
         }
 
-        private class BrokenModelType {
-            public BrokenModelType() { }
-            public BrokenModelType(string somethingSomethingDarkSide) { }
+        [Test]
+        public void Given_an_activator_for_a_model_type_when_its_constructor_uses_a_broken_memento_type_then_expect_a_throw() {
+            Assert.Throws<InvalidOperationException>(() => new ObjectActivatorCache<BrokenModelTypeB>().Activator());           
+        }
+
+        // ReSharper disable ClassNeverInstantiated.Local
+        // ReSharper disable UnusedParameter.Local
+        private class BrokenModelTypeA {
+            public BrokenModelTypeA(string foobar) { }
+        }
+
+        private class BrokenModelTypeB {
+            public BrokenModelTypeB(BrokenModelTypeState memento) { }
         }
 
         private class ValidModelTypeA {
-            public ValidModelTypeA() { }
-            public ValidModelTypeA(string memento) { }
+            public ValidModelTypeA(ValidModelTypeState memento) { }
         }
 
         private class ValidModelTypeB {
-            public ValidModelTypeB() { }
-            public ValidModelTypeB(string state) { }
+            public ValidModelTypeB(ValidModelTypeState state) { }
         }
+
+        private class BrokenModelTypeState {
+            public BrokenModelTypeState(string foobar) { }
+        }
+
+        private class ValidModelTypeState {
+            public ValidModelTypeState(Guid identity) { }
+        }
+        // ReSharper restore UnusedParameter.Local
+        // ReSharper restore ClassNeverInstantiated.Local
     }
 }

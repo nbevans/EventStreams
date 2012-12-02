@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 
 namespace EventStreams.Projection {
-    internal sealed class ObjectActivatorCache<TModel> where TModel : class, new() {
+    internal sealed class ObjectActivatorCache<TModel> where TModel : class {
 
         private delegate object ObjectActivator(params object[] args);
 
@@ -28,7 +28,7 @@ namespace EventStreams.Projection {
             if (modelCtorInfo == null)
                 throw new InvalidOperationException(
                     string.Format(
-                        "The type '{0}' does not define a constructor that accepts a memento or state object. " +
+                        "The '{0}' model type does not define a constructor that accepts a memento or state object. " +
                         "Ensure that your type defines a single-parameter constructor where the parameter is named either '{1}' or '{2}'.",
                         typeof(TModel), MementoParamName, StateParamName));
 
@@ -39,6 +39,13 @@ namespace EventStreams.Projection {
                     .Single()
                     .ParameterType
                     .GetConstructor(new[] { typeof(Guid) });
+
+            if (mementoCtorInfo == null)
+                throw new InvalidOperationException(
+                    string.Format(
+                        "The '{0}' model type uses a type of memento/state which does not define a constructor that accepts a mandatory identity value." +
+                        "Ensure that your memento or state type defines a single-parameter constructor where the parameter is of '{1}' type.",
+                        typeof (TModel), typeof (Guid)));
 
             return arId => {
                 var mementoActivator = GetCompiledActivator(mementoCtorInfo);
