@@ -57,6 +57,14 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CompositeEventSource.cs" />
+    <Compile Include="Core\EventArgsExtensions.cs" />
+    <Compile Include="Core\IStreamedEvent.cs" />
+    <Compile Include="Core\IStreamedEventDiagnostics.cs" />
+    <Compile Include="Core\IStreamedEventIdentity.cs" />
+    <Compile Include="Core\IStreamedEventTiming.cs" />
+    <Compile Include="Core\StreamedEvent.cs" />
+    <Compile Include="Core\StreamedEventExtensions.cs" />
+    <Compile Include="Core\TimeSource.cs" />
     <Compile Include="EventSource.cs" />
     <Compile Include="IEventSource.cs" />
     <Compile Include="Persistence\FileSystem\ByteExtensions.cs" />
@@ -102,6 +110,8 @@
     <Compile Include="Projection\IProjector.cs" />
     <Compile Include="Projection\Projector.cs" />
     <Compile Include="Projection\Transformation\EventSequenceTransformer.cs" />
+    <Compile Include="Projection\Transformation\IEventSequenceTransformer.cs" />
+    <Compile Include="Projection\Transformation\IEventTransformer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Persistence\Serialization\Snapshots\ISerializer.cs" />
     <Compile Include="Persistence\Serialization\Snapshots\Serializer.cs" />

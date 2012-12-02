@@ -53,17 +53,7 @@
     <Compile Include="Core\Domain\EventHandlerBehavior.cs" />
     <Compile Include="Core\Domain\ConventionEventHandler.cs" />
     <Compile Include="Core\Domain\EventHandler.cs" />
-    <Compile Include="Core\EventArgsExtensions.cs" />
-    <Compile Include="Core\IStreamedEvent.cs" />
-    <Compile Include="Core\IStreamedEventDiagnostics.cs" />
-    <Compile Include="Core\IStreamedEventIdentity.cs" />
-    <Compile Include="Core\IStreamedEventTiming.cs" />
     <Compile Include="Core\Domain\HandleMethodInvocationCache.cs" />
-    <Compile Include="Core\StreamedEvent.cs" />
-    <Compile Include="Core\StreamedEventExtensions.cs" />
-    <Compile Include="Core\TimeSource.cs" />
-    <Compile Include="Projection\Transformation\IEventSequenceTransformer.cs" />
-    <Compile Include="Projection\Transformation\IEventTransformer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
