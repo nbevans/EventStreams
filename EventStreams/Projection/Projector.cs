@@ -24,7 +24,7 @@ namespace EventStreams.Projection {
         public TModel Project<TModel>(Guid identity, IEnumerable<IStreamedEvent> events, Func<TModel, EventHandler<TModel>> eventHandlerFactory)
             where TModel : class, new() {
 
-            // Initialize a suitable activator for the aggregate root type.
+            // Initialize a suitable activator for the model type.
             var activator =
                 new ObjectActivatorCache<TModel>()
                     .Activator();
@@ -54,7 +54,7 @@ namespace EventStreams.Projection {
             // TODO: This OnCompletion notification isn't wanted or needed for read-models.
             //
             // Send a signal to notify that event projection has finished.
-            // Typically an aggregate root would then not allow itself to receive
+            // Typically a model would then not allow itself to receive
             // any further IObserver<EventArgs> notifications.
             applier.OnCompleted();
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace EventStreams {
     /// <summary>
     /// A composition of multiple <see cref="EventSource"/> instances, each representing a logically separate source.
-    /// This type acts as a facade interface by selecting the appropriate <see cref="EventSource"/> for a particular requested type of aggregate root or read model.
+    /// This type acts as a facade interface by selecting the appropriate <see cref="EventSource"/> for a particular requested type of write model or read model.
     /// </summary>
     public class CompositeEventSource : IEventSource {
         private readonly Dictionary<Type, object> _sources =
@@ -16,22 +16,22 @@ namespace EventStreams {
         }
 
         /// <summary>
-        /// Creates a new aggregate root with a unique identity.
+        /// Creates a new write model object with a unique identity.
         /// </summary>
-        /// <typeparam name="TModel">The type of aggregate root to be created.</typeparam>
-        /// <returns>The newly created aggregate root.</returns>
-        public TModel Create<TModel>() where TModel : class, IObservable<EventArgs>, new() {
-            return GetSource<TModel>().Create<TModel>();
+        /// <typeparam name="TWriteModel">The type of write model to be created.</typeparam>
+        /// <returns>The newly created write model.</returns>
+        public TWriteModel Create<TWriteModel>() where TWriteModel : class, IObservable<EventArgs>, new() {
+            return GetSource<TWriteModel>().Create<TWriteModel>();
         }
 
         /// <summary>
-        /// Creates a new aggregate root with a specific unique identity.
+        /// Creates a new write model object with a specific unique identity.
         /// </summary>
-        /// <typeparam name="TModel">The type of aggregate root to be created.</typeparam>
-        /// <param name="identity">The identity to be used for the new aggregate root.</param>
-        /// <returns>The newly created aggregate root.</returns>
-        public TModel Create<TModel>(Guid identity) where TModel : class, IObservable<EventArgs>, new() {
-            return GetSource<TModel>().Create<TModel>(identity);
+        /// <typeparam name="TWriteModel">The type of write model to be created.</typeparam>
+        /// <param name="identity">The identity of the event stream to be created.</param>
+        /// <returns>The newly created write model.</returns>
+        public TWriteModel Create<TWriteModel>(Guid identity) where TWriteModel : class, IObservable<EventArgs>, new() {
+            return GetSource<TWriteModel>().Create<TWriteModel>(identity);
         }
 
         /// <summary>
@@ -45,23 +45,23 @@ namespace EventStreams {
         }
 
         /// <summary>
-        /// Opens an existing aggregate root with a specific identity.
+        /// Opens an existing write model with a specific identity.
         /// </summary>
-        /// <typeparam name="TModel">The type of aggregate root to be opened.</typeparam>
-        /// <param name="identity">The identity of the aggregate root to be opened.</param>
-        /// <returns>The opened aggregate root.</returns>
-        public TModel Open<TModel>(Guid identity) where TModel : class, IObservable<EventArgs>, new() {
-            return GetSource<TModel>().Open<TModel>(identity);
+        /// <typeparam name="TWriteModel">The type of write model to be opened.</typeparam>
+        /// <param name="identity">The identity of the event stream to be opened or created.</param>
+        /// <returns>The opened write model.</returns>
+        public TWriteModel Open<TWriteModel>(Guid identity) where TWriteModel : class, IObservable<EventArgs>, new() {
+            return GetSource<TWriteModel>().Open<TWriteModel>(identity);
         }
 
         /// <summary>
-        /// Opens or creates an aggregate root with a specific identity.
+        /// Opens or creates a write model with a specific identity.
         /// </summary>
-        /// <typeparam name="TModel">The type of aggregate root to be opened or created.</typeparam>
-        /// <param name="identity">The identity of the aggregate root to be opened or created.</param>
-        /// <returns>The aggregate root that was either opened or created.</returns>
-        public TModel OpenOrCreate<TModel>(Guid identity) where TModel : class, IObservable<EventArgs>, new() {
-            return GetSource<TModel>().OpenOrCreate<TModel>(identity);
+        /// <typeparam name="TWriteModel">The type of write model to be opened or created.</typeparam>
+        /// <param name="identity">The identity of the event stream to be opened or created.</param>
+        /// <returns>The write model that was either opened or created.</returns>
+        public TWriteModel OpenOrCreate<TWriteModel>(Guid identity) where TWriteModel : class, IObservable<EventArgs>, new() {
+            return GetSource<TWriteModel>().OpenOrCreate<TWriteModel>(identity);
         }
 
         private EventSource GetSource<TModel>() where TModel : class, new() {
@@ -70,7 +70,7 @@ namespace EventStreams {
                 return (EventSource)source;
 
             throw new InvalidOperationException(
-                string.Format("An event source for the type '{0}' is not available.",
+                string.Format("An event source for the '{0}' model type is not available.",
                               typeof(TModel).FullName));
         }
     }

@@ -6,7 +6,6 @@ using NUnit.Framework;
 
 namespace EventStreams.Projection.Transformation {
     using Core;
-    using Core.Domain;
     using Domain;
     using Domain.Events.BankAccount;
 

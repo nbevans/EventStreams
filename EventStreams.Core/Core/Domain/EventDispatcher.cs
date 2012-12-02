@@ -4,28 +4,28 @@ using System.Collections.Generic;
 namespace EventStreams.Core.Domain {
 
     /// <summary>
-    /// Serves as a boilerplate helper component that can, optionally, be used by aggregate roots to simplify their event dispatching.
+    /// Serves as a boilerplate helper component that can, optionally, be used by write models (WM) to simplify their event dispatching.
     /// This type manages the list of subscribed observers and allows events to be published to those observers.
     /// 
-    /// Note that this implementation treats the aggregate root instance itself as an observer, so as to ensure that the event handler is called
-    /// on the AR first.
+    /// Note that this implementation treats the write model instance itself as an observer, so as to ensure that the event handler is called
+    /// on the WM first.
     /// </summary>
     /// <remarks>
-    /// An aggregate root can implement this type by forwarding its <code>IObservable.Subscribe()</code> invocations to a privately held instance of this type.
+    /// An write model can implement this type by forwarding its <code>IObservable.Subscribe()</code> invocations to a privately held instance of this type.
     /// </remarks>
-    /// <typeparam name="TAggregateRoot">The type of aggregate root for which observation services will be performed.</typeparam>
-    public class EventDispatcher<TAggregateRoot> : IObservable<EventArgs>, IObserver<EventArgs>, IDisposable
-        where TAggregateRoot : class, IObservable<EventArgs>, new() {
+    /// <typeparam name="TWriteModel">The type of write model for which event dispatching will be performed.</typeparam>
+    public class EventDispatcher<TWriteModel> : IObservable<EventArgs>, IObserver<EventArgs>, IDisposable
+        where TWriteModel : class, IObservable<EventArgs>, new() {
 
         private readonly object _syncLock = new object();
 
         private readonly List<IObserver<EventArgs>> _observers =
             new List<IObserver<EventArgs>>(3);
 
-        public TAggregateRoot Owner { get; set; }
+        public TWriteModel Owner { get; set; }
         public bool IsCompleted { get; set; }
 
-        public EventDispatcher(TAggregateRoot owner) {
+        public EventDispatcher(TWriteModel owner) {
             if (owner == null) throw new ArgumentNullException("owner");
             Owner = owner;
         }
@@ -41,7 +41,7 @@ namespace EventStreams.Core.Domain {
         }
 
         protected virtual void DispatchToSelf(EventArgs args) {
-            new ConventionEventHandler<TAggregateRoot>(Owner).OnNext(args);
+            new ConventionEventHandler<TWriteModel>(Owner).OnNext(args);
         }
 
         private void RemoveObserver(IObserver<EventArgs> observer) {
@@ -85,7 +85,7 @@ namespace EventStreams.Core.Domain {
         protected void ThrowIfCompleted() {
             if (IsCompleted)
                 throw new InvalidOperationException(
-                    "The aggregate root previously indicated that it had completed producing commands.");
+                    "The write model previously indicated that it had completed producing commands.");
         }
     }
 }

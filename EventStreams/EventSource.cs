@@ -10,16 +10,16 @@ namespace EventStreams {
     using Projection;
 
     /// <summary>
-    /// The ultimate entry point into the event store. All aggregate roots and read models are "sourced" via this provider.
+    /// The ultimate entry point into the event store. All write models (WM) and read models (RM) are "sourced" via this provider.
     /// The event source will perform event observation and lifetime scope management of all objects that are sourced from it.
     /// </summary>
     public class EventSource : IEventSource {
 
         // We use the "little known" ConditionalWeakTable hidden in the depths of .NET 4 because it means we don't need to hold
-        // strong references to our aggregate roots which would prevent them being garbage collected. This is important to prevent
-        // serious memory leaks.
-        private readonly ConditionalWeakTable<IObservable<EventArgs>, AggregateRootObserver> _objects =
-            new ConditionalWeakTable<IObservable<EventArgs>, AggregateRootObserver>();
+        // strong references to our write or read models which would prevent them being garbage collected.
+        // This is important to prevent serious memory leaks.
+        private readonly ConditionalWeakTable<IObservable<EventArgs>, WriteModelObserver> _objects =
+            new ConditionalWeakTable<IObservable<EventArgs>, WriteModelObserver>();
 
         private readonly IProjector _projector;
         private readonly IPersistenceStrategy _persistenceStrategy;
@@ -34,22 +34,22 @@ namespace EventStreams {
         }
 
         /// <summary>
-        /// Creates a new aggregate root with a unique identity.
+        /// Creates a new write model object with a unique identity.
         /// </summary>
-        /// <typeparam name="TModel">The type of aggregate root to be created.</typeparam>
-        /// <returns>The newly created aggregate root.</returns>
-        public TModel Create<TModel>() where TModel : class, IObservable<EventArgs>, new() {
-            return Create<TModel>(Guid.NewGuid());
+        /// <typeparam name="TWriteModel">The type of write model to be created.</typeparam>
+        /// <returns>The newly created write model.</returns>
+        public TWriteModel Create<TWriteModel>() where TWriteModel : class, IObservable<EventArgs>, new() {
+            return Create<TWriteModel>(Guid.NewGuid());
         }
 
         /// <summary>
-        /// Creates a new aggregate root with a specific unique identity.
+        /// Creates a new write model object with a specific unique identity.
         /// </summary>
-        /// <typeparam name="TModel">The type of aggregate root to be created.</typeparam>
-        /// <param name="identity">The identity to be used for the new aggregate root.</param>
-        /// <returns>The newly created aggregate root.</returns>
-        public TModel Create<TModel>(Guid identity) where TModel : class, IObservable<EventArgs>, new() {
-            return OpenCore<TModel>(identity, false);
+        /// <typeparam name="TWriteModel">The type of write model to be created.</typeparam>
+        /// <param name="identity">The identity of the event stream to be created.</param>
+        /// <returns>The newly created write model.</returns>
+        public TWriteModel Create<TWriteModel>(Guid identity) where TWriteModel : class, IObservable<EventArgs>, new() {
+            return OpenCore<TWriteModel>(identity, false);
         }
 
         /// <summary>
@@ -63,73 +63,73 @@ namespace EventStreams {
         }
 
         /// <summary>
-        /// Opens an existing aggregate root with a specific identity.
+        /// Opens an existing write model with a specific identity.
         /// </summary>
-        /// <typeparam name="TModel">The type of aggregate root to be opened.</typeparam>
-        /// <param name="identity">The identity of the aggregate root to be opened.</param>
-        /// <returns>The opened aggregate root.</returns>
-        public TModel Open<TModel>(Guid identity) where TModel : class, IObservable<EventArgs>, new() {
-            return OpenCore<TModel>(identity);
+        /// <typeparam name="TWriteModel">The type of write model to be opened.</typeparam>
+        /// <param name="identity">The identity of the event stream to be opened or created.</param>
+        /// <returns>The opened write model.</returns>
+        public TWriteModel Open<TWriteModel>(Guid identity) where TWriteModel : class, IObservable<EventArgs>, new() {
+            return OpenCore<TWriteModel>(identity);
         }
 
         /// <summary>
-        /// Opens or creates an aggregate root with a specific identity.
+        /// Opens or creates a write model with a specific identity.
         /// </summary>
-        /// <typeparam name="TModel">The type of aggregate root to be opened or created.</typeparam>
-        /// <param name="identity">The identity of the aggregate root to be opened or created.</param>
-        /// <returns>The aggregate root that was either opened or created.</returns>
-        public TModel OpenOrCreate<TModel>(Guid identity) where TModel : class, IObservable<EventArgs>, new() {
+        /// <typeparam name="TWriteModel">The type of write model to be opened or created.</typeparam>
+        /// <param name="identity">The identity of the event stream to be opened or created.</param>
+        /// <returns>The write model that was either opened or created.</returns>
+        public TWriteModel OpenOrCreate<TWriteModel>(Guid identity) where TWriteModel : class, IObservable<EventArgs>, new() {
             try {
-                return Open<TModel>(identity);
+                return Open<TWriteModel>(identity);
 
             } catch (StreamNotFoundPersistenceException) {
-                return Create<TModel>(identity);
+                return Create<TWriteModel>(identity);
             }
         }
 
         private TModel OpenCore<TModel>(Guid identity, bool loadEvents = true, EventHandlerBehavior eventHandlerBehavior = EventHandlerBehavior.Lossless) where TModel : class, new() {
             var events = loadEvents ? _persistenceStrategy.Load(identity) : Enumerable.Empty<IStreamedEvent>();
-            var ar = _projector.Project<TModel>(identity, events, x => new ConventionEventHandler<TModel>(x, eventHandlerBehavior));
+            var model = _projector.Project<TModel>(identity, events, x => new ConventionEventHandler<TModel>(x, eventHandlerBehavior));
 
             if (typeof(IObservable<EventArgs>).IsAssignableFrom(typeof(TModel)))
-                Observe((IObservable<EventArgs>)ar, identity);
+                Observe((IObservable<EventArgs>)model, identity);
 
-            return ar;
+            return model;
         }
 
-        private void Close(IObservable<EventArgs> aggregateRoot) {
-            _objects.Remove(aggregateRoot);
+        private void Close(IObservable<EventArgs> writeModel) {
+            _objects.Remove(writeModel);
         }
 
-        private void Commit(Guid identity, IEnumerable<IStreamedEvent> uncommittedEvents) {
-            _persistenceStrategy.Store(identity, uncommittedEvents);
+        private void Commit(Guid identity, IEnumerable<IStreamedEvent> events) {
+            _persistenceStrategy.Store(identity, events);
         }
 
-        private void Observe(IObservable<EventArgs> aggregateRoot, Guid identity) {
-            var observer = new AggregateRootObserver(this, aggregateRoot, identity);
-            _objects.Add(aggregateRoot, observer);
-            observer.Subscription = aggregateRoot.Subscribe(observer);
+        private void Observe(IObservable<EventArgs> writeModel, Guid identity) {
+            var observer = new WriteModelObserver(this, writeModel, identity);
+            _objects.Add(writeModel, observer);
+            observer.Subscription = writeModel.Subscribe(observer);
         }
 
         /// <summary>
-        /// Provides observation services upon an aggregate root.
+        /// Provides observation services upon a write model (WM).
         /// </summary>
         /// <remarks>
-        /// When the <see cref="EventSource"/> creates or opens an aggregate root, it will subscribe for notification of events on that AR.
-        /// This type is the observer implementation that will act as the callback function when the AR is publishing an event.
+        /// When the <see cref="EventSource"/> creates or opens a write model (WM), it will subscribe for notification of events on that WM.
+        /// This type is the observer implementation that will act as the callback function when the WM is publishing an event.
         /// </remarks>
-        private sealed class AggregateRootObserver : IObserver<EventArgs> {
+        private sealed class WriteModelObserver : IObserver<EventArgs> {
             private readonly EventSource _parentSource;
-            private readonly IObservable<EventArgs> _aggregateRoot;
+            private readonly IObservable<EventArgs> _writeModel;
             private readonly Guid _identity;
 
             public IDisposable Subscription { get; set; }
 
-            public AggregateRootObserver(EventSource parentSource, IObservable<EventArgs> aggregateRoot, Guid identity) {
+            public WriteModelObserver(EventSource parentSource, IObservable<EventArgs> writeModel, Guid identity) {
                 if (parentSource == null) throw new ArgumentNullException("parentSource");
-                if (aggregateRoot == null) throw new ArgumentNullException("aggregateRoot");
+                if (writeModel == null) throw new ArgumentNullException("writeModel");
                 _parentSource = parentSource;
-                _aggregateRoot = aggregateRoot;
+                _writeModel = writeModel;
                 _identity = identity;
             }
 
@@ -143,7 +143,7 @@ namespace EventStreams {
 
             public void OnCompleted() {
                 // Notify the EventSource to purge its observer.
-                _parentSource.Close(_aggregateRoot);
+                _parentSource.Close(_writeModel);
 
                 // Unsubscribe from observation.
                 Subscription.Dispose();

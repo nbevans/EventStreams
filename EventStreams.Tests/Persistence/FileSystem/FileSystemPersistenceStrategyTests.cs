@@ -16,27 +16,27 @@ namespace EventStreams.Persistence.FileSystem {
 
         [Test]
         public void Given_first_set_when_written_to_disk_and_when_read_back_in_then_content_is_as_expected() {
-            var arId = new Guid("E34900D6-6C63-4066-988F-DCEC25B482FA");
+            var identity = new Guid("E34900D6-6C63-4066-988F-DCEC25B482FA");
 
-            var filename = _repositoryPath.For(arId);
+            var filename = _repositoryPath.For(identity);
             File.Delete(filename);
 
             var fspe = new FileSystemPersistenceStrategy(_repositoryPath, EventReaderWriterPair.Null);
-            fspe.Store(arId, MockEventStreams.First);
+            fspe.Store(identity, MockEventStreams.First);
 
             Assert.AreEqual(File.ReadAllText(filename), ResourceProvider.Get("First.e"));
         }
 
         [Test]
         public void Given_first_set_and_second_set_when_written_to_disk_individually_and_when_read_back_in_then_content_is_as_expected() {
-            var arId = new Guid("E34900D6-6C63-4066-988F-DCEC25B482FA");
+            var identity = new Guid("E34900D6-6C63-4066-988F-DCEC25B482FA");
 
-            var filename = _repositoryPath.For(arId);
+            var filename = _repositoryPath.For(identity);
             File.Delete(filename);
 
             var fspe = new FileSystemPersistenceStrategy(_repositoryPath, EventReaderWriterPair.Null);
-            fspe.Store(arId, MockEventStreams.First);
-            fspe.Store(arId, MockEventStreams.Second);
+            fspe.Store(identity, MockEventStreams.First);
+            fspe.Store(identity, MockEventStreams.Second);
 
             Assert.AreEqual(File.ReadAllText(filename), ResourceProvider.Get("First_and_second.e"));
         }

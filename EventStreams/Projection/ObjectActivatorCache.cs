@@ -47,11 +47,11 @@ namespace EventStreams.Projection {
                         "Ensure that your memento or state type defines a single-parameter constructor where the parameter is of '{1}' type.",
                         typeof (TModel), typeof (Guid)));
 
-            return arId => {
+            return identity => {
                 var mementoActivator = GetCompiledActivator(mementoCtorInfo);
                 var modelActivator = GetCompiledActivator(modelCtorInfo);
 
-                var memento = mementoActivator(arId);
+                var memento = mementoActivator(identity);
                 return (TModel)modelActivator(memento);
             };
         }

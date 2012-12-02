@@ -12,7 +12,7 @@ namespace EventStreams.Projection {
         private readonly Projector _projector = new Projector();
 
         private readonly Func<BankAccount, EventHandler<BankAccount>> _defaultEventHandlerFactory =
-            ar => new ConventionEventHandler<BankAccount>(ar, EventHandlerBehavior.Lossless);
+            model => new ConventionEventHandler<BankAccount>(model, EventHandlerBehavior.Lossless);
 
         private readonly StreamedEvent[] _events100 = new[] {
             new PayeSalaryDeposited(100, "Acme Corp").ToStreamedEvent(),
