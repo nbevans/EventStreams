@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace EventStreams.Core.Domain {
 
@@ -18,11 +17,10 @@ namespace EventStreams.Core.Domain {
     public class EventDispatcher<TAggregateRoot> : IObservable<EventArgs>, IObserver<EventArgs>, IDisposable
         where TAggregateRoot : class, IObservable<EventArgs>, new() {
 
-        private readonly ReaderWriterLockSlim _rwLock =
-            new ReaderWriterLockSlim();
+        private readonly object _syncLock = new object();
 
-        private readonly IList<IObserver<EventArgs>> _observers =
-            new List<IObserver<EventArgs>>(1);
+        private readonly List<IObserver<EventArgs>> _observers =
+            new List<IObserver<EventArgs>>(3);
 
         public TAggregateRoot Owner { get; set; }
         public bool IsCompleted { get; set; }
@@ -47,39 +45,23 @@ namespace EventStreams.Core.Domain {
         }
 
         private void RemoveObserver(IObserver<EventArgs> observer) {
-            try {
-                _rwLock.EnterWriteLock();
-
+            lock (_syncLock)
                 _observers.Remove(observer);
-
-            } finally {
-                _rwLock.ExitWriteLock();
-            }
         }
 
         private void NotifyObservers(Action<IObserver<EventArgs>> action) {
-            try {
-                _rwLock.EnterReadLock();
-
-                foreach (var observer in _observers)
+            lock (_syncLock) {
+                var clone = _observers.ToArray();
+                foreach (var observer in clone)
                     action(observer);
-
-            } finally {
-                _rwLock.ExitReadLock();
             }
         }
 
         public virtual IDisposable Subscribe(IObserver<EventArgs> observer) {
             if (observer == null) throw new ArgumentNullException("observer");
             
-            try {
-                _rwLock.EnterWriteLock();
-
+            lock (_syncLock)
                 _observers.Add(observer);
-
-            } finally {
-                _rwLock.ExitWriteLock();
-            }
 
             return Disposable.Create(() => RemoveObserver(observer));
         }
