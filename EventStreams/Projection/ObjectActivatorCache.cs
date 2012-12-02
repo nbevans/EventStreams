@@ -24,7 +24,6 @@ namespace EventStreams.Projection {
                     .GetConstructors()
                     .Where(ci => ci.GetParameters().Length == 1)
                     .SingleOrDefault(ci => ci.GetParameters().SingleOrDefault(TestMementoParameterInfo) != null);
-                    //.SingleOrDefault(ci => ci.GetParameters().SingleOrDefault(pi => pi.ParameterType.GetGenericTypeDefinition() == typeof(Memento<>)) != null);
 
             if (modelCtorInfo == null)
                 throw new InvalidOperationException(
