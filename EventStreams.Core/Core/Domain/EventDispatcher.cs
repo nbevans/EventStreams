@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace EventStreams.Core.Domain {
+
     /// <summary>
     /// Serves as a boilerplate helper component that can, optionally, be used by aggregate roots to simplify their event dispatching.
     /// This type manages the list of subscribed observers and allows events to be published to those observers.
@@ -13,8 +15,11 @@ namespace EventStreams.Core.Domain {
     /// An aggregate root can implement this type by forwarding its <code>IObservable.Subscribe()</code> invocations to a privately held instance of this type.
     /// </remarks>
     /// <typeparam name="TAggregateRoot">The type of aggregate root for which observation services will be performed.</typeparam>
-    public class CommandObservation<TAggregateRoot> : IObservable<EventArgs>, IObserver<EventArgs>, IDisposable
+    public class EventDispatcher<TAggregateRoot> : IObservable<EventArgs>, IObserver<EventArgs>, IDisposable
         where TAggregateRoot : class, IObservable<EventArgs>, new() {
+
+        private readonly ReaderWriterLockSlim _rwLock =
+            new ReaderWriterLockSlim();
 
         private readonly IList<IObserver<EventArgs>> _observers =
             new List<IObserver<EventArgs>>(1);
@@ -22,7 +27,7 @@ namespace EventStreams.Core.Domain {
         public TAggregateRoot Owner { get; set; }
         public bool IsCompleted { get; set; }
 
-        public CommandObservation(TAggregateRoot owner) {
+        public EventDispatcher(TAggregateRoot owner) {
             if (owner == null) throw new ArgumentNullException("owner");
             Owner = owner;
         }
@@ -31,43 +36,67 @@ namespace EventStreams.Core.Domain {
             ((IObserver<EventArgs>)this).OnCompleted();
         }
 
+        public virtual void Dispatch(EventArgs args) {
+            ((IObserver<EventArgs>)this).OnNext(args);
+
+            DispatchToSelf(args);
+        }
+
+        protected virtual void DispatchToSelf(EventArgs args) {
+            new ConventionEventHandler<TAggregateRoot>(Owner).OnNext(args);
+        }
+
+        private void RemoveObserver(IObserver<EventArgs> observer) {
+            try {
+                _rwLock.EnterWriteLock();
+
+                _observers.Remove(observer);
+
+            } finally {
+                _rwLock.ExitWriteLock();
+            }
+        }
+
+        private void NotifyObservers(Action<IObserver<EventArgs>> action) {
+            try {
+                _rwLock.EnterReadLock();
+
+                foreach (var observer in _observers)
+                    action(observer);
+
+            } finally {
+                _rwLock.ExitReadLock();
+            }
+        }
+
         public virtual IDisposable Subscribe(IObserver<EventArgs> observer) {
             if (observer == null) throw new ArgumentNullException("observer");
-            _observers.Add(observer);
-            return Disposable.Create(() => _observers.Remove(observer));
-        }
+            
+            try {
+                _rwLock.EnterWriteLock();
 
-        public virtual void Apply(EventArgs args) {
-            new ConventionEventHandler<TAggregateRoot>(Owner).OnNext(args);
-            ((IObserver<EventArgs>) this).OnNext(args);
-        }
+                _observers.Add(observer);
 
-        public virtual void Error(Exception error) {
-            ((IObserver<EventArgs>)this).OnError(error);
-        }
+            } finally {
+                _rwLock.ExitWriteLock();
+            }
 
-        public virtual void Commit() {
-            ((IObserver<EventArgs>)this).OnCompleted();
+            return Disposable.Create(() => RemoveObserver(observer));
         }
 
         void IObserver<EventArgs>.OnNext(EventArgs value) {
             ThrowIfCompleted();
-            foreach (var observer in _observers)
-                observer.OnNext(value);
+            NotifyObservers(observer => observer.OnNext(value));
         }
 
         void IObserver<EventArgs>.OnError(Exception error) {
             ThrowIfCompleted();
-            foreach (var observer in _observers)
-                observer.OnError(error);
+            NotifyObservers(observer => observer.OnError(error));
         }
 
         void IObserver<EventArgs>.OnCompleted() {
             ThrowIfCompleted();
-
-            foreach (var observer in _observers)
-                observer.OnCompleted();
-
+            NotifyObservers(observer => observer.OnCompleted());
             IsCompleted = true;
         }
 

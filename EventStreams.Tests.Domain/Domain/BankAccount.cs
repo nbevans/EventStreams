@@ -6,7 +6,7 @@ namespace EventStreams.Domain {
 
     public class BankAccount : IObservable<EventArgs>, IDisposable {
         private readonly BankAccountState _memento;
-        private readonly CommandObservation<BankAccount> _commandObservation;
+        private readonly EventDispatcher<BankAccount> _eventDispatcher;
         
         public Guid Identity { get { return _memento.Identity; }}
         public decimal Balance { get { return _memento.Balance; } }
@@ -16,23 +16,23 @@ namespace EventStreams.Domain {
 
         public BankAccount(BankAccountState memento) {
             _memento = memento ?? new BankAccountState();
-            _commandObservation = new CommandObservation<BankAccount>(this);
+            _eventDispatcher = new EventDispatcher<BankAccount>(this);
         }
 
         public void Credit(decimal value) {
-            _commandObservation.Apply(new Credited(value));
+            _eventDispatcher.Dispatch(new Credited(value));
         }
 
         public void Debit(decimal value) {
-            _commandObservation.Apply(new Debited(value));
+            _eventDispatcher.Dispatch(new Debited(value));
         }
 
         public void Purchase(decimal value, string name) {
-            _commandObservation.Apply(new MadePurchase(value, name));
+            _eventDispatcher.Dispatch(new MadePurchase(value, name));
         }
 
         public void DepositPayeSalary(decimal value, string source) {
-            _commandObservation.Apply(new PayeSalaryDeposited(value, source));
+            _eventDispatcher.Dispatch(new PayeSalaryDeposited(value, source));
         }
 
         protected void Apply(Credited args) {
@@ -52,11 +52,11 @@ namespace EventStreams.Domain {
         }
 
         IDisposable IObservable<EventArgs>.Subscribe(IObserver<EventArgs> observer) {
-            return _commandObservation.Subscribe(observer);
+            return _eventDispatcher.Subscribe(observer);
         }
 
         public void Dispose() {
-            _commandObservation.Dispose();
+            _eventDispatcher.Dispose();
         }
     }
 }
