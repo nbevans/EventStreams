@@ -10,9 +10,9 @@ namespace EventStreams.Projection {
         IEventSequenceTransformer Transformations { get; }
 
         TModel Project<TModel>(IEnumerable<IStreamedEvent> events, Func<TModel, EventHandler<TModel>> eventHandlerFactory)
-            where TModel : class, new();
+            where TModel : class;
 
         TModel Project<TModel>(Guid identity, IEnumerable<IStreamedEvent> events, Func<TModel, EventHandler<TModel>> eventHandlerFactory)
-            where TModel : class, new();
+            where TModel : class;
     }
 }

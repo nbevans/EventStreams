@@ -38,7 +38,7 @@ namespace EventStreams {
         /// </summary>
         /// <typeparam name="TWriteModel">The type of write model to be created.</typeparam>
         /// <returns>The newly created write model.</returns>
-        public TWriteModel Create<TWriteModel>() where TWriteModel : class, IObservable<EventArgs>, new() {
+        public TWriteModel Create<TWriteModel>() where TWriteModel : class, IObservable<EventArgs> {
             return Create<TWriteModel>(Guid.NewGuid());
         }
 
@@ -48,7 +48,7 @@ namespace EventStreams {
         /// <typeparam name="TWriteModel">The type of write model to be created.</typeparam>
         /// <param name="identity">The identity of the event stream to be created.</param>
         /// <returns>The newly created write model.</returns>
-        public TWriteModel Create<TWriteModel>(Guid identity) where TWriteModel : class, IObservable<EventArgs>, new() {
+        public TWriteModel Create<TWriteModel>(Guid identity) where TWriteModel : class, IObservable<EventArgs> {
             return OpenCore<TWriteModel>(identity, false);
         }
 
@@ -58,7 +58,7 @@ namespace EventStreams {
         /// <typeparam name="TReadModel">The of read model to be used for the projection.</typeparam>
         /// <param name="identity">The identity of the event stream to be read.</param>
         /// <returns>The projected read model.</returns>
-        public TReadModel Read<TReadModel>(Guid identity) where TReadModel : class, new() {
+        public TReadModel Read<TReadModel>(Guid identity) where TReadModel : class {
             return OpenCore<TReadModel>(identity, true, EventHandlerBehavior.Lossy);
         }
 
@@ -68,7 +68,7 @@ namespace EventStreams {
         /// <typeparam name="TWriteModel">The type of write model to be opened.</typeparam>
         /// <param name="identity">The identity of the event stream to be opened or created.</param>
         /// <returns>The opened write model.</returns>
-        public TWriteModel Open<TWriteModel>(Guid identity) where TWriteModel : class, IObservable<EventArgs>, new() {
+        public TWriteModel Open<TWriteModel>(Guid identity) where TWriteModel : class, IObservable<EventArgs> {
             return OpenCore<TWriteModel>(identity);
         }
 
@@ -78,7 +78,7 @@ namespace EventStreams {
         /// <typeparam name="TWriteModel">The type of write model to be opened or created.</typeparam>
         /// <param name="identity">The identity of the event stream to be opened or created.</param>
         /// <returns>The write model that was either opened or created.</returns>
-        public TWriteModel OpenOrCreate<TWriteModel>(Guid identity) where TWriteModel : class, IObservable<EventArgs>, new() {
+        public TWriteModel OpenOrCreate<TWriteModel>(Guid identity) where TWriteModel : class, IObservable<EventArgs> {
             try {
                 return Open<TWriteModel>(identity);
 
@@ -87,7 +87,7 @@ namespace EventStreams {
             }
         }
 
-        private TModel OpenCore<TModel>(Guid identity, bool loadEvents = true, EventHandlerBehavior eventHandlerBehavior = EventHandlerBehavior.Lossless) where TModel : class, new() {
+        private TModel OpenCore<TModel>(Guid identity, bool loadEvents = true, EventHandlerBehavior eventHandlerBehavior = EventHandlerBehavior.Lossless) where TModel : class {
             var events = loadEvents ? _persistenceStrategy.Load(identity) : Enumerable.Empty<IStreamedEvent>();
             var model = _projector.Project<TModel>(identity, events, x => new ConventionEventHandler<TModel>(x, eventHandlerBehavior));
 

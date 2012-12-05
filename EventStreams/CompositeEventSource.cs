@@ -10,7 +10,7 @@ namespace EventStreams {
         private readonly Dictionary<Type, object> _sources =
             new Dictionary<Type, object>();
 
-        public CompositeEventSource Add<TModel>(EventSource eventSource) where TModel : class, new() {
+        public CompositeEventSource Add<TModel>(EventSource eventSource) where TModel : class {
             _sources.Add(typeof(TModel), eventSource);
             return this;
         }
@@ -20,7 +20,7 @@ namespace EventStreams {
         /// </summary>
         /// <typeparam name="TWriteModel">The type of write model to be created.</typeparam>
         /// <returns>The newly created write model.</returns>
-        public TWriteModel Create<TWriteModel>() where TWriteModel : class, IObservable<EventArgs>, new() {
+        public TWriteModel Create<TWriteModel>() where TWriteModel : class, IObservable<EventArgs> {
             return GetSource<TWriteModel>().Create<TWriteModel>();
         }
 
@@ -30,7 +30,7 @@ namespace EventStreams {
         /// <typeparam name="TWriteModel">The type of write model to be created.</typeparam>
         /// <param name="identity">The identity of the event stream to be created.</param>
         /// <returns>The newly created write model.</returns>
-        public TWriteModel Create<TWriteModel>(Guid identity) where TWriteModel : class, IObservable<EventArgs>, new() {
+        public TWriteModel Create<TWriteModel>(Guid identity) where TWriteModel : class, IObservable<EventArgs> {
             return GetSource<TWriteModel>().Create<TWriteModel>(identity);
         }
 
@@ -40,7 +40,7 @@ namespace EventStreams {
         /// <typeparam name="TReadModel">The of read model to be used for the projection.</typeparam>
         /// <param name="identity">The identity of the event stream to be read.</param>
         /// <returns>The projected read model.</returns>
-        public TReadModel Read<TReadModel>(Guid identity) where TReadModel : class, new() {
+        public TReadModel Read<TReadModel>(Guid identity) where TReadModel : class {
             return GetSource<TReadModel>().Read<TReadModel>(identity);
         }
 
@@ -50,7 +50,7 @@ namespace EventStreams {
         /// <typeparam name="TWriteModel">The type of write model to be opened.</typeparam>
         /// <param name="identity">The identity of the event stream to be opened or created.</param>
         /// <returns>The opened write model.</returns>
-        public TWriteModel Open<TWriteModel>(Guid identity) where TWriteModel : class, IObservable<EventArgs>, new() {
+        public TWriteModel Open<TWriteModel>(Guid identity) where TWriteModel : class, IObservable<EventArgs> {
             return GetSource<TWriteModel>().Open<TWriteModel>(identity);
         }
 
@@ -60,11 +60,11 @@ namespace EventStreams {
         /// <typeparam name="TWriteModel">The type of write model to be opened or created.</typeparam>
         /// <param name="identity">The identity of the event stream to be opened or created.</param>
         /// <returns>The write model that was either opened or created.</returns>
-        public TWriteModel OpenOrCreate<TWriteModel>(Guid identity) where TWriteModel : class, IObservable<EventArgs>, new() {
+        public TWriteModel OpenOrCreate<TWriteModel>(Guid identity) where TWriteModel : class, IObservable<EventArgs> {
             return GetSource<TWriteModel>().OpenOrCreate<TWriteModel>(identity);
         }
 
-        private EventSource GetSource<TModel>() where TModel : class, new() {
+        private EventSource GetSource<TModel>() where TModel : class {
             object source;
             if (_sources.TryGetValue(typeof(TModel), out source))
                 return (EventSource)source;

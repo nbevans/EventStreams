@@ -16,13 +16,13 @@ namespace EventStreams.Projection {
         }
 
         public TModel Project<TModel>(IEnumerable<IStreamedEvent> events, Func<TModel, EventHandler<TModel>> eventHandlerFactory)
-            where TModel : class, new() {
+            where TModel : class {
 
             return Project(Guid.NewGuid(), events, eventHandlerFactory);
         }
 
         public TModel Project<TModel>(Guid identity, IEnumerable<IStreamedEvent> events, Func<TModel, EventHandler<TModel>> eventHandlerFactory)
-            where TModel : class, new() {
+            where TModel : class {
 
             // Initialize a suitable activator for the model type.
             var activator =
