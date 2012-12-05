@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+
 using NUnit.Framework;
 
 namespace EventStreams {
@@ -32,9 +34,11 @@ namespace EventStreams {
                 ba.Credit(150);
                 ba.DepositPayeSalary(1500, "Acme Corp");
                 ba.Purchase(20, "Steak");
+                ba.Purchase(10, "Spam");
+                ba.Purchase(10, "Noodles");
 
                 Assert.That(ba.Identity == _a);
-                Assert.That(ba.Balance == 1630);
+                Assert.That(ba.Balance == 1610);
             }
         }
 
@@ -46,7 +50,7 @@ namespace EventStreams {
                 ba.Purchase(5, "Broadband");
 
                 Assert.That(ba.Identity == _a);
-                Assert.AreEqual(1625, ba.Balance);
+                Assert.AreEqual(1605, ba.Balance);
             }
         }
 
@@ -60,6 +64,18 @@ namespace EventStreams {
                 Assert.That(ba.Identity == _b);
                 Assert.AreEqual(0, ba.Balance);
             }
+        }
+
+        [Test]
+        public void Read_a_stream_with_a_specific_identifier_into_a_particular_read_model() {
+            Create_a_brand_new_stream_and_issue_some_commands();
+
+            var ba = _eventSource.Read<PurchasesMadeOnBankAccount>(_a);
+
+            Assert.AreEqual("Steak", ba.ItemNames.ElementAt(0));
+            Assert.AreEqual("Spam", ba.ItemNames.ElementAt(1));
+            Assert.AreEqual("Noodles", ba.ItemNames.ElementAt(2));
+            Assert.AreEqual(40, ba.TotalValue);
         }
     }
 }
