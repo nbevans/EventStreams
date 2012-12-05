@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace EventStreams.Core.Domain {
-    public abstract class EventHandler<TModel> : IObserver<EventArgs> where TModel : class, new() {
+    public abstract class EventHandler<TModel> : IObserver<EventArgs> where TModel : class {
         public TModel Owner { get; private set; }
         public EventHandlerBehavior Behavior { get; private set; }
         public bool IsCompleted { get; private set; }

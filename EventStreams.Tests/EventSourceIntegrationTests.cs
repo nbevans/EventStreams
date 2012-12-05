@@ -3,7 +3,7 @@ using System.IO;
 using NUnit.Framework;
 
 namespace EventStreams {
-    using Domain;
+    using Domain.Accounting;
     using Persistence.FileSystem;
     using Persistence.Serialization.Events;
 

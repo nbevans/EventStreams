@@ -3,8 +3,8 @@
 using NUnit.Framework;
 
 namespace EventStreams.Core.Domain {
-    using EventStreams.Domain;
-    using EventStreams.Domain.Events.BankAccount;
+    using EventStreams.Domain.Accounting;
+    using EventStreams.Domain.Accounting.Events;
 
     [TestFixture]
     public class ConventionEventHandlerTests {

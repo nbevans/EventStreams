@@ -1,8 +1,10 @@
 ﻿using System;
-using EventStreams.Domain.Events.BankAccount;
+
 using NUnit.Framework;
 
 namespace EventStreams.Core {
+    using EventStreams.Domain.Accounting.Events;
+
     [TestFixture]
     public class StreamedEventExtensionsTests {
 

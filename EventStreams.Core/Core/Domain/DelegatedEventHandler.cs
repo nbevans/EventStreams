@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 namespace EventStreams.Core.Domain {
     [Obsolete]
-    internal class DelegatedEventHandler<TWriteModel> : EventHandler<TWriteModel> where TWriteModel : class, new() {
+    internal class DelegatedEventHandler<TModel> : EventHandler<TModel> where TModel : class {
         private readonly Dictionary<Type, Action<EventArgs>> _handlers = new Dictionary<Type, Action<EventArgs>>();
 
-        public DelegatedEventHandler(TWriteModel owner)
+        public DelegatedEventHandler(TModel owner)
             : base(owner, EventHandlerBehavior.Lossless) { }
 
-        public DelegatedEventHandler(TWriteModel owner, EventHandlerBehavior behavior)
+        public DelegatedEventHandler(TModel owner, EventHandlerBehavior behavior)
             : base(owner, behavior) { }
 
-        public DelegatedEventHandler<TWriteModel> Bind<T>(Action<EventArgs> handler) {
+        public DelegatedEventHandler<TModel> Bind<T>(Action<EventArgs> handler) {
             _handlers.Add(typeof(T), handler);
             return this;
         }

@@ -3,7 +3,7 @@
 using NUnit.Framework;
 
 namespace EventStreams.Projection {
-    using Domain;
+    using Domain.Accounting;
 
     [TestFixture]
     public class ObjectActivatorCacheTests {

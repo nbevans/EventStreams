@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
-using EventStreams.Core;
-using EventStreams.Domain;
-using EventStreams.Domain.Events.BankAccount;
 
 using NUnit.Framework;
 
 namespace EventStreams.Projection {
+    using Core;
     using Core.Domain;
+    using Domain.Accounting;
+    using Domain.Accounting.Events;
 
     [TestFixture]
     public class ProjectorIntegrationTests {

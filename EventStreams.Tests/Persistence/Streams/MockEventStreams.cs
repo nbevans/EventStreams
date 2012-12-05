@@ -4,7 +4,7 @@ using Moq;
 
 namespace EventStreams.Persistence.Streams {
     using Core;
-    using Domain.Events.BankAccount;
+    using Domain.Accounting.Events;
 
     internal class MockEventStreams {
 

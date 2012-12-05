@@ -44,13 +44,13 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Domain\BankAccount.cs" />
-    <Compile Include="Domain\BankAccountState.cs" />
-    <Compile Include="Domain\Events\BankAccount\Credited.cs" />
-    <Compile Include="Domain\Events\BankAccount\Debited.cs" />
-    <Compile Include="Domain\Events\BankAccount\MadePurchase.cs" />
-    <Compile Include="Domain\Events\BankAccount\PayeSalaryDeposited.cs" />
-    <Compile Include="Domain\Events\BankAccount\SalaryDeposited.cs" />
+    <Compile Include="Domain\Accounting\PurchasesMadeOnBankAccount.cs" />
+    <Compile Include="Domain\Accounting\BankAccount.cs" />
+    <Compile Include="Domain\Accounting\Events\Credited.cs" />
+    <Compile Include="Domain\Accounting\Events\Debited.cs" />
+    <Compile Include="Domain\Accounting\Events\MadePurchase.cs" />
+    <Compile Include="Domain\Accounting\Events\PayeSalaryDeposited.cs" />
+    <Compile Include="Domain\Accounting\Events\SalaryDeposited.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
@@ -60,6 +60,9 @@
       <Project>{510E17FE-9418-4148-A58B-066E2D98C52C}</Project>
       <Name>EventStreams.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Domain\Namespace.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

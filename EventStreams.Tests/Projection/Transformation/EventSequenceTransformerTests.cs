@@ -6,8 +6,8 @@ using NUnit.Framework;
 
 namespace EventStreams.Projection.Transformation {
     using Core;
-    using Domain;
-    using Domain.Events.BankAccount;
+    using Domain.Accounting;
+    using Domain.Accounting.Events;
 
     [TestFixture]
     public class EventSequenceTransformerTests {

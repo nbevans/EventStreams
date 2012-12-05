@@ -1,0 +1,2 @@
+﻿This namespace has an simple example domain model for a bank account.
+The basic structure and naming conventions used is considered to be quite clean.

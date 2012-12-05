@@ -4,7 +4,7 @@ using System.IO;
 
 namespace EventStreams.Persistence.Serialization {
     using Core;
-    using Domain;
+    using Domain.Accounting;
     using Snapshots;
 
     class SerializerTests : IPerformanceTestSuite {
@@ -21,18 +21,18 @@ namespace EventStreams.Persistence.Serialization {
         }
 
         public SerializerTests() {
-            var tmp = new BankAccountState { Balance = 111.95m };
+            var tmp = new BankAccount.State { Balance = 111.95m };
             _serializer.Serialize(_ms, tmp);
         }
 
         private void Serialize() {
-            var tmp = new BankAccountState { Balance = 111.95m };
+            var tmp = new BankAccount.State { Balance = 111.95m };
             using (var ms = new MemoryStream(64))
                 _serializer.Serialize(ms, tmp);
         }
 
         private void Deserialize() {
-            _serializer.Deserialize<BankAccountState>(_ms);
+            _serializer.Deserialize<BankAccount.State>(_ms);
         }
     }
 }

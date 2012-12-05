@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace EventStreams.Core.Domain {
-    public class ConventionEventHandler<TModel> : EventHandler<TModel> where TModel : class, new() {
+    public class ConventionEventHandler<TModel> : EventHandler<TModel> where TModel : class {
         // Note: Because this is a generic type, each ConventionEventHandler per TModel type will have its own static state.
         //       Therefore, the HandleMethodInvocationCache will be a different instance per TModel type. Handy.
         //       Originally, the HandleMethodInvocationCache was based on an outer and inner cache.

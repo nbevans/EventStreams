@@ -3,7 +3,7 @@
 using NUnit.Framework;
 
 namespace EventStreams {
-    using Domain;
+    using Domain.Accounting;
     using Persistence;
 
     [TestFixture]
@@ -29,15 +29,16 @@ namespace EventStreams {
             Assert.That(finalized);  
         }
 
+// ReSharper disable ClassNeverInstantiated.Local
         private class BankAccountWithGcNotify : BankAccount {
 
             public Action FinalizeCallback { get; set; }
 
+// ReSharper disable UnusedMember.Local
             public BankAccountWithGcNotify()
                 : base(null) { }
 
-// ReSharper disable UnusedMember.Local
-            public BankAccountWithGcNotify(BankAccountState memento)
+            public BankAccountWithGcNotify(State memento)
 // ReSharper restore UnusedMember.Local
                 : base(memento) { }
 
@@ -45,5 +46,6 @@ namespace EventStreams {
                 FinalizeCallback();
             }
         }
+// ReSharper restore ClassNeverInstantiated.Local
     }
 }

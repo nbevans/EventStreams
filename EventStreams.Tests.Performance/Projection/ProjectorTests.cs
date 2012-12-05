@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace EventStreams.Projection {
     using Core;
     using Core.Domain;
-    using Domain;
-    using Domain.Events.BankAccount;
+    using Domain.Accounting;
+    using Domain.Accounting.Events;
 
     class ProjectorTests : IPerformanceTestSuite {
 
