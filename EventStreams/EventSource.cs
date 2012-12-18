@@ -5,9 +5,9 @@ using System.Runtime.CompilerServices;
 
 namespace EventStreams {
     using Core;
-    using Core.Domain;
     using Persistence;
     using Projection;
+    using Projection.EventHandling;
 
     /// <summary>
     /// The ultimate entry point into the event store. All write models (WM) and read models (RM) are "sourced" via this provider.
@@ -30,7 +30,7 @@ namespace EventStreams {
         public EventSource(IPersistenceStrategy persistenceStrategy, IProjector projector) {
             if (persistenceStrategy == null) throw new ArgumentNullException("persistenceStrategy");
             _persistenceStrategy = persistenceStrategy;
-            _projector = projector ?? new Projector();
+            _projector = projector ?? new DefaultProjector();
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace EventStreams {
 
         private TModel OpenCore<TModel>(Guid identity, bool loadEvents = true, EventHandlerBehavior eventHandlerBehavior = EventHandlerBehavior.Lossless) where TModel : class {
             var events = loadEvents ? _persistenceStrategy.Load(identity) : Enumerable.Empty<IStreamedEvent>();
-            var model = _projector.Project<TModel>(identity, events, x => new ConventionEventHandler<TModel>(x, eventHandlerBehavior));
+            var model = _projector.Project<TModel>(identity, events, x => new ConventionEventHandler(x, eventHandlerBehavior));
 
             if (typeof(IObservable<EventArgs>).IsAssignableFrom(typeof(TModel)))
                 Observe((IObservable<EventArgs>)model, identity);
@@ -106,9 +106,8 @@ namespace EventStreams {
         }
 
         private void Observe(IObservable<EventArgs> writeModel, Guid identity) {
-            var observer = new WriteModelObserver(this, writeModel, identity);
-            _objects.Add(writeModel, observer);
-            observer.Subscription = writeModel.Subscribe(observer);
+            new WriteModelObserver(this, writeModel, identity, new ConventionEventHandler(writeModel))
+                .Initialize(observer => _objects.Add(writeModel, observer), null);
         }
 
         /// <summary>
@@ -122,19 +121,34 @@ namespace EventStreams {
             private readonly EventSource _parentSource;
             private readonly IObservable<EventArgs> _writeModel;
             private readonly Guid _identity;
+            private readonly EventHandler _modelDispatcher;
+            private IDisposable _subscription;
 
-            public IDisposable Subscription { get; set; }
-
-            public WriteModelObserver(EventSource parentSource, IObservable<EventArgs> writeModel, Guid identity) {
+            public WriteModelObserver(EventSource parentSource, IObservable<EventArgs> writeModel, Guid identity, EventHandler modelDispatcher) {
                 if (parentSource == null) throw new ArgumentNullException("parentSource");
                 if (writeModel == null) throw new ArgumentNullException("writeModel");
+
                 _parentSource = parentSource;
                 _writeModel = writeModel;
                 _identity = identity;
+                _modelDispatcher = modelDispatcher;
+            }
+
+            public void Initialize(Action<WriteModelObserver> preInitialize, Action<WriteModelObserver> postInitialize) {
+                if (preInitialize != null)
+                    preInitialize(this);
+
+                _subscription = _writeModel.Subscribe(this);
+
+                if (postInitialize != null)
+                    postInitialize(this);
             }
 
             public void OnNext(EventArgs value) {
                 _parentSource.Commit(_identity, new[] { new StreamedEvent(value) });
+                
+                if (_modelDispatcher != null)
+                    _modelDispatcher.OnNext(value);
             }
 
             public void OnError(Exception error) {
@@ -146,7 +160,11 @@ namespace EventStreams {
                 _parentSource.Close(_writeModel);
 
                 // Unsubscribe from observation.
-                Subscription.Dispose();
+                _subscription.Dispose();
+
+                // Notify the event dispatcher for the model that we're completing the stream.
+                if (_modelDispatcher != null)
+                    _modelDispatcher.OnCompleted();
             }
         }
     }

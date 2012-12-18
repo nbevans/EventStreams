@@ -44,10 +44,6 @@
     <Compile Include="EventSourceTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EventStreams.Core\EventStreams.Core.csproj">
-      <Project>{510e17fe-9418-4148-a58b-066e2d98c52c}</Project>
-      <Name>EventStreams.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\EventStreams.Tests.Domain\EventStreams.Tests.Domain.csproj">
       <Project>{6f890369-d7dd-4a2d-8590-e4550f8647a0}</Project>
       <Name>EventStreams.Tests.Domain</Name>

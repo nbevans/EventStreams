@@ -56,10 +56,6 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EventStreams.Core\EventStreams.Core.csproj">
-      <Project>{510E17FE-9418-4148-A58B-066E2D98C52C}</Project>
-      <Name>EventStreams.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\EventStreams.Tests.Domain\EventStreams.Tests.Domain.csproj">
       <Project>{6F890369-D7DD-4A2D-8590-E4550F8647A0}</Project>
       <Name>EventStreams.Tests.Domain</Name>

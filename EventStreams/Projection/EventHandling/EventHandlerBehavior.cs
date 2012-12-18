@@ -1,4 +1,4 @@
-﻿namespace EventStreams.Core.Domain {
+﻿namespace EventStreams.Projection.EventHandling {
     /// <summary>
     /// Indicates the behavior by which event handling is expected to occur.
     /// </summary>

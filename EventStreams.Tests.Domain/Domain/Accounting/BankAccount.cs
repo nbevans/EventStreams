@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using System.Reactive.Subjects;
 
 namespace EventStreams.Domain.Accounting {
-    using Core.Domain;
     using Events;
 
     public class BankAccount : IObservable<EventArgs>, IDisposable {
         private readonly State _memento;
-        private readonly EventDispatcher<BankAccount> _eventDispatcher;
+        private readonly Subject<EventArgs> _subject;
         
         public Guid Identity { get { return _memento.Identity; }}
         public decimal Balance { get { return _memento.Balance; } }
@@ -17,23 +17,23 @@ namespace EventStreams.Domain.Accounting {
 
         public BankAccount(State memento) {
             _memento = memento ?? new State();
-            _eventDispatcher = new EventDispatcher<BankAccount>(this);
+            _subject = new Subject<EventArgs>();
         }
 
         public void Credit(decimal value) {
-            _eventDispatcher.Dispatch(new Credited(value));
+            _subject.OnNext(new Credited(value));
         }
 
         public void Debit(decimal value) {
-            _eventDispatcher.Dispatch(new Debited(value));
+            _subject.OnNext(new Debited(value));
         }
 
         public void Purchase(decimal value, string name) {
-            _eventDispatcher.Dispatch(new MadePurchase(value, name));
+            _subject.OnNext(new MadePurchase(value, name));
         }
 
         public void DepositPayeSalary(decimal value, string source) {
-            _eventDispatcher.Dispatch(new PayeSalaryDeposited(value, source));
+            _subject.OnNext(new PayeSalaryDeposited(value, source));
         }
 
         protected void Apply(Credited args) {
@@ -53,11 +53,11 @@ namespace EventStreams.Domain.Accounting {
         }
 
         IDisposable IObservable<EventArgs>.Subscribe(IObserver<EventArgs> observer) {
-            return _eventDispatcher.Subscribe(observer);
+            return _subject.Subscribe(observer);
         }
 
         public void Dispose() {
-            _eventDispatcher.Dispose();
+            _subject.Dispose();
         }
 
         [DataContract]

@@ -5,17 +5,17 @@ using NUnit.Framework;
 
 namespace EventStreams.Projection {
     using Core;
-    using Core.Domain;
     using Domain.Accounting;
     using Domain.Accounting.Events;
+    using EventHandling;
 
     [TestFixture]
     public class ProjectorIntegrationTests {
 
-        private readonly Projector _projector = new Projector();
+        private readonly DefaultProjector _projector = new DefaultProjector();
 
-        private readonly Func<BankAccount, EventHandler<BankAccount>> _defaultEventHandlerFactory =
-            model => new ConventionEventHandler<BankAccount>(model, EventHandlerBehavior.Lossless);
+        private readonly Func<BankAccount, EventHandler> _defaultEventHandlerFactory =
+            model => new ConventionEventHandler(model);
 
         private readonly StreamedEvent[] _events100 = new[] {
             new PayeSalaryDeposited(100, "Acme Corp").ToStreamedEvent(),

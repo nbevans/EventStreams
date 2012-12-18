@@ -2,8 +2,6 @@
 using System.IO;
 
 namespace EventStreams.Persistence.FileSystem {
-    using Core.Domain;
-
     public sealed class RepositoryHierarchy {
 
         public string RootPath { get; private set; }

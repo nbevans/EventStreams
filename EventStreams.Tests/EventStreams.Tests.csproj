@@ -43,31 +43,35 @@
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\packages\NUnit.2.6.1\lib\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Reactive.Core">
-      <HintPath>..\packages\Rx-Core.2.0.20814\lib\Net40\System.Reactive.Core.dll</HintPath>
+    <Reference Include="System.Reactive.Core, Version=2.0.20823.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Rx-Core.2.0.21114\lib\Net40\System.Reactive.Core.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.Interfaces">
-      <HintPath>..\packages\Rx-Interfaces.2.0.20814\lib\Net40\System.Reactive.Interfaces.dll</HintPath>
+    <Reference Include="System.Reactive.Interfaces, Version=2.0.20823.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Rx-Interfaces.2.0.21114\lib\Net40\System.Reactive.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.Linq">
-      <HintPath>..\packages\Rx-Linq.2.0.20814\lib\Net40\System.Reactive.Linq.dll</HintPath>
+    <Reference Include="System.Reactive.Linq, Version=2.0.20823.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Rx-Linq.2.0.21114\lib\Net40\System.Reactive.Linq.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.PlatformServices">
-      <HintPath>..\packages\Rx-PlatformServices.2.0.20814\lib\Net40\System.Reactive.PlatformServices.dll</HintPath>
+    <Reference Include="System.Reactive.PlatformServices, Version=2.0.20823.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Rx-PlatformServices.2.0.21114\lib\Net40\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\EventArgsExtensionsTests.cs" />
-    <Compile Include="Core\Domain\ConventionEventHandlerTests.cs" />
-    <Compile Include="Core\Domain\DelegatedEventHandlerTests.cs" />
+    <Compile Include="Projection\EventHandling\ConventionEventHandlerTests.cs" />
     <Compile Include="Core\StreamedEventExtensionsTests.cs" />
     <Compile Include="EventSourceIntegrationTests.cs" />
     <Compile Include="Persistence\Streams\EventStreamReaderTests.cs" />
@@ -79,6 +83,7 @@
     <Compile Include="Persistence\Resources\ResourceProvider.cs" />
     <Compile Include="Persistence\Streams\SelfHealing\EventStreamSelfHealingWriterTests.cs" />
     <Compile Include="Persistence\Streams\StreamExtensions.cs" />
+    <Compile Include="Projection\EventHandling\HandleMethodFastInvocationTests.cs" />
     <Compile Include="Projection\ObjectActivatorCacheTests.cs" />
     <Compile Include="Projection\ProjectorIntegrationTests.cs" />
     <Compile Include="Projection\Transformation\EventSequenceTransformerTests.cs" />
@@ -93,10 +98,6 @@
     <EmbeddedResource Include="Persistence\Resources\First_with_hash_seed.e" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EventStreams.Core\EventStreams.Core.csproj">
-      <Project>{510E17FE-9418-4148-A58B-066E2D98C52C}</Project>
-      <Name>EventStreams.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\EventStreams.Tests.Domain\EventStreams.Tests.Domain.csproj">
       <Project>{6F890369-D7DD-4A2D-8590-E4550F8647A0}</Project>
       <Name>EventStreams.Tests.Domain</Name>
