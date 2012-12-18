@@ -6,12 +6,10 @@ namespace EventStreams.Persistence.FileSystem {
     using Serialization.Events;
 
     public class FileSystemPersistenceStrategy : IPersistenceStrategy {
-        private readonly RepositoryHierarchy _repositoryHierarchy;
         private readonly FileSystemLoader _loader;
         private readonly FileSystemStorer _storer;
 
         public FileSystemPersistenceStrategy(RepositoryHierarchy repositoryHierarchy, IEventReaderWriterPair eventReaderWriterPair) {
-            _repositoryHierarchy = repositoryHierarchy;
             if (repositoryHierarchy == null) throw new ArgumentNullException("repositoryHierarchy");
             if (eventReaderWriterPair == null) throw new ArgumentNullException("eventReaderWriterPair");
 
