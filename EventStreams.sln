@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStreams.Tests.Domain",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStreams.Tests.Memory", "EventStreams.Tests.Memory\EventStreams.Tests.Memory.csproj", "{26744494-8E97-4C91-A8FC-FE873D9E3A14}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStreams.Persistence.Riak", "EventStreams.Persistence.Riak\EventStreams.Persistence.Riak.csproj", "{87DB24DD-2AEA-48E6-9DD8-82B5A999787F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,6 +88,16 @@ Global
 		{26744494-8E97-4C91-A8FC-FE873D9E3A14}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{26744494-8E97-4C91-A8FC-FE873D9E3A14}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{26744494-8E97-4C91-A8FC-FE873D9E3A14}.Release|x86.ActiveCfg = Release|Any CPU
+		{87DB24DD-2AEA-48E6-9DD8-82B5A999787F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87DB24DD-2AEA-48E6-9DD8-82B5A999787F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87DB24DD-2AEA-48E6-9DD8-82B5A999787F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{87DB24DD-2AEA-48E6-9DD8-82B5A999787F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{87DB24DD-2AEA-48E6-9DD8-82B5A999787F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{87DB24DD-2AEA-48E6-9DD8-82B5A999787F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87DB24DD-2AEA-48E6-9DD8-82B5A999787F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87DB24DD-2AEA-48E6-9DD8-82B5A999787F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{87DB24DD-2AEA-48E6-9DD8-82B5A999787F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{87DB24DD-2AEA-48E6-9DD8-82B5A999787F}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
