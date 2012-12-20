@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace EventStreams.Persistence.Riak.Persistence.Riak {
+namespace EventStreams.Persistence.Riak {
     using Core;
     using Serialization.Events;
 

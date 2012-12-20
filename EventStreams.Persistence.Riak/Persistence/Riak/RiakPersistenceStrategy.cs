@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 
 using CorrugatedIron.Config;
-using CorrugatedIron.Config.Fluent;
 
-namespace EventStreams.Persistence.Riak.Persistence.Riak {
+namespace EventStreams.Persistence.Riak {
     using Core;
-    using CorrugatedIron.Comms;
     using Serialization.Events;
 
     public class RiakPersistenceStrategy : IPersistenceStrategy {

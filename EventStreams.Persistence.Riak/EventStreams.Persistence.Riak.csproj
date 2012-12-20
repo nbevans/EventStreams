@@ -7,7 +7,7 @@
     <ProjectGuid>{87DB24DD-2AEA-48E6-9DD8-82B5A999787F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStreams.Persistence.Riak</RootNamespace>
+    <RootNamespace>EventStreams</RootNamespace>
     <AssemblyName>EventStreams.Persistence.Riak</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -57,7 +57,9 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
