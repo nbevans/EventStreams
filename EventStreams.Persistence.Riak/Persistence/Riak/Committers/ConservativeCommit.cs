@@ -68,7 +68,7 @@ namespace EventStreams.Persistence.Riak.Committers {
                     var rr = RiakClient.Get(last);
                     if (rr.IsSuccess) {
                         var ro = rr.Value;
-                        ro.LinkTo(RiakObjects.First(), LinkNames.Pointer);
+                        ro.SingleLinkTo(RiakObjects.First(), LinkNames.Pointer);
                         RiakClient.Put(ro, new RiakPutOptions { IfNotModified = true });
 
                     } else {

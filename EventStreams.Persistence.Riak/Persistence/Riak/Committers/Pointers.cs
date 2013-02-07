@@ -27,7 +27,7 @@ namespace EventStreams.Persistence.Riak.Committers {
 
         public void CreateHead(RiakObjectId next) {
             var head = new RiakObject(_bucket, PointerKeys.Head);
-            head.LinkTo(next, LinkNames.Pointer);
+            head.SingleLinkTo(next, LinkNames.Pointer);
 
             var rr = _riakClient.Put(head, new RiakPutOptions { IfNoneMatch = true });
             if (!rr.IsSuccess)
@@ -47,7 +47,7 @@ namespace EventStreams.Persistence.Riak.Committers {
                 ro = new RiakObject(_bucket, PointerKeys.Tail);
 
             if (ro != null) {
-                ro.LinkTo(prev, LinkNames.Pointer);
+                ro.SingleLinkTo(prev, LinkNames.Pointer);
 
                 rr = _riakClient.Put(
                     ro,

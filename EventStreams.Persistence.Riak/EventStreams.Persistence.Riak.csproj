@@ -72,6 +72,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ExceptionStrings.resx</DependentUpon>
     </Compile>
+    <Compile Include="Persistence\Riak\RiakObjectExtensions.cs" />
     <Compile Include="Persistence\Riak\RiakPersistenceExceptions.cs" />
     <Compile Include="Persistence\Riak\RiakLoader.cs" />
     <Compile Include="Persistence\Riak\RiakPersistenceStrategy.cs" />

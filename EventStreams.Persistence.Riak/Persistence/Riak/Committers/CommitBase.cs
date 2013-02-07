@@ -46,14 +46,14 @@ namespace EventStreams.Persistence.Riak.Committers {
 
                 // Wire up object pointers to form the linked list.
                 if (next != null)
-                    ro.LinkTo(Bucket, KeySelector(next), LinkNames.Pointer);
+                    ro.SingleLinkTo(Bucket, KeySelector(next), LinkNames.Pointer);
 
                 //
                 riakObjects[i] = ro;
             }
 
             // Special case for last in the chain, which must point to the "tail".
-            riakObjects[objects.Length - 1].LinkTo(Bucket, PointerKeys.Tail, LinkNames.Pointer);
+            riakObjects[objects.Length - 1].SingleLinkTo(Bucket, PointerKeys.Tail, LinkNames.Pointer);
 
             return riakObjects;
         }
