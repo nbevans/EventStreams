@@ -120,11 +120,14 @@
   <data name="Commit_objects_unexpectantly_failed" xml:space="preserve">
     <value>Failed to commit {0:N0} object(s). Review the inner exception(s) for further information.</value>
   </data>
+  <data name="Corrupt_pointer" xml:space="preserve">
+    <value>Pointer object ({0}) exists but it does not contain the expected link ({1}). The bucket is either invalid, corrupted or has been tampered with by a foreign system.</value>
+  </data>
   <data name="Head_pointer_update_failed" xml:space="preserve">
     <value>Head pointer could not be updated.</value>
   </data>
   <data name="Object_creation_pre_commitment_failed" xml:space="preserve">
-    <value>Failed to store {0:N0} object(s) as a self-linked but dereferenced unit.</value>
+    <value>Failed to store {0:N0} object(s) (of {1:N0}) as a self-linked but dereferenced unit.</value>
   </data>
   <data name="Object_wireup_failed" xml:space="preserve">
     <value>Failed to wire-up the links of {0:N0} object(s); they are self-linked but will remain dereferenced.</value>

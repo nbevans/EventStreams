@@ -74,10 +74,10 @@ namespace EventStreams.Persistence.Riak.Committers {
                     return new RiakObjectId(link.Bucket, link.Key);
 
                 // Highly unusual.
-                // Was the pointer object created by some other system?
+                // Was the pointer object created or tampered with by some foreign system?
                 throw new RiakPersistenceException(
                     string.Format(
-                        "Pointer object ({0}) exists but it does not contain the expected link ({1}).",
+                        Resources.ExceptionStrings.Corrupt_pointer,
                         key, linkName));
             }
 

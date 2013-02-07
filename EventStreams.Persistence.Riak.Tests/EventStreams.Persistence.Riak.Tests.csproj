@@ -75,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Persistence\Riak\Committers\ConservativeCommitTests.cs" />
+    <Compile Include="Persistence\Riak\RiakClientExtensions.cs" />
     <Compile Include="Persistence\Riak\RiakStorerTests.cs" />
     <Compile Include="Persistence\Riak\TestingRiakClient.cs" />
     <Compile Include="Persistence\Riak\TestUtils.cs" />

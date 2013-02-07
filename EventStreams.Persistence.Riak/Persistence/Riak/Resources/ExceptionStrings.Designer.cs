@@ -70,6 +70,15 @@ namespace EventStreams.Persistence.Riak.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Pointer object ({0}) exists but it does not contain the expected link ({1}). The bucket is either invalid, corrupted or has been tampered with by a foreign system..
+        /// </summary>
+        internal static string Corrupt_pointer {
+            get {
+                return ResourceManager.GetString("Corrupt_pointer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Head pointer could not be updated..
         /// </summary>
         internal static string Head_pointer_update_failed {
@@ -79,7 +88,7 @@ namespace EventStreams.Persistence.Riak.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to store {0:N0} object(s) as a self-linked but dereferenced unit..
+        ///   Looks up a localized string similar to Failed to store {0:N0} object(s) (of {1:N0}) as a self-linked but dereferenced unit..
         /// </summary>
         internal static string Object_creation_pre_commitment_failed {
             get {

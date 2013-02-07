@@ -8,6 +8,7 @@ using CorrugatedIron.Models;
 namespace EventStreams.Persistence.Riak.Committers {
 
     internal class ConservativeCommit<TObject> : CommitBase<TObject> where TObject : class {
+
         public ConservativeCommit(IRiakClient riakClient, string bucket, IEnumerable<TObject> objects, Func<TObject, string> keySelector)
             : base(riakClient, bucket, objects, keySelector) { }
 
@@ -27,12 +28,17 @@ namespace EventStreams.Persistence.Riak.Committers {
 
             if (failures.Any()) {
                 // Rollback (delete) any of the objects that may have been successfully created.
+                //
+                // It is safe to delete these because they were only JUST created on the above Put() line.
+                // And since they were successfully added (IsSuccess == true) then it was definitely this
+                // thread that created them, therefore nobody else knows about them as they haven't even
+                // been referenced in the linked list yet.
                 var successes = putResults.Where(rr => rr.IsSuccess);
                 var rollbackResults = RiakClient.Delete(successes.Select(rr => rr.Value.ToRiakObjectId()));
 
                 //
                 throw new RiakObjectCreationPersistenceException(
-                    string.Format(Resources.ExceptionStrings.Object_creation_pre_commitment_failed, putResults.Count()),
+                    string.Format(Resources.ExceptionStrings.Object_creation_pre_commitment_failed, failures.Count(), putResults.Count()),
                     putResults, rollbackResults);
             }
 
@@ -43,18 +49,18 @@ namespace EventStreams.Persistence.Riak.Committers {
         /// Wires up the Put()'d objects by updating the pointers and the last object's pointer to point to the tip of the new chain of objects.
         /// </summary>
         private void Wireup() {
-            var nav = new Pointers(RiakClient, Bucket);
+            var ptrs = new Pointers(RiakClient, Bucket);
 
             try {
                 // Creates a new head if this is a fresh bucket.
                 // The new head is set to pointer to the first object in chain.
-                var head = nav.FollowHead();
+                var head = ptrs.FollowHead();
                 if (head == null) {
-                    nav.CreateHead(RiakObjects.First().ToRiakObjectId());
+                    ptrs.CreateHead(RiakObjects.First().ToRiakObjectId());
                 }
 
-                // Set last object (tail - 1)'s to point to the first object in chain.
-                var last = nav.FollowTail();
+                // Set last object (tail - 1) to point to the first object in chain.
+                var last = ptrs.FollowTail();
                 if (last != null) {
                     var rr = RiakClient.Get(last);
                     if (rr.IsSuccess) {
@@ -69,7 +75,7 @@ namespace EventStreams.Persistence.Riak.Committers {
                 }
 
                 // Set tail to point to the last object in chain.
-                nav.UpdateTail(RiakObjects.Last().ToRiakObjectId());
+                ptrs.UpdateTail(RiakObjects.Last().ToRiakObjectId());
 
             } catch (RiakPointerPersistenceException x) {
                 throw new RiakObjectWireupPersistenceException(
