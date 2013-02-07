@@ -2,9 +2,7 @@
 
 using NUnit.Framework;
 
-using CorrugatedIron;
-using CorrugatedIron.Comms;
-using CorrugatedIron.Config;
+using CorrugatedIron.Util;
 
 namespace EventStreams.Persistence.Riak {
     using Core;
@@ -37,11 +35,10 @@ namespace EventStreams.Persistence.Riak {
 
         [Test]
         public void foo() {
-            var riakClusterConfiguration = RiakClusterConfiguration.LoadFromConfig("riakConfig");
-            var riakClient = new RiakCluster(riakClusterConfiguration, new RiakConnectionFactory()).CreateClient();
+            var riakClient = TestingRiakClient.Get();
             var storer = new RiakStorer(riakClient, new NullEventWriter());
 
-            var rr = riakClient.DeleteBucket(_bucketId.ToRiakIdentity());
+            riakClient.DeleteBucket(_bucketId.ToRiakIdentity(), RiakConstants.QuorumOptions.All);
 
             storer.Store(_bucketId, new[] { _eventA, _eventB, _eventC, _eventD });
         }

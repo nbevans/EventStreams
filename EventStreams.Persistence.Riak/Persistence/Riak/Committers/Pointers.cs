@@ -4,35 +4,30 @@ using System.Linq;
 using CorrugatedIron;
 using CorrugatedIron.Models;
 
-namespace EventStreams.Persistence.Riak {
+namespace EventStreams.Persistence.Riak.Committers {
 
-    internal class BucketPointers {
-        private const string HeadKey = "head";
-        private const string TailKey = "tail";
-        private const string PrevLink = "prev";
-        private const string NextLink = "next";
-
+    internal class Pointers {
         private readonly IRiakClient _riakClient;
         private readonly string _bucket;
 
-        public BucketPointers(IRiakClient riakClient, string bucket) {
+        public Pointers(IRiakClient riakClient, string bucket) {
             if (riakClient == null) throw new ArgumentNullException("riakClient");
             if (bucket == null) throw new ArgumentNullException("bucket");
             _riakClient = riakClient;
             _bucket = bucket;
         }
 
-        public RiakObjectId GetHead() {
-            return GetPointer(HeadKey, NextLink);
+        public RiakObjectId FollowHead() {
+            return FollowPointer(PointerKeys.Head, LinkNames.Pointer);
         }
 
-        public RiakObjectId GetTail() {
-            return GetPointer(TailKey, PrevLink);
+        public RiakObjectId FollowTail() {
+            return FollowPointer(PointerKeys.Tail, LinkNames.Pointer);
         }
 
         public void CreateHead(RiakObjectId next) {
-            var head = new RiakObject(_bucket, HeadKey);
-            head.LinkTo(next, NextLink);
+            var head = new RiakObject(_bucket, PointerKeys.Head);
+            head.LinkTo(next, LinkNames.Pointer);
 
             var rr = _riakClient.Put(head, new RiakPutOptions { IfNoneMatch = true });
             if (!rr.IsSuccess)
@@ -43,16 +38,16 @@ namespace EventStreams.Persistence.Riak {
 
         public void UpdateTail(RiakObjectId prev) {
             var success = false;
-            var rr = _riakClient.Get(_bucket, TailKey);
+            var rr = _riakClient.Get(_bucket, PointerKeys.Tail);
 
             RiakObject ro = null;
             if (rr.IsSuccess)
                 ro = rr.Value;
             else if (rr.ResultCode == ResultCode.NotFound)
-                ro = new RiakObject(_bucket, TailKey);
+                ro = new RiakObject(_bucket, PointerKeys.Tail);
 
             if (ro != null) {
-                ro.LinkTo(prev, PrevLink);
+                ro.LinkTo(prev, LinkNames.Pointer);
 
                 rr = _riakClient.Put(
                     ro,
@@ -70,7 +65,7 @@ namespace EventStreams.Persistence.Riak {
                     rr);
         }
 
-        private RiakObjectId GetPointer(string key, string linkName) {
+        private RiakObjectId FollowPointer(string key, string linkName) {
             var rr = _riakClient.Get(_bucket, key);
 
             if (rr.IsSuccess) {

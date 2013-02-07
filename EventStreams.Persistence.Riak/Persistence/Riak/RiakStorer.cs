@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using CorrugatedIron;
 
 namespace EventStreams.Persistence.Riak {
+    using Committers;
     using Core;
     using Serialization.Events;
 
@@ -21,7 +22,7 @@ namespace EventStreams.Persistence.Riak {
         public void Store(Guid identity, IEnumerable<IStreamedEvent> eventsToAppend) {
             var bucket = identity.ToRiakIdentity();
 
-            new CommitContext(_riakClient, bucket, eventsToAppend)
+            new ConservativeCommit<IStreamedEvent>(_riakClient, bucket, eventsToAppend, e => e.ToRiakIdentity())
                 .Commit();
         }
     }

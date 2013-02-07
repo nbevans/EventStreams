@@ -31,6 +31,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>StrongName.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="CorrugatedIron">
       <HintPath>..\packages\CorrugatedIron.1.1.0\lib\net40\CorrugatedIron.dll</HintPath>
@@ -55,6 +61,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="StrongName.snk" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EventStreams.Persistence.Riak\EventStreams.Persistence.Riak.csproj">
@@ -67,7 +74,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Persistence\Riak\Committers\ConservativeCommitTests.cs" />
     <Compile Include="Persistence\Riak\RiakStorerTests.cs" />
+    <Compile Include="Persistence\Riak\TestingRiakClient.cs" />
+    <Compile Include="Persistence\Riak\TestUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

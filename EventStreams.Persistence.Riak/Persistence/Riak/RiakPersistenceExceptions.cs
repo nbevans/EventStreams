@@ -31,22 +31,25 @@ namespace EventStreams.Persistence.Riak {
     [Serializable]
     public class RiakObjectCreationPersistenceException : RiakPersistenceException {
         public IEnumerable<RiakResult<RiakObject>> Results { get; private set; }
+        public IEnumerable<RiakResult> RollbackResults { get; private set; }
 
         // ReSharper disable PossibleMultipleEnumeration
-        public RiakObjectCreationPersistenceException(string message, IEnumerable<RiakResult<RiakObject>> results)
+        public RiakObjectCreationPersistenceException(string message, IEnumerable<RiakResult<RiakObject>> putResults, IEnumerable<RiakResult> rollbackResults)
             : base(message) {
 
-            Results = results;
+            Results = putResults;
+            RollbackResults = rollbackResults;
         }
         // ReSharper restore PossibleMultipleEnumeration
     }
 
     [Serializable]
     public class RiakObjectWireupPersistenceException : RiakPersistenceException {
-        // ReSharper disable PossibleMultipleEnumeration
+        public RiakObjectWireupPersistenceException(string message)
+            : base(message) { }
+
         public RiakObjectWireupPersistenceException(string message, Exception innerException)
             : base(message, innerException) { }
-        // ReSharper restore PossibleMultipleEnumeration
     }
 
     [Serializable]
