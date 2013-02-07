@@ -9,6 +9,9 @@ namespace EventStreams.Persistence.Riak.Committers {
 
     internal class ConservativeCommit<TObject> : CommitBase<TObject> where TObject : class {
 
+        public ConservativeCommit(IRiakClient riakClient, string bucket, IEnumerable<TObject> objects)
+            : base(riakClient, bucket, objects, v => v.ToString()) { }
+
         public ConservativeCommit(IRiakClient riakClient, string bucket, IEnumerable<TObject> objects, Func<TObject, string> keySelector)
             : base(riakClient, bucket, objects, keySelector) { }
 
