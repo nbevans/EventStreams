@@ -61,6 +61,15 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Persistence\Riak\ClusterTools\ring-status.sh">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Persistence\Riak\ClusterTools\restart-iptables.sh">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Persistence\Riak\ClusterTools\simulate-network-partition.sh">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="StrongName.snk" />
   </ItemGroup>
   <ItemGroup>
@@ -74,11 +83,22 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Persistence\Riak\ClusterTools\NetworkPartition.cs" />
+    <Compile Include="Persistence\Riak\ClusterTools\NetworkPartitionTests.cs" />
+    <Compile Include="Persistence\Riak\ClusterTools\Plink.cs" />
+    <Compile Include="Persistence\Riak\ClusterTools\Reachability.cs" />
+    <Compile Include="Persistence\Riak\ClusterTools\ReachabilityTests.cs" />
     <Compile Include="Persistence\Riak\Committers\ConservativeCommitTests.cs" />
     <Compile Include="Persistence\Riak\RiakClientExtensions.cs" />
     <Compile Include="Persistence\Riak\RiakStorerTests.cs" />
     <Compile Include="Persistence\Riak\TestingRiakClient.cs" />
     <Compile Include="Persistence\Riak\TestUtils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Persistence\Riak\ClusterTools\plink.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="Persistence\Riak\ClusterTools\Readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
