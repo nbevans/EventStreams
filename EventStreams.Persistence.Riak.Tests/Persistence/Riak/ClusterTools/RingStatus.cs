@@ -12,7 +12,7 @@ namespace EventStreams.Persistence.Riak.ClusterTools {
         Degraded
     }
 
-    internal class Reachability {
+    internal static class RingStatus {
         public static Health Test(string nodeName, out IEnumerable<string> unreachableNodes) {
             var output = Plink.Execute("ring-status.sh", nodeName);
 
@@ -35,24 +35,34 @@ namespace EventStreams.Persistence.Riak.ClusterTools {
             return Test(nodeName, out tmp);
         }
 
-        public static void AssertOkay(string nodeName) {
-            var health = Health.Unknown;
-            for (var i = 0; i < 3 && (health = Test(nodeName)) != Health.Okay; i++)
-                Thread.Sleep(5000);
-
-            if (health != Health.Okay)
-                Assert.Fail("The cluster health is not okay.");
+        public static void Wait(string nodeName, Health expected = Health.Okay, int seconds = 60) {
+            IEnumerable<string> tmp;
+            Wait(nodeName, expected, seconds, out tmp);
         }
 
-        public static void AssertDegraded(string nodeName, int numberOfUnreachableNodes = 2) {
-            var health = Health.Unknown;
-            IEnumerable<string> tmp = null;
-            for (var i = 0; i < 3 && (health = Test(nodeName, out tmp)) != Health.Degraded; i++)
-                Thread.Sleep(5000);
-            
-            if (health != Health.Degraded)
-                Assert.Fail("The cluster health is not degraded.");
+        private static void Wait(string nodeName, Health expected, int seconds, out IEnumerable<string> unreachableNodes) {
+            unreachableNodes = null;
 
+            var health = Health.Unknown;
+            var limit = DateTime.UtcNow.AddSeconds(seconds);
+            while (DateTime.UtcNow < limit && (health = Test(nodeName, out unreachableNodes)) != expected)
+                Thread.Sleep(5000);
+
+            if (health != expected)
+                Assert.Fail(
+                    "Timed out after {0:N0} seconds whilst waiting for cluster status to be {1}.",
+                    seconds,
+                    expected);
+        }
+
+        public static void AssertOkay(string nodeName, int seconds = 60) {
+            Wait(nodeName, Health.Okay, seconds);
+        }
+
+        public static void AssertDegraded(string nodeName, int numberOfUnreachableNodes = 2, int seconds = 60) {
+            IEnumerable<string> tmp;
+            Wait(nodeName, Health.Degraded, seconds, out tmp);
+            
             // ReSharper disable PossibleMultipleEnumeration
             if (tmp != null && tmp.Count() != numberOfUnreachableNodes)
                 Assert.Fail(

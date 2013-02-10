@@ -61,6 +61,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Persistence\Riak\ClusterTools\ring-ready.sh">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Persistence\Riak\ClusterTools\ring-status.sh">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -83,11 +86,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Persistence\Riak\ClusterTools\RingReadyTests.cs" />
     <Compile Include="Persistence\Riak\ClusterTools\NetworkPartition.cs" />
     <Compile Include="Persistence\Riak\ClusterTools\NetworkPartitionTests.cs" />
     <Compile Include="Persistence\Riak\ClusterTools\Plink.cs" />
-    <Compile Include="Persistence\Riak\ClusterTools\Reachability.cs" />
-    <Compile Include="Persistence\Riak\ClusterTools\ReachabilityTests.cs" />
+    <Compile Include="Persistence\Riak\ClusterTools\RingReady.cs" />
+    <Compile Include="Persistence\Riak\ClusterTools\RingStatus.cs" />
+    <Compile Include="Persistence\Riak\ClusterTools\RingStatusTests.cs" />
     <Compile Include="Persistence\Riak\Committers\ConservativeCommitTests.cs" />
     <Compile Include="Persistence\Riak\RiakClientExtensions.cs" />
     <Compile Include="Persistence\Riak\RiakStorerTests.cs" />
