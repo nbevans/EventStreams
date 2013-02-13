@@ -2,7 +2,7 @@
 
 [assembly: AssemblyCompany("Byteflag Ltd")]
 [assembly: AssemblyProduct("EventStreams")]
-[assembly: AssemblyCopyright("Copyright © MMXII, Byteflag Ltd. All rights reserved.")]
+[assembly: AssemblyCopyright("Copyright © MMXIII, Byteflag Ltd. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 
 [assembly: AssemblyVersion("1.0.*")]
