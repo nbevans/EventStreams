@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStreams.Persistence.Ri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStreams.Persistence.Riak.Tests", "EventStreams.Persistence.Riak.Tests\EventStreams.Persistence.Riak.Tests.csproj", "{A2D5D944-1252-426D-97A2-B287569A4F1F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStreams.Persistence.Riak.FacadeProxy", "EventStreams.Persistence.Riak.FacadeProxy\EventStreams.Persistence.Riak.FacadeProxy.csproj", "{746BC527-3058-4872-876D-32DFAC095118}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -110,6 +112,16 @@ Global
 		{A2D5D944-1252-426D-97A2-B287569A4F1F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{A2D5D944-1252-426D-97A2-B287569A4F1F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{A2D5D944-1252-426D-97A2-B287569A4F1F}.Release|x86.ActiveCfg = Release|Any CPU
+		{746BC527-3058-4872-876D-32DFAC095118}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{746BC527-3058-4872-876D-32DFAC095118}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{746BC527-3058-4872-876D-32DFAC095118}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{746BC527-3058-4872-876D-32DFAC095118}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{746BC527-3058-4872-876D-32DFAC095118}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{746BC527-3058-4872-876D-32DFAC095118}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{746BC527-3058-4872-876D-32DFAC095118}.Release|Any CPU.Build.0 = Release|Any CPU
+		{746BC527-3058-4872-876D-32DFAC095118}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{746BC527-3058-4872-876D-32DFAC095118}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{746BC527-3058-4872-876D-32DFAC095118}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
